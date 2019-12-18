@@ -11,7 +11,7 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`archives`;
         FOREIGN KEY (`thread_id`)
         REFERENCES `ls_chat`.`threads` (`id`)
         ON DELETE NO ACTION
-        ON UPDATE NO ACTION,
+        ON UPDATE NO ACTION
 )
 COMMENT = 'アーカイブ';
 
@@ -19,7 +19,7 @@ COMMENT = 'アーカイブ';
 DROP TABLE `ls_chat`.`evaluations`;
 CREATE DATABASE IF NOT EXISTS `ls_chat`.`evalutions`;
     `id` VARCHAR(36) PRIMARY KEY COMMENT 'id',
-    `item` VARCHAR(10) NOT NULL UNIQUE COMMENT '評価文',
+    `item` VARCHAR(10) NOT NULL UNIQUE COMMENT '評価文'
 )
 COMMENT = '評価';
 
@@ -35,7 +35,7 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`evaluation_scores`;
         FOREIGN KEY (`evaluation_id`)
         REFERENCES `ls_chat`.`evaluations` (`evaluation_id`)
         ON DELETE NO ACTION
-        ON UPDATE NO ACTION,
+        ON UPDATE NO ACTION
     CONSTRAINT `fk_evaluation_scores_users`
         FOREIGN KEY (`user_id`)
         REFERENCES `ls_chat`.`users` (`id`)
