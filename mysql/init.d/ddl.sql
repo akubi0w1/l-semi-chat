@@ -81,9 +81,8 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`archives`;
     `id` VARCHAR(36) PRIMARY KEY COMMENT 'id',
     `path` VARCHAR(128) NOT NULL COMMENT 'ファイルのpath',
     `is_public` TINYINT NOT NULL DEFAULT 1 COMMENT '公開範囲',
-    `password` VARCHAR(70) NOT NULL COMMENT 'パスワード' 
+    `password` VARCHAR(70) NOT NULL COMMENT 'パスワード' ,
     `thread_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
-    PRIMARY KEY (`id`),
     CONSTRAINT `fk_archives_threads`
         FOREIGN KEY (`thread_id`)
         REFERENCES `ls_chat`.`threads` (`id`)
@@ -106,13 +105,12 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`evaluation_scores`;
     `id` VARCHAR(36) PRIMARY KEY COMMENT 'id',
     `evaluation_id` VARCHAR(36) NOT NULL COMMENT '評価ID',
     `users_id` VARCHAR(36) NOT NULL COMMENT 'ユーザID',
-    `score` INTEGER NOT NULL DEFAULT 0 COMMENT 'スコア' 
-    PRIMARY KEY (`id`),
+    `score` INTEGER NOT NULL DEFAULT 0 COMMENT 'スコア' ,
     CONSTRAINT `fk_evaluation_scores_evaluations`
         FOREIGN KEY (`evaluation_id`)
         REFERENCES `ls_chat`.`evaluations` (`evaluation_id`)
         ON DELETE NO ACTION
-        ON UPDATE NO ACTION
+        ON UPDATE NO ACTION,
     CONSTRAINT `fk_evaluation_scores_users`
         FOREIGN KEY (`user_id`)
         REFERENCES `ls_chat`.`users` (`id`)
@@ -128,8 +126,7 @@ DROP TABLE `ls_chat`.`users_followers`;
 CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_followers`;
     `id` VARCHAR(36) PRIMARY KEY COMMENT 'id',
     `users_id` VARCHAR(36) NOT NULL COMMENT 'ユーザID',
-    `followed_user_id` VARCHAR(36) NOT NULL
-    PRIMARY KEY (`id`),
+    `followed_user_id` VARCHAR(36) NOT NULL COMMENT 'フォローユーザーID',
     CONSTRAINT `fk_users_followers_users`
         FOREIGN KEY (`user_id`)
         REFERENCES `ls_chat`.`users` (`user_id`)
