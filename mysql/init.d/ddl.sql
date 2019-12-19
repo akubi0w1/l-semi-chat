@@ -76,8 +76,7 @@ COMMENT'カテゴリ';
 
 
 -- archives
-DROP TABLE `ls_chat`.`archives`;
-CREATE DATABASE IF NOT EXISTS `ls_chat`.`archives`;
+CREATE TABLE IF NOT EXISTS `ls_chat`.`archives`(
     `id` VARCHAR(36) PRIMARY KEY COMMENT 'id',
     `path` VARCHAR(128) NOT NULL COMMENT 'ファイルのpath',
     `is_public` TINYINT NOT NULL DEFAULT 1 COMMENT '公開範囲',
@@ -92,16 +91,14 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`archives`;
 COMMENT = 'アーカイブ';
 
 -- evaluations(master)
-DROP TABLE `ls_chat`.`evaluations`;
-CREATE DATABASE IF NOT EXISTS `ls_chat`.`evalutions`;
+CREATE TABLE IF NOT EXISTS `ls_chat`.`evalutions`(
     `id` VARCHAR(36) PRIMARY KEY COMMENT 'id',
     `item` VARCHAR(10) NOT NULL UNIQUE COMMENT '評価文'
 )
 COMMENT = '評価';
 
 -- evaluation_scores
-DROP TABLE `ls_chat`.`evaluation_scores`;
-CREATE DATABASE IF NOT EXISTS `ls_chat`.`evaluation_scores`;
+CREATE TABLE IF NOT EXISTS `ls_chat`.`evaluation_scores`(
     `id` VARCHAR(36) PRIMARY KEY COMMENT 'id',
     `evaluation_id` VARCHAR(36) NOT NULL COMMENT '評価ID',
     `users_id` VARCHAR(36) NOT NULL COMMENT 'ユーザID',
@@ -122,8 +119,7 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`evaluation_scores`;
 COMMENT = '評価スコア';
 
 -- users_followers
-DROP TABLE `ls_chat`.`users_followers`;
-CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_followers`;
+CREATE TABLE IF NOT EXISTS `ls_chat`.`users_followers`(
     `id` VARCHAR(36) PRIMARY KEY COMMENT 'id',
     `users_id` VARCHAR(36) NOT NULL COMMENT 'ユーザID',
     `followed_user_id` VARCHAR(36) NOT NULL COMMENT 'フォローユーザーID',
