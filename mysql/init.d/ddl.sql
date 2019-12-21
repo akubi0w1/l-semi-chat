@@ -9,13 +9,13 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`threads_tags`(
     `tags_id` VARCHAR(36) NOT NULL COMMENT 'タグID',
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_threads_tags`
-        FOREIGN KEY (`thread_id`),
-        REFERENCES `ls_chat`.`threads` (`thread_id`),
+        FOREIGN KEY (`thread_id`)
+        REFERENCES `ls_chat`.`threads` (`thread_id`)
         ON DELETE NO ACTION,
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_tags_threads`
-        FOREIGN KEY (`tag_id`),
-        REFERENCES `ls_chat`,`tags` (`tag_id`),
+        FOREIGN KEY (`tag_id`)
+        REFERENCES `ls_chat`,`tags` (`tag_id`)
         ON DELETE NO ACTION,
         ON UPDATE NO ACTION,
     CONSTRAINT `unique_thread_tag`
@@ -29,13 +29,13 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_tags`(
     'tags_id' VARCHAR(36) NOT NULL COMMENT 'タグID',
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_users_tags`
-        FOREIGN KEY (`user_id`),
-        REFERENCES `ls_chat`.`users` (`users_id`),
+        FOREIGN KEY (`user_id`)
+        REFERENCES `ls_chat`.`users` (`users_id`)
         ON DELETE NO ACTION,
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_tags_users`
-        FOREIGN KEY (`tag_id`),
-        REFERENCES `ls_chat`,`tags` (`tag_id`),
+        FOREIGN KEY (`tag_id`)
+        REFERENCES `ls_chat`,`tags` (`tag_id`)
         ON DELETE NO ACTION,
         ON UPDATE NO ACTION,
     CONSTRAINT `unique_user_tag`
@@ -50,13 +50,13 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_threads`(
     `is_admin` TINYINT NOT NULL DEFAULT 0 COMMENT 'スレッドの管理者判断'
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_users_threads`
-        FOREIGN KEY (`user_id`),
-        REFERENCES `ls_chat`.`users` (`users_id`),
+        FOREIGN KEY (`user_id`)
+        REFERENCES `ls_chat`.`users` (`users_id`)
         ON DELETE NO ACTION,
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_threads_users`
-        FOREIGN KEY (`thread_id`),
-        REFERENCES `ls_chat`.`users` (`threads_id`),
+        FOREIGN KEY (`thread_id`)
+        REFERENCES `ls_chat`.`users` (`threads_id`)
         ON DELETE NO ACTION,
         ON UPDATE NO ACTION,
     CONSTRAINT `unique_user_thread`
@@ -70,13 +70,13 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_favorites`(
     `message_id` VARCHAR(36) NOT NULL COMMENT 'メッセージID',
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_users_messages`
-        FOREIGN KEY (`user_id`),
-        REFERENCES `ls_chat`.`users` (users_id),
+        FOREIGN KEY (`user_id`)
+        REFERENCES `ls_chat`.`users` (users_id)
         ON DELETE NO ACTION,
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_messages_users`
-        FOREIGN KEY (`message_id`),
-        REFERENCES `ls_chat`.`message` (message_id),
+        FOREIGN KEY (`message_id`)
+        REFERENCES `ls_chat`.`message` (message_id)
         ON DELETE NO ACTION,
         ON UPDATE NO ACTION,
     CONSTRAINT `unique_user_id_message_id`
