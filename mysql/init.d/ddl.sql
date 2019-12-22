@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`tags`(
     CONSTRAINT `fk_tags_categories`
         FOREIGN KEY (`category_id`)
         REFERENCES `ls_chat`.`categories`(`id`)
-        ON DELETE NO ACTION
+        ON DELETE CASCADE
         ON UPDATE NO ACTION,
     UNIQUE(`tag`,`category_id`)
 )
@@ -70,7 +70,8 @@ COMMENT 'タグ';
 
 CREATE TABLE IF NOT EXISTS `ls_chat`.`categories`(
     `id` VARCHAR(36) PRIMARY KEY NOT NULL COMMENT'id',
-    `category` VARCHAR(8) NOT NULL COMMENT '大枠名'
+    `category` VARCHAR(8) NOT NULL COMMENT '大枠名',
+    UNIQUE(`category`)
 )
 COMMENT'カテゴリ';
 
