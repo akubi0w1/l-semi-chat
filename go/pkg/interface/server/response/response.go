@@ -14,6 +14,11 @@ func Success(w http.ResponseWriter, data interface{}) {
 	w.Write(jsonData)
 }
 
+// NoContent
+func NoContent(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // BadRequest status: 400
 func BadRequest(w http.ResponseWriter, message string) {
 	httpError(w, http.StatusBadRequest, message)
@@ -34,6 +39,7 @@ func httpError(w http.ResponseWriter, code int, message string) {
 		Code:    code,
 		Message: message,
 	})
+	w.WriteHeader(code)
 	w.Write(jsonData)
 }
 

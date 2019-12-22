@@ -9,11 +9,16 @@ import (
 
 type appHandler struct {
 	AccountHandler AccountHandler
+	AuthHandler    AuthHandler
 }
 
 type AppHandler interface {
 	// account
 	CreateAccount() http.HandlerFunc
+
+	// auth
+	Login() http.HandlerFunc
+	Logout() http.HandlerFunc
 }
 
 func NewAppHandler(sh repository.SQLHandler) AppHandler {
@@ -23,9 +28,22 @@ func NewAppHandler(sh repository.SQLHandler) AppHandler {
 				repository.NewAccountRepository(sh),
 			),
 		),
+		AuthHandler: NewAuthHandler(
+			interactor.NewAuthInteractor(
+				repository.NewAuthRepository(sh),
+			),
+		),
 	}
 }
 
 func (ah *appHandler) CreateAccount() http.HandlerFunc {
 	return ah.AccountHandler.CreateAccount
+}
+
+func (ah *appHandler) Login() http.HandlerFunc {
+	return ah.AuthHandler.Login
+}
+
+func (ah *appHandler) Logout() http.HandlerFunc {
+	return ah.AuthHandler.Logout
 }

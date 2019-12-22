@@ -16,6 +16,8 @@ type Server interface {
 	Serve()
 	Get(string, http.HandlerFunc)
 	Post(string, http.HandlerFunc)
+	Put(string, http.HandlerFunc)
+	Delete(string, http.HandlerFunc)
 }
 
 func NewServer(addr, port string) Server {
@@ -39,6 +41,14 @@ func (s *server) Get(endpoint string, apiFunc http.HandlerFunc) {
 
 func (s *server) Post(endpoint string, apiFunc http.HandlerFunc) {
 	http.HandleFunc(endpoint, httpMethod(apiFunc, http.MethodPost))
+}
+
+func (s *server) Put(endpoint string, apiFunc http.HandlerFunc) {
+	http.HandleFunc(endpoint, httpMethod(apiFunc, http.MethodPut))
+}
+
+func (s *server) Delete(endpoint string, apiFunc http.HandlerFunc) {
+	http.HandleFunc(endpoint, httpMethod(apiFunc, http.MethodDelete))
 }
 
 func httpMethod(apiFunc http.HandlerFunc, method string) http.HandlerFunc {
