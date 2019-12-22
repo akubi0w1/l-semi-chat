@@ -11,17 +11,17 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`threads_tags`(
     CONSTRAINT `fk_threads_tags`
         FOREIGN KEY (`thread_id`)
         REFERENCES `ls_chat`.`threads` (`thread_id`)
-        ON DELETE NO ACTION,
+        ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_tags_threads`
         FOREIGN KEY (`tag_id`)
-        REFERENCES `ls_chat`,`tags` (`tag_id`)
-        ON DELETE NO ACTION,
+        REFERENCES `ls_chat`.`tags` (`tag_id`)
+        ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `unique_thread_tag`
         UNIQUE (`thread_id`,`tag_id`)
 )
-COMMENT='スレッドのタグ'
+COMMENT='スレッドのタグ';
 
 CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_tags`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
@@ -31,38 +31,38 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_tags`(
     CONSTRAINT `fk_users_tags`
         FOREIGN KEY (`user_id`)
         REFERENCES `ls_chat`.`users` (`users_id`)
-        ON DELETE NO ACTION,
+        ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_tags_users`
         FOREIGN KEY (`tag_id`)
-        REFERENCES `ls_chat`,`tags` (`tag_id`)
-        ON DELETE NO ACTION,
+        REFERENCES `ls_chat`.`tags` (`tag_id`)
+        ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `unique_user_tag`
         UNIQUE (`user_id`,`tag_id`)
 )
-COMMENT='ユーザーのタグ'
+COMMENT='ユーザーのタグ';
 
 CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_threads`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
     `users_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
     `threads_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
-    `is_admin` TINYINT NOT NULL DEFAULT 0 COMMENT 'スレッドの管理者判断'
+    `is_admin` TINYINT NOT NULL DEFAULT 0 COMMENT 'スレッドの管理者判断',
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_users_threads`
         FOREIGN KEY (`user_id`)
         REFERENCES `ls_chat`.`users` (`users_id`)
-        ON DELETE NO ACTION,
+        ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_threads_users`
         FOREIGN KEY (`thread_id`)
         REFERENCES `ls_chat`.`users` (`threads_id`)
-        ON DELETE NO ACTION,
+        ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `unique_user_thread`
         UNIQUE (`user_id`,`thread_id`)
 )
-COMMENT='ユーザーのスレッド'
+COMMENT='ユーザーのスレッド';
 
 CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_favorites`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
@@ -72,17 +72,17 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_favorites`(
     CONSTRAINT `fk_users_messages`
         FOREIGN KEY (`user_id`)
         REFERENCES `ls_chat`.`users` (users_id)
-        ON DELETE NO ACTION,
+        ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_messages_users`
         FOREIGN KEY (`message_id`)
         REFERENCES `ls_chat`.`message` (message_id)
-        ON DELETE NO ACTION,
+        ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `unique_user_id_message_id`
         UNIQUE (`user_id`,`message_id`)
 )
-COMMENT='ユーザーのいいね'
+COMMENT='ユーザーのいいね';
 
 -- define tables
 CREATE TABLE IF NOT EXISTS `ls_chat`.`users`(
