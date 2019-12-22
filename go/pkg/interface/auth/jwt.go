@@ -1,11 +1,9 @@
 package auth
 
 import (
-	"net/http"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	request "github.com/dgrijalva/jwt-go/request"
 )
 
 func CreateToken(userID string) (string, error) {
@@ -14,8 +12,8 @@ func CreateToken(userID string) (string, error) {
 
 	// claimsの設定
 	token.Claims = jwt.MapClaims{
-		"user": userID,
-		"exp":  time.Now().Add(time.Hour * 1).Unix(),
+		"user_id": userID,
+		"exp":     time.Now().Add(time.Hour * 1).Unix(),
 	}
 
 	// 署名
@@ -28,10 +26,14 @@ func CreateToken(userID string) (string, error) {
 
 }
 
-func VerifyToken(r *http.Request) (*jwt.Token, error) {
-	token, err := request.ParseFromRequest(r, request.OAuth2Extractor, func(token *jwt.Token) (interface{}, error) {
-		b := []byte("secret")
-		return b, nil
+func VerifyToken(tokenString string) (*jwt.Token, error) {
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte("l-semi-chat"), nil
 	})
-	return token, err
+	if err != nil {
+		return token, err
+	}
+	return token, nil
+
 }

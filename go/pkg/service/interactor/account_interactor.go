@@ -13,6 +13,8 @@ type accountInteractor struct {
 
 type AccountInteractor interface {
 	AddAccount(string, string, string, string, string, string) (domain.User, error)
+	ShowAccount(userID string) (domain.User, error)
+	DeleteAccount(userID string) error
 }
 
 func NewAccountInteractor(ar repository.AccountRepository) AccountInteractor {
@@ -51,4 +53,12 @@ func (ai *accountInteractor) AddAccount(userID, name, mail, image, profile, pass
 		Image:   image,
 		Profile: profile,
 	}, err
+}
+
+func (ai *accountInteractor) ShowAccount(userID string) (domain.User, error) {
+	return ai.AccountRepositoy.FindAccountByUserID(userID)
+}
+
+func (ai *accountInteractor) DeleteAccount(userID string) error {
+	return ai.AccountRepositoy.DeleteAccount(userID)
 }

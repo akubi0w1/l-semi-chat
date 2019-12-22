@@ -15,6 +15,8 @@ type appHandler struct {
 type AppHandler interface {
 	// account
 	CreateAccount() http.HandlerFunc
+	GetAccount() http.HandlerFunc
+	DeleteAccount() http.HandlerFunc
 
 	// auth
 	Login() http.HandlerFunc
@@ -38,6 +40,14 @@ func NewAppHandler(sh repository.SQLHandler) AppHandler {
 
 func (ah *appHandler) CreateAccount() http.HandlerFunc {
 	return ah.AccountHandler.CreateAccount
+}
+
+func (ah *appHandler) GetAccount() http.HandlerFunc {
+	return ah.AccountHandler.GetAccount
+}
+
+func (ah *appHandler) DeleteAccount() http.HandlerFunc {
+	return ah.AccountHandler.DeleteAccount
 }
 
 func (ah *appHandler) Login() http.HandlerFunc {
