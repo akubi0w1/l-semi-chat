@@ -1,8 +1,6 @@
 DROP DATABASE `ls_chat`;
 CREATE DATABASE IF NOT EXISTS `ls_chat`;
 
-DROP DATABASE `ls_chat`;
-
 CREATE DATABASE IF NOT EXISTS `ls_chat`.`threads_tags`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
     `threads_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
