@@ -26,6 +26,11 @@ func NewAuthHandler(ai interactor.AuthInteractor) AuthHandler {
 }
 
 func (ah *authHandler) Login(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		response.MethodNotAllowed(w, "method not allowed")
+		return
+	}
+
 	// bodyの読み出し
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -73,6 +78,11 @@ type loginResponse struct {
 }
 
 func (ah *authHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		response.MethodNotAllowed(w, "method not allowed")
+		return
+	}
+
 	// check cookie
 	cookie, err := r.Cookie("x-token")
 	if err != nil {

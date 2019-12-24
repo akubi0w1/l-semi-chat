@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"l-semi-chat/pkg/interface/server/response"
 	"log"
 	"net/http"
 )
@@ -14,10 +13,7 @@ type server struct {
 
 type Server interface {
 	Serve()
-	Get(string, http.HandlerFunc)
-	Post(string, http.HandlerFunc)
-	Put(string, http.HandlerFunc)
-	Delete(string, http.HandlerFunc)
+	Handle(string, http.HandlerFunc)
 }
 
 func NewServer(addr, port string) Server {
@@ -35,23 +31,11 @@ func (s *server) Serve() {
 	)
 }
 
-func (s *server) Get(endpoint string, apiFunc http.HandlerFunc) {
-	http.HandleFunc(endpoint, httpMethod(apiFunc, http.MethodGet))
+func (s *server) Handle(endpoint string, apiFunc http.HandlerFunc) {
+	http.HandleFunc(endpoint, httpMethod(apiFunc))
 }
 
-func (s *server) Post(endpoint string, apiFunc http.HandlerFunc) {
-	http.HandleFunc(endpoint, httpMethod(apiFunc, http.MethodPost))
-}
-
-func (s *server) Put(endpoint string, apiFunc http.HandlerFunc) {
-	http.HandleFunc(endpoint, httpMethod(apiFunc, http.MethodPut))
-}
-
-func (s *server) Delete(endpoint string, apiFunc http.HandlerFunc) {
-	http.HandleFunc(endpoint, httpMethod(apiFunc, http.MethodDelete))
-}
-
-func httpMethod(apiFunc http.HandlerFunc, method string) http.HandlerFunc {
+func httpMethod(apiFunc http.HandlerFunc) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		// CORS対応
 		writer.Header().Add("Access-Control-Allow-Origin", "*")
@@ -62,14 +46,10 @@ func httpMethod(apiFunc http.HandlerFunc, method string) http.HandlerFunc {
 			return
 		}
 
+		// TODO: methodを弾く。引数増やして
+
 		// 共通のレスポンスヘッダを設定
 		writer.Header().Add("Content-Type", "application/json")
-
-		// 指定のHTTPメソッドでない場合はエラー
-		if request.Method != method {
-			response.MethodNotAllowed(writer, "Method Not Allowed")
-			return
-		}
 
 		apiFunc(writer, request)
 	}

@@ -26,7 +26,7 @@ func BadRequest(w http.ResponseWriter, message string) {
 
 // MethodNotAllowed
 func MethodNotAllowed(w http.ResponseWriter, message string) {
-	httpError(w, http.StatusInternalServerError, message)
+	httpError(w, http.StatusMethodNotAllowed, message)
 }
 
 // InternalServerError status: 500

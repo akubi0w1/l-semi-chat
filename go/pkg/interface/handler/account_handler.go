@@ -18,10 +18,12 @@ type accountHandler struct {
 }
 
 type AccountHandler interface {
-	CreateAccount(w http.ResponseWriter, r *http.Request)
-	GetAccount(w http.ResponseWriter, r *http.Request)
-	UpdateAccount(w http.ResponseWriter, r *http.Request)
-	DeleteAccount(w http.ResponseWriter, r *http.Request)
+	ManageAccount(w http.ResponseWriter, r *http.Request)
+
+	createAccount(w http.ResponseWriter, r *http.Request)
+	getAccount(w http.ResponseWriter, r *http.Request)
+	updateAccount(w http.ResponseWriter, r *http.Request)
+	deleteAccount(w http.ResponseWriter, r *http.Request)
 }
 
 // NewAccountHandler
@@ -31,7 +33,22 @@ func NewAccountHandler(ai interactor.AccountInteractor) AccountHandler {
 	}
 }
 
-func (ah *accountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
+func (ah *accountHandler) ManageAccount(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		ah.getAccount(w, r)
+	} else if r.Method == http.MethodPost {
+		ah.createAccount(w, r)
+	} else if r.Method == http.MethodPut {
+		ah.updateAccount(w, r)
+	} else if r.Method == http.MethodDelete {
+		ah.deleteAccount(w, r)
+	}
+
+	response.MethodNotAllowed(w, "method not allowed")
+	return
+}
+
+func (ah *accountHandler) createAccount(w http.ResponseWriter, r *http.Request) {
 	// requestの読み出し
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -60,7 +77,6 @@ func (ah *accountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) 
 		Image:   user.Image,
 		Profile: user.Profile,
 	})
-
 }
 
 type createAccountRequest struct {
@@ -82,7 +98,7 @@ type createAccountResponse struct {
 	// Evaluations
 }
 
-func (ah *accountHandler) GetAccount(w http.ResponseWriter, r *http.Request) {
+func (ah *accountHandler) getAccount(w http.ResponseWriter, r *http.Request) {
 	// cookieからtokenを取得
 	cookie, err := r.Cookie("x-token")
 	if err != nil {
@@ -121,7 +137,7 @@ type getAccountResponse struct {
 	// Evaluations
 }
 
-func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) {
+func (ah *accountHandler) updateAccount(w http.ResponseWriter, r *http.Request) {
 	// cookieからtokenを取得
 	cookie, err := r.Cookie("x-token")
 	if err != nil {
@@ -147,7 +163,7 @@ func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) 
 
 }
 
-func (ah *accountHandler) DeleteAccount(w http.ResponseWriter, r *http.Request) {
+func (ah *accountHandler) deleteAccount(w http.ResponseWriter, r *http.Request) {
 	// cookieからtokenを取得
 	cookie, err := r.Cookie("x-token")
 	if err != nil {

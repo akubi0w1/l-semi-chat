@@ -6,12 +6,12 @@ import (
 )
 
 func SetupRouter(s server.Server, h handler.AppHandler) {
-	s.Post("/accounts", h.CreateAccount())
-	s.Get("/accounts", h.GetAccount())
-	s.Delete("/accounts", h.DeleteAccount())
+
+	// account
+	s.Handle("/accounts", h.ManageAccount())
 
 	// auth
-	s.Post("/login", h.Login())
-	s.Delete("/logout", h.Logout())
+	s.Handle("/login", h.Login())
+	s.Handle("/logout", h.Logout())
 
 }
