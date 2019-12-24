@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`messages`(
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_messages_users`
         FOREIGN KEY (`user_id`)
-        REFERENCES `ls_chat`.`users` (`user_id`)
+        REFERENCES `ls_chat`.`users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_messages_threads`
@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`threads`(
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '更新日時',
     CONSTRAINT `fk_threads_users`
         FOREIGN KEY (`user_id`)
-        REFERENCES `ls_chat`.`users`(`user_id`)
+        REFERENCES `ls_chat`.`users`(`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION
 )
