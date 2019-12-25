@@ -3,14 +3,12 @@ package handler
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 
-	"l-semi-chat/pkg/interface/auth"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"l-semi-chat/pkg/interface/dcontext"
 )
 
 type accountHandler struct {
@@ -18,12 +16,10 @@ type accountHandler struct {
 }
 
 type AccountHandler interface {
-	ManageAccount(w http.ResponseWriter, r *http.Request)
-
-	createAccount(w http.ResponseWriter, r *http.Request)
-	getAccount(w http.ResponseWriter, r *http.Request)
-	updateAccount(w http.ResponseWriter, r *http.Request)
-	deleteAccount(w http.ResponseWriter, r *http.Request)
+	CreateAccount(w http.ResponseWriter, r *http.Request)
+	GetAccount(w http.ResponseWriter, r *http.Request)
+	UpdateAccount(w http.ResponseWriter, r *http.Request)
+	DeleteAccount(w http.ResponseWriter, r *http.Request)
 }
 
 // NewAccountHandler
@@ -33,22 +29,7 @@ func NewAccountHandler(ai interactor.AccountInteractor) AccountHandler {
 	}
 }
 
-func (ah *accountHandler) ManageAccount(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		ah.getAccount(w, r)
-	} else if r.Method == http.MethodPost {
-		ah.createAccount(w, r)
-	} else if r.Method == http.MethodPut {
-		ah.updateAccount(w, r)
-	} else if r.Method == http.MethodDelete {
-		ah.deleteAccount(w, r)
-	}
-
-	response.MethodNotAllowed(w, "method not allowed")
-	return
-}
-
-func (ah *accountHandler) createAccount(w http.ResponseWriter, r *http.Request) {
+func (ah *accountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 	// requestの読み出し
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -98,23 +79,17 @@ type createAccountResponse struct {
 	// Evaluations
 }
 
-func (ah *accountHandler) getAccount(w http.ResponseWriter, r *http.Request) {
-	// cookieからtokenを取得
-	cookie, err := r.Cookie("x-token")
-	if err != nil {
-		response.BadRequest(w, err.Error())
-		return
-	}
-	// check token
-	token, err := auth.VerifyToken(cookie.Value)
-	if err != nil {
-		response.BadRequest(w, err.Error())
-	}
-	claims := token.Claims.(jwt.MapClaims)
-	userID, _ := claims["user_id"].(string)
+func (ah *accountHandler) GetAccount(w http.ResponseWriter, r *http.Request) {
+	// contextからuserIDの読み出し
+	ctx := r.Context()
+	userID := dcontext.GetUserIDFromContext(ctx)
 
 	// getData
 	user, err := ah.AccountInteractor.ShowAccount(userID)
+	if err != nil {
+		response.InternalServerError(w, err.Error())
+		return
+	}
 
 	// create response
 	response.Success(w, &getAccountResponse{
@@ -137,49 +112,67 @@ type getAccountResponse struct {
 	// Evaluations
 }
 
-func (ah *accountHandler) updateAccount(w http.ResponseWriter, r *http.Request) {
-	// cookieからtokenを取得
-	cookie, err := r.Cookie("x-token")
+func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) {
+	// tokenからuserIDを取得
+	ctx := r.Context()
+	userID := dcontext.GetUserIDFromContext(ctx)
+
+	// bodyの取得
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.BadRequest(w, err.Error())
 		return
 	}
-	// check token
-	token, err := auth.VerifyToken(cookie.Value)
+	var req updateAccountRequest
+	err = json.Unmarshal(body, &req)
 	if err != nil {
-		response.BadRequest(w, err.Error())
+		response.InternalServerError(w, err.Error())
+		return
 	}
-	claims := token.Claims.(jwt.MapClaims)
-	userID, _ := claims["user_id"].(string)
-	log.Println(userID)
-
-	// bodyの取得
 
 	// 更新用データの作成
-
-	// update
+	user, err := ah.AccountInteractor.UpdateAccount(userID, req.UserID, req.Name, req.Mail, req.Image, req.Profile, req.Password)
+	if err != nil {
+		response.InternalServerError(w, err.Error())
+		return
+	}
 
 	// response
+	response.Success(w, &updateAccountResponse{
+		UserID:  user.UserID,
+		Name:    user.Name,
+		Mail:    user.Mail,
+		Image:   user.Image,
+		Profile: user.Profile,
+	})
 
 }
 
-func (ah *accountHandler) deleteAccount(w http.ResponseWriter, r *http.Request) {
-	// cookieからtokenを取得
-	cookie, err := r.Cookie("x-token")
-	if err != nil {
-		response.BadRequest(w, err.Error())
-		return
-	}
-	// check token
-	token, err := auth.VerifyToken(cookie.Value)
-	if err != nil {
-		response.BadRequest(w, err.Error())
-	}
-	claims := token.Claims.(jwt.MapClaims)
-	userID, _ := claims["user_id"].(string)
+type updateAccountRequest struct {
+	UserID   string `json:"user_id"`
+	Name     string `json:"name"`
+	Mail     string `json:"mail"`
+	Image    string `json:"image"`
+	Profile  string `json:"profile"`
+	Password string `json:"password"`
+}
+
+type updateAccountResponse struct {
+	UserID  string `json:"user_id"`
+	Name    string `json:"name"`
+	Mail    string `json:"mail"`
+	Image   string `json:"image"`
+	Profile string `json:"profile"`
+	// Tags
+	// Evaluations
+}
+
+func (ah *accountHandler) DeleteAccount(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID := dcontext.GetUserIDFromContext(ctx)
 
 	// delete
-	err = ah.AccountInteractor.DeleteAccount(userID)
+	err := ah.AccountInteractor.DeleteAccount(userID)
 	if err != nil {
 		response.InternalServerError(w, err.Error())
 		return
