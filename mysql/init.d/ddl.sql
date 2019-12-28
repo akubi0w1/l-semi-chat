@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`evaluation_scores`(
     `score` INTEGER NOT NULL DEFAULT 0 COMMENT 'スコア' ,
     CONSTRAINT `fk_evaluation_scores_evaluations`
         FOREIGN KEY (`evaluation_id`)
-        REFERENCES `ls_chat`.`evaluations` (`evaluation_id`)
+        REFERENCES `ls_chat`.`evaluations` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_evaluation_scores_users`
@@ -48,12 +48,12 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`users_followers`(
     `followed_user_id` VARCHAR(36) NOT NULL COMMENT 'フォローユーザーID',
     CONSTRAINT `fk_users_followers_users`
         FOREIGN KEY (`user_id`)
-        REFERENCES `ls_chat`.`users` (`user_id`)
+        REFERENCES `ls_chat`.`users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_users_followers_followed_users`
         FOREIGN KEY (`followed_user_id`)
-        REFERENCES `ls_chat`.`followed_users` (`followed_user_id`)
+        REFERENCES `ls_chat`.`followed_users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `unique_user_followed`
