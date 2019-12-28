@@ -1,6 +1,7 @@
 package interactor
 
 import (
+	"errors"
 	"l-semi-chat/pkg/domain"
 	"l-semi-chat/pkg/interface/auth"
 	"l-semi-chat/pkg/service/repository"
@@ -26,17 +27,30 @@ func NewAccountInteractor(ar repository.AccountRepository) AccountInteractor {
 }
 
 func (ai *accountInteractor) AddAccount(userID, name, mail, image, profile, password string) (domain.User, error) {
+	var user domain.User
 	// TODO: バリデーションチェック
+	if userID == "" {
+		return user, domain.BadRequest(errors.New("userID is empty"))
+	}
+	if name == "" {
+		return user, domain.BadRequest(errors.New("name is empty"))
+	}
+	if mail == "" {
+		return user, domain.BadRequest(errors.New("mail is empty"))
+	}
+	if password == "" {
+		return user, domain.BadRequest(errors.New("password is empty"))
+	}
 
 	// passwordハッシュ
 	hash, err := auth.PasswordHash(password)
 	if err != nil {
-		return domain.User{}, err
+		return user, domain.InternalServerError(err)
 	}
 
 	id, err := uuid.NewRandom()
 	if err != nil {
-		return domain.User{}, err
+		return user, domain.InternalServerError(err)
 	}
 
 	// TODO: timeの取得
@@ -51,14 +65,16 @@ func (ai *accountInteractor) AddAccount(userID, name, mail, image, profile, pass
 		profile,
 		hash,
 	)
+	if err != nil {
+		return user, domain.InternalServerError(err)
+	}
 
-	return domain.User{
-		UserID:  userID,
-		Name:    name,
-		Mail:    mail,
-		Image:   image,
-		Profile: profile,
-	}, err
+	user.UserID = userID
+	user.Name = name
+	user.Mail = mail
+	user.Image = image
+	user.Profile = profile
+	return user, nil
 }
 
 func (ai *accountInteractor) ShowAccount(userID string) (domain.User, error) {

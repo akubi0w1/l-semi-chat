@@ -1,6 +1,7 @@
 package interactor
 
 import (
+	"l-semi-chat/pkg/domain"
 	"l-semi-chat/pkg/interface/auth"
 	"l-semi-chat/pkg/service/repository"
 )
@@ -19,16 +20,16 @@ func NewAuthInteractor(ar repository.AuthRepository) AuthInteractor {
 	}
 }
 
-func (ai *authInteractor) Login(userID, password string) (err error) {
+func (ai *authInteractor) Login(userID, password string) error {
 
 	// ユーザの取得
 	user, err := ai.AuthRepository.FindUserByUserID(userID)
 	if err != nil {
-		return
+		return err
 	}
 
 	// password の比較
 	err = auth.PasswordVerify(user.Password, password)
 
-	return
+	return domain.Unauthorized(err)
 }

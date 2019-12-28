@@ -32,15 +32,15 @@ func (ar *accountRepository) StoreAccount(id, userID, name, mail, image, profile
 		profile,
 		password,
 	)
-	return err
+	return domain.InternalServerError(err)
 }
 
 func (ar *accountRepository) FindAccountByUserID(userID string) (user domain.User, err error) {
 	row := ar.SQLHandler.QueryRow("SELECT user_id, name, mail, image, profile FROM users WHERE user_id=?", userID)
 	if err = row.Scan(&user.UserID, &user.Name, &user.Mail, &user.Image, &user.Profile); err != nil {
-		return
+		return user, domain.InternalServerError(err)
 	}
-	return
+	return user, domain.InternalServerError(err)
 }
 
 func (ar *accountRepository) UpdateAccount(userID, newUserID, name, mail, image, profile, password string) error {
@@ -76,11 +76,11 @@ func (ar *accountRepository) UpdateAccount(userID, newUserID, name, mail, image,
 
 	// exec
 	_, err := ar.SQLHandler.Execute(query, values...)
-	return err
+	return domain.InternalServerError(err)
 
 }
 
 func (ar *accountRepository) DeleteAccount(userID string) error {
 	_, err := ar.SQLHandler.Execute("DELETE FROM users WHERE user_id=?", userID)
-	return err
+	return domain.InternalServerError(err)
 }

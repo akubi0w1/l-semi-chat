@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"l-semi-chat/pkg/domain"
 	"l-semi-chat/pkg/interface/auth"
 	"l-semi-chat/pkg/interface/dcontext"
 	"l-semi-chat/pkg/interface/server/response"
@@ -21,13 +22,13 @@ func Authorized(nextFunc http.HandlerFunc) http.HandlerFunc {
 
 		cookie, err := r.Cookie("x-token")
 		if err != nil {
-			response.BadRequest(w, err.Error())
+			response.HttpError(w, domain.BadRequest(err))
 			return
 		}
 
 		token, err := auth.VerifyToken(cookie.Value)
 		if err != nil {
-			response.BadRequest(w, err.Error())
+			response.HttpError(w, domain.BadRequest(err))
 			return
 		}
 

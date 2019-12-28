@@ -2,6 +2,7 @@ package response
 
 import (
 	"encoding/json"
+	"l-semi-chat/pkg/domain"
 	"net/http"
 )
 
@@ -9,7 +10,7 @@ import (
 func Success(w http.ResponseWriter, data interface{}) {
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		InternalServerError(w, err.Error())
+		HttpError(w, domain.InternalServerError(err))
 	}
 	w.Write(jsonData)
 }
@@ -19,27 +20,17 @@ func NoContent(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// BadRequest status: 400
-func BadRequest(w http.ResponseWriter, message string) {
-	httpError(w, http.StatusBadRequest, message)
-}
-
-// MethodNotAllowed
-func MethodNotAllowed(w http.ResponseWriter, message string) {
-	httpError(w, http.StatusMethodNotAllowed, message)
-}
-
-// InternalServerError status: 500
-func InternalServerError(w http.ResponseWriter, message string) {
-	httpError(w, http.StatusInternalServerError, message)
-}
-
-func httpError(w http.ResponseWriter, code int, message string) {
+// HttpError
+func HttpError(w http.ResponseWriter, err error) {
+	e, ok := err.(domain.Error)
+	if !ok {
+		e = domain.InternalServerError(err)
+	}
 	jsonData, _ := json.Marshal(&errorResponse{
-		Code:    code,
-		Message: message,
+		Code:    e.GetStatusCode(),
+		Message: e.Error(),
 	})
-	w.WriteHeader(code)
+	w.WriteHeader(e.GetStatusCode())
 	w.Write(jsonData)
 }
 

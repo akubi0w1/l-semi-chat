@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"io/ioutil"
+	"l-semi-chat/pkg/domain"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
 	"net/http"
@@ -14,11 +15,13 @@ type authHandler struct {
 	AuthInteractor interactor.AuthInteractor
 }
 
+// AuthHandler login, logout
 type AuthHandler interface {
 	Login(w http.ResponseWriter, r *http.Request)
 	Logout(w http.ResponseWriter, r *http.Request)
 }
 
+// NewAuthHandler create authorized handler
 func NewAuthHandler(ai interactor.AuthInteractor) AuthHandler {
 	return &authHandler{
 		AuthInteractor: ai,
@@ -26,33 +29,32 @@ func NewAuthHandler(ai interactor.AuthInteractor) AuthHandler {
 }
 
 func (ah *authHandler) Login(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		response.MethodNotAllowed(w, "method not allowed")
-		return
-	}
-
 	// bodyの読み出し
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		response.BadRequest(w, err.Error())
+		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
 	var req loginRequest
 	err = json.Unmarshal(body, &req)
 	if err != nil {
-		response.InternalServerError(w, err.Error())
+		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
 
 	// 認証処理
 	err = ah.AuthInteractor.Login(req.UserID, req.Password)
 	if err != nil {
-		response.InternalServerError(w, err.Error())
+		response.HttpError(w, err)
 		return
 	}
 
 	// tokenの作成
 	token, err := auth.CreateToken(req.UserID)
+	if err != nil {
+		response.HttpError(w, domain.InternalServerError(err))
+		return
+	}
 
 	// cookieに載せる
 	cookie := http.Cookie{
@@ -78,22 +80,18 @@ type loginResponse struct {
 }
 
 func (ah *authHandler) Logout(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodDelete {
-		response.MethodNotAllowed(w, "method not allowed")
-		return
-	}
-
 	// check cookie
 	cookie, err := r.Cookie("x-token")
 	if err != nil {
-		response.BadRequest(w, err.Error())
+		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
 
 	// check token
 	_, err = auth.VerifyToken(cookie.Value)
 	if err != nil {
-		response.BadRequest(w, err.Error())
+		response.HttpError(w, domain.BadRequest(err))
+		return
 	}
 
 	// cookieの無効化

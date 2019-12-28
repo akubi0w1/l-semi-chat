@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"l-semi-chat/pkg/domain"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
 
@@ -15,6 +16,7 @@ type accountHandler struct {
 	AccountInteractor interactor.AccountInteractor
 }
 
+// AccountHandler CRUD of account
 type AccountHandler interface {
 	CreateAccount(w http.ResponseWriter, r *http.Request)
 	GetAccount(w http.ResponseWriter, r *http.Request)
@@ -22,7 +24,7 @@ type AccountHandler interface {
 	DeleteAccount(w http.ResponseWriter, r *http.Request)
 }
 
-// NewAccountHandler
+// NewAccountHandler create account handler
 func NewAccountHandler(ai interactor.AccountInteractor) AccountHandler {
 	return &accountHandler{
 		AccountInteractor: ai,
@@ -33,20 +35,20 @@ func (ah *accountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) 
 	// requestの読み出し
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		response.BadRequest(w, err.Error())
+		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
 	var req createAccountRequest
 	err = json.Unmarshal(body, &req)
 	if err != nil {
-		response.InternalServerError(w, err.Error())
+		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
 
 	// 登録
 	user, err := ah.AccountInteractor.AddAccount(req.UserID, req.Name, req.Mail, req.Image, req.Profile, req.Password)
 	if err != nil {
-		response.InternalServerError(w, err.Error())
+		response.HttpError(w, err)
 		return
 	}
 
@@ -87,7 +89,7 @@ func (ah *accountHandler) GetAccount(w http.ResponseWriter, r *http.Request) {
 	// getData
 	user, err := ah.AccountInteractor.ShowAccount(userID)
 	if err != nil {
-		response.InternalServerError(w, err.Error())
+		response.HttpError(w, err)
 		return
 	}
 
@@ -120,20 +122,20 @@ func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) 
 	// bodyの取得
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		response.BadRequest(w, err.Error())
+		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
 	var req updateAccountRequest
 	err = json.Unmarshal(body, &req)
 	if err != nil {
-		response.InternalServerError(w, err.Error())
+		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
 
 	// 更新用データの作成
 	user, err := ah.AccountInteractor.UpdateAccount(userID, req.UserID, req.Name, req.Mail, req.Image, req.Profile, req.Password)
 	if err != nil {
-		response.InternalServerError(w, err.Error())
+		response.HttpError(w, err)
 		return
 	}
 
@@ -174,7 +176,7 @@ func (ah *accountHandler) DeleteAccount(w http.ResponseWriter, r *http.Request) 
 	// delete
 	err := ah.AccountInteractor.DeleteAccount(userID)
 	if err != nil {
-		response.InternalServerError(w, err.Error())
+		response.HttpError(w, err)
 		return
 	}
 

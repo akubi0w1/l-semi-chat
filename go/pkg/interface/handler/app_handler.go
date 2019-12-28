@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
+	"l-semi-chat/pkg/domain"
 	"l-semi-chat/pkg/interface/server/middleware"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
@@ -14,6 +16,7 @@ type appHandler struct {
 	AuthHandler    AuthHandler
 }
 
+// AppHandler ApplicationHandler
 type AppHandler interface {
 	// account
 	ManageAccount() http.HandlerFunc
@@ -23,6 +26,7 @@ type AppHandler interface {
 	Logout() http.HandlerFunc
 }
 
+// NewAppHandler create application handler
 func NewAppHandler(sh repository.SQLHandler) AppHandler {
 	return &appHandler{
 		AccountHandler: NewAccountHandler(
@@ -40,35 +44,39 @@ func NewAppHandler(sh repository.SQLHandler) AppHandler {
 
 func (ah *appHandler) ManageAccount() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var handler http.HandlerFunc
-		if r.Method == http.MethodGet {
-			handler = middleware.Authorized(ah.AccountHandler.GetAccount)
-			handler(w, r)
-			return
-
-		} else if r.Method == http.MethodPost {
+		switch r.Method {
+		case http.MethodGet:
+			middleware.Authorized(ah.AccountHandler.GetAccount).ServeHTTP(w, r)
+		case http.MethodPost:
 			ah.AccountHandler.CreateAccount(w, r)
-			return
-
-		} else if r.Method == http.MethodPut {
-			handler = middleware.Authorized(ah.AccountHandler.UpdateAccount)
-			handler(w, r)
-			return
-
-		} else if r.Method == http.MethodDelete {
-			handler = middleware.Authorized(ah.AccountHandler.DeleteAccount)
-			handler(w, r)
-			return
-
+		case http.MethodPut:
+			middleware.Authorized(ah.AccountHandler.UpdateAccount).ServeHTTP(w, r)
+		case http.MethodDelete:
+			middleware.Authorized(ah.AccountHandler.DeleteAccount).ServeHTTP(w, r)
+		default:
+			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
 		}
-		response.MethodNotAllowed(w, "Method not allowed")
 	}
 }
 
 func (ah *appHandler) Login() http.HandlerFunc {
-	return ah.AuthHandler.Login
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			ah.AuthHandler.Login(w, r)
+		default:
+			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
+		}
+	}
 }
 
 func (ah *appHandler) Logout() http.HandlerFunc {
-	return ah.AuthHandler.Logout
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodDelete:
+			ah.AuthHandler.Logout(w, r)
+		default:
+			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
+		}
+	}
 }
