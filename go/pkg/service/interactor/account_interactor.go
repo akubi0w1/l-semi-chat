@@ -3,16 +3,18 @@ package interactor
 import (
 	"errors"
 	"l-semi-chat/pkg/domain"
-	"l-semi-chat/pkg/interface/auth"
 	"l-semi-chat/pkg/service/repository"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 type accountInteractor struct {
 	AccountRepositoy repository.AccountRepository
+	PasswordHandler
 }
 
+// AccountInteractor メイン処理
 type AccountInteractor interface {
 	AddAccount(string, string, string, string, string, string) (domain.User, error)
 	UpdateAccount(string, string, string, string, string, string, string) (domain.User, error)
@@ -20,15 +22,16 @@ type AccountInteractor interface {
 	DeleteAccount(userID string) error
 }
 
-func NewAccountInteractor(ar repository.AccountRepository) AccountInteractor {
+// NewAccountInteractor accountInteractorを作成
+func NewAccountInteractor(ar repository.AccountRepository, ph PasswordHandler) AccountInteractor {
 	return &accountInteractor{
 		AccountRepositoy: ar,
+		PasswordHandler:  ph,
 	}
 }
 
 func (ai *accountInteractor) AddAccount(userID, name, mail, image, profile, password string) (domain.User, error) {
 	var user domain.User
-	// TODO: バリデーションチェック
 	if userID == "" {
 		return user, domain.BadRequest(errors.New("userID is empty"))
 	}
@@ -43,7 +46,7 @@ func (ai *accountInteractor) AddAccount(userID, name, mail, image, profile, pass
 	}
 
 	// passwordハッシュ
-	hash, err := auth.PasswordHash(password)
+	hash, err := ai.PasswordHandler.PasswordHash(password)
 	if err != nil {
 		return user, domain.InternalServerError(err)
 	}
@@ -53,7 +56,8 @@ func (ai *accountInteractor) AddAccount(userID, name, mail, image, profile, pass
 		return user, domain.InternalServerError(err)
 	}
 
-	// TODO: timeの取得
+	// timeの取得
+	createdAt := time.Now()
 
 	// dbに突っ込む
 	err = ai.AccountRepositoy.StoreAccount(
@@ -64,6 +68,7 @@ func (ai *accountInteractor) AddAccount(userID, name, mail, image, profile, pass
 		image,
 		profile,
 		hash,
+		createdAt,
 	)
 	if err != nil {
 		return user, domain.InternalServerError(err)
@@ -82,9 +87,13 @@ func (ai *accountInteractor) ShowAccount(userID string) (domain.User, error) {
 }
 
 func (ai *accountInteractor) UpdateAccount(userID, newUserID, name, mail, image, profile, password string) (user domain.User, err error) {
-	// TODO: password hash
+	// password hash
+	hash, err := ai.PasswordHandler.PasswordHash(password)
+	if err != nil {
+		return user, domain.InternalServerError(err)
+	}
 
-	err = ai.AccountRepositoy.UpdateAccount(userID, newUserID, name, mail, image, profile, password)
+	err = ai.AccountRepositoy.UpdateAccount(userID, newUserID, name, mail, image, profile, hash)
 	if err != nil {
 		return
 	}

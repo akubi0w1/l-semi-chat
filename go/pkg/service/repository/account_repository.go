@@ -2,28 +2,31 @@ package repository
 
 import (
 	"l-semi-chat/pkg/domain"
+	"time"
 )
 
 type accountRepository struct {
 	SQLHandler SQLHandler
 }
 
+// AccountRepository アカウント系で使うDB処理
 type AccountRepository interface {
-	StoreAccount(string, string, string, string, string, string, string) error
+	StoreAccount(id, userID, name, mail, image, profile, password string, createdAt time.Time) error
 	FindAccountByUserID(string) (domain.User, error)
 	UpdateAccount(string, string, string, string, string, string, string) error
 	DeleteAccount(userID string) error
 }
 
+// NewAccountRepository accountRepositoryの作成
 func NewAccountRepository(sh SQLHandler) AccountRepository {
 	return &accountRepository{
 		SQLHandler: sh,
 	}
 }
 
-func (ar *accountRepository) StoreAccount(id, userID, name, mail, image, profile, password string) error {
+func (ar *accountRepository) StoreAccount(id, userID, name, mail, image, profile, password string, createdAt time.Time) error {
 	_, err := ar.SQLHandler.Execute(
-		"INSERT INTO users(id, user_id, name, mail, image, profile, password) VALUES (?,?,?,?,?,?,?)",
+		"INSERT INTO users(id, user_id, name, mail, image, profile, password, created_at) VALUES (?,?,?,?,?,?,?,?)",
 		id,
 		userID,
 		name,
@@ -31,6 +34,7 @@ func (ar *accountRepository) StoreAccount(id, userID, name, mail, image, profile
 		image,
 		profile,
 		password,
+		createdAt,
 	)
 	return domain.InternalServerError(err)
 }

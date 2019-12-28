@@ -27,16 +27,18 @@ type AppHandler interface {
 }
 
 // NewAppHandler create application handler
-func NewAppHandler(sh repository.SQLHandler) AppHandler {
+func NewAppHandler(sh repository.SQLHandler, ph interactor.PasswordHandler) AppHandler {
 	return &appHandler{
 		AccountHandler: NewAccountHandler(
 			interactor.NewAccountInteractor(
 				repository.NewAccountRepository(sh),
+				ph,
 			),
 		),
 		AuthHandler: NewAuthHandler(
 			interactor.NewAuthInteractor(
 				repository.NewAuthRepository(sh),
+				ph,
 			),
 		),
 	}

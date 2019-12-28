@@ -1,10 +1,10 @@
 # 住み分けの話
-サーバの接続、ルーティング、sqlの接続(main)
-リクエストを受け取る、レスポンスを作る(handler)
-処理(service)
-    ロジック(interactor)
-    DBをぶっ叩く(repository)
-モデル定義(domain)
+- サーバの接続、ルーティング、sqlの接続(main)
+- リクエストを受け取る、レスポンスを作る(handler)
+- 処理(service)
+    - ロジック(interactor)
+    - DBをぶっ叩く(repository)
+- モデル定義(domain)
 
 ```
 go
@@ -15,6 +15,7 @@ go
 ├── go.sum
 └── pkg
     ├── domain  // モデルをおいておく場所。外のことは何も知らない。
+    │   ├── response.go  // errorレスポンスをどうにか定義してある
     │   └── user.go
     ├── interface // 外部のルールを使う。service, domainを知ってる
     │   ├── auth    // 認証とかパスワードの暗号化とかのユーティリティ
@@ -49,3 +50,4 @@ go
 
 12/25
 - 今のとこ、パスワードのハッシュとか、handlerでやってるので、ここをserviceに移行させるかも知らん。考え中です。
+    - パスワードハッシュはおそらく移行できたはず。serviceへの以降も行ったはず。

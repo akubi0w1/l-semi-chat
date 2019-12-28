@@ -6,6 +6,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
+// CreateToken JWTの作成
 func CreateToken(userID string) (string, error) {
 	// tokenの作成
 	token := jwt.New(jwt.GetSigningMethod("HS256"))
@@ -26,6 +27,7 @@ func CreateToken(userID string) (string, error) {
 
 }
 
+// VerifyToken JWTの検証
 func VerifyToken(tokenString string) (*jwt.Token, error) {
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -35,5 +37,4 @@ func VerifyToken(tokenString string) (*jwt.Token, error) {
 		return token, err
 	}
 	return token, nil
-
 }

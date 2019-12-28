@@ -15,12 +15,12 @@ func Success(w http.ResponseWriter, data interface{}) {
 	w.Write(jsonData)
 }
 
-// NoContent
+// NoContent 204 no content
 func NoContent(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// HttpError
+// HttpError error response
 func HttpError(w http.ResponseWriter, err error) {
 	e, ok := err.(domain.Error)
 	if !ok {

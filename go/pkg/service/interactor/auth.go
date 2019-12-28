@@ -1,12 +1,7 @@
 package interactor
 
-// type JWTHandler interface {
-// 	CreateToken(userID string) (string, error)
-// 	VerifyToken(Request) (Token, error)
-// }
-
-// type Request interface {
-// }
-
-// type Token interface {
-// }
+// PasswordHandler passwordの暗号化、複合
+type PasswordHandler interface {
+	PasswordHash(pw string) (string, error)
+	PasswordVerify(hash, pw string) error
+}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"l-semi-chat/pkg/interface/auth"
 	"l-semi-chat/pkg/interface/database"
 	"l-semi-chat/pkg/interface/handler"
 	"l-semi-chat/pkg/interface/server"
@@ -14,7 +15,8 @@ func main() {
 	sh := database.NewSQLHandler()
 
 	// create handler
-	appHandler := handler.NewAppHandler(sh)
+	ph := auth.NewPasswordHandler()
+	appHandler := handler.NewAppHandler(sh, ph)
 
 	// create server
 	serv := server.NewServer("localhost", "8080")

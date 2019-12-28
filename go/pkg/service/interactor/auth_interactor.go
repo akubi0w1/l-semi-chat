@@ -2,21 +2,24 @@ package interactor
 
 import (
 	"l-semi-chat/pkg/domain"
-	"l-semi-chat/pkg/interface/auth"
 	"l-semi-chat/pkg/service/repository"
 )
 
 type authInteractor struct {
 	AuthRepository repository.AuthRepository
+	PasswordHandler
 }
 
+// AuthInteractor 認証系の処理
 type AuthInteractor interface {
 	Login(userID, password string) error
 }
 
-func NewAuthInteractor(ar repository.AuthRepository) AuthInteractor {
+// NewAuthInteractor authInteractorの作成
+func NewAuthInteractor(ar repository.AuthRepository, ph PasswordHandler) AuthInteractor {
 	return &authInteractor{
-		AuthRepository: ar,
+		AuthRepository:  ar,
+		PasswordHandler: ph,
 	}
 }
 
@@ -29,7 +32,7 @@ func (ai *authInteractor) Login(userID, password string) error {
 	}
 
 	// password の比較
-	err = auth.PasswordVerify(user.Password, password)
+	err = ai.PasswordHandler.PasswordVerify(user.Password, password)
 
 	return domain.Unauthorized(err)
 }

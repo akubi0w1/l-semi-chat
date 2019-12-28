@@ -8,10 +8,12 @@ type authRepository struct {
 	SQLHandler SQLHandler
 }
 
+// AuthRepository 認証系で使うDBアクセス
 type AuthRepository interface {
 	FindUserByUserID(userID string) (user domain.User, err error)
 }
 
+// NewAuthRepository authRepositoryの作成
 func NewAuthRepository(sh SQLHandler) AuthRepository {
 	return &authRepository{
 		SQLHandler: sh,

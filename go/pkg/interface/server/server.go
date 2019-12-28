@@ -11,11 +11,13 @@ type server struct {
 	Port string
 }
 
+// Server server
 type Server interface {
 	Serve()
 	Handle(string, http.HandlerFunc)
 }
 
+// NewServer serverの作成
 func NewServer(addr, port string) Server {
 	return &server{
 		Addr: addr,
@@ -45,8 +47,6 @@ func httpMethod(apiFunc http.HandlerFunc) http.HandlerFunc {
 		if request.Method == http.MethodOptions {
 			return
 		}
-
-		// TODO: methodを弾く。引数増やして
 
 		// 共通のレスポンスヘッダを設定
 		writer.Header().Add("Content-Type", "application/json")

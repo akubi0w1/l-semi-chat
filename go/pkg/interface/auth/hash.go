@@ -1,8 +1,19 @@
 package auth
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"l-semi-chat/pkg/service/interactor"
 
-func PasswordHash(pw string) (string, error) {
+	"golang.org/x/crypto/bcrypt"
+)
+
+type passwordHandler struct{}
+
+func NewPasswordHandler() interactor.PasswordHandler {
+	return &passwordHandler{}
+}
+
+// PasswordHash パスワードのハッシュ
+func (ph *passwordHandler) PasswordHash(pw string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
@@ -10,7 +21,7 @@ func PasswordHash(pw string) (string, error) {
 	return string(hash), nil
 }
 
-func PasswordVerify(hash, pw string) error {
-	// 認証に失敗した場合は error
+// PasswordVerify パスワードの検証
+func (ph *passwordHandler) PasswordVerify(hash, pw string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(pw))
 }
