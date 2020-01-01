@@ -2,8 +2,9 @@ package server
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+
+	"l-semi-chat/pkg/interface/server/logger"
 )
 
 type server struct {
@@ -26,7 +27,7 @@ func NewServer(addr, port string) Server {
 }
 
 func (s *server) Serve() {
-	log.Println("Server running...")
+	logger.Info("Server running...")
 	http.ListenAndServe(
 		fmt.Sprintf("%s:%s", s.Addr, s.Port),
 		nil,
@@ -40,8 +41,10 @@ func (s *server) Handle(endpoint string, apiFunc http.HandlerFunc) {
 func httpMethod(apiFunc http.HandlerFunc) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		// CORS対応
-		writer.Header().Add("Access-Control-Allow-Origin", "*")
-		writer.Header().Add("Access-Control-Allow-Headers", "Content-Type,Accept,Origin,x-token")
+		writer.Header().Add("Access-Control-Allow-Origin", "*") // client server
+		writer.Header().Add("Access-Control-Allow-Headers", "Content-Type,Accept,Origin")
+		writer.Header().Add("Access-Control-Allow-Credentials", "true")
+		writer.Header().Add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE")
 
 		// プリフライトリクエストは処理を通さない
 		if request.Method == http.MethodOptions {

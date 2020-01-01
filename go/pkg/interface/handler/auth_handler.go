@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"l-semi-chat/pkg/domain"
+	"l-semi-chat/pkg/interface/server/logger"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
 	"net/http"
@@ -32,12 +33,14 @@ func (ah *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 	// bodyの読み出し
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		logger.Warn(err)
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
 	var req loginRequest
 	err = json.Unmarshal(body, &req)
 	if err != nil {
+		logger.Error(err)
 		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
@@ -45,6 +48,7 @@ func (ah *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 	// 認証処理
 	err = ah.AuthInteractor.Login(req.UserID, req.Password)
 	if err != nil {
+		logger.Error(err)
 		response.HttpError(w, err)
 		return
 	}
@@ -52,6 +56,7 @@ func (ah *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 	// tokenの作成
 	token, err := auth.CreateToken(req.UserID)
 	if err != nil {
+		logger.Error(err)
 		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
@@ -83,6 +88,7 @@ func (ah *authHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	// check cookie
 	cookie, err := r.Cookie("x-token")
 	if err != nil {
+		logger.Warn(err)
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
@@ -90,6 +96,7 @@ func (ah *authHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	// check token
 	_, err = auth.VerifyToken(cookie.Value)
 	if err != nil {
+		logger.Warn(err)
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}

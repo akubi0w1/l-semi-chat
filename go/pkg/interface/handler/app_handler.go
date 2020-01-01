@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"l-semi-chat/pkg/domain"
+	"l-semi-chat/pkg/interface/server/logger"
 	"l-semi-chat/pkg/interface/server/middleware"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
@@ -56,6 +57,7 @@ func (ah *appHandler) ManageAccount() http.HandlerFunc {
 		case http.MethodDelete:
 			middleware.Authorized(ah.AccountHandler.DeleteAccount).ServeHTTP(w, r)
 		default:
+			logger.Warn("request method not allowed")
 			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
 		}
 	}
@@ -67,6 +69,7 @@ func (ah *appHandler) Login() http.HandlerFunc {
 		case http.MethodPost:
 			ah.AuthHandler.Login(w, r)
 		default:
+			logger.Warn("request method not allowed")
 			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
 		}
 	}
@@ -78,6 +81,7 @@ func (ah *appHandler) Logout() http.HandlerFunc {
 		case http.MethodDelete:
 			ah.AuthHandler.Logout(w, r)
 		default:
+			logger.Warn("request method not allowed")
 			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
 		}
 	}
