@@ -84,7 +84,11 @@ type createAccountResponse struct {
 func (ah *accountHandler) GetAccount(w http.ResponseWriter, r *http.Request) {
 	// contextからuserIDの読み出し
 	ctx := r.Context()
-	userID := dcontext.GetUserIDFromContext(ctx)
+	userID, err := dcontext.GetUserIDFromContext(ctx)
+	if err != nil {
+		response.HttpError(w, err)
+		return
+	}
 
 	// getData
 	user, err := ah.AccountInteractor.ShowAccount(userID)
@@ -117,7 +121,11 @@ type getAccountResponse struct {
 func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) {
 	// tokenからuserIDを取得
 	ctx := r.Context()
-	userID := dcontext.GetUserIDFromContext(ctx)
+	userID, err := dcontext.GetUserIDFromContext(ctx)
+	if err != nil {
+		response.HttpError(w, err)
+		return
+	}
 
 	// bodyの取得
 	body, err := ioutil.ReadAll(r.Body)
@@ -171,10 +179,14 @@ type updateAccountResponse struct {
 
 func (ah *accountHandler) DeleteAccount(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	userID := dcontext.GetUserIDFromContext(ctx)
+	userID, err := dcontext.GetUserIDFromContext(ctx)
+	if err != nil {
+		response.HttpError(w, err)
+		return
+	}
 
 	// delete
-	err := ah.AccountInteractor.DeleteAccount(userID)
+	err = ah.AccountInteractor.DeleteAccount(userID)
 	if err != nil {
 		response.HttpError(w, err)
 		return

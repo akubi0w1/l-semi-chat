@@ -2,6 +2,8 @@ package dcontext
 
 import (
 	"context"
+	"errors"
+	"l-semi-chat/pkg/domain"
 )
 
 type key string
@@ -16,10 +18,14 @@ func SetUserID(ctx context.Context, userID string) context.Context {
 }
 
 // GetUserIDFromContext contextからuserIDの取得
-func GetUserIDFromContext(ctx context.Context) string {
+func GetUserIDFromContext(ctx context.Context) (string, error) {
 	var userID string
+	var err error
 	if ctx.Value(userIDKey) != nil {
 		userID = ctx.Value(userIDKey).(string)
 	}
-	return userID
+	if userID == "" {
+		err = domain.BadRequest(errors.New("userID is empty"))
+	}
+	return userID, err
 }
