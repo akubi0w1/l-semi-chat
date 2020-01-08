@@ -14,4 +14,8 @@ func SetupRouter(s server.Server, h handler.AppHandler) {
 	s.Handle("/login", h.Login())
 	s.Handle("/logout", h.Logout())
 
+	// archive
+	// TODO: gorrilaの導入しないとダメだわ
+	s.Handle("/threads/{id}/archives", h.ManageArchive())
+
 }
