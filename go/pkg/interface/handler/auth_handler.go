@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"l-semi-chat/pkg/domain"
-	"l-semi-chat/pkg/interface/server/logger"
+	"l-semi-chat/pkg/domain/logger"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
 	"net/http"

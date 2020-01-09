@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"l-semi-chat/pkg/interface/server/logger"
+	"l-semi-chat/pkg/domain/logger"
 )
 
 type server struct {
