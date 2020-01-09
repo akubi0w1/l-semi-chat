@@ -42,7 +42,7 @@ func (ti *tagInteractor) AddTag(tagName, categoryID string) (tag domain.Tag, err
 	// uuidの生成
 	id, err := uuid.NewRandom()
 	if err != nil {
-		logger.Warn(fmt.Sprintf("create tag: %s", err.Error()))
+		logger.Error(fmt.Sprintf("create tag: %s", err.Error()))
 		return tag, domain.InternalServerError(err)
 	}
 
