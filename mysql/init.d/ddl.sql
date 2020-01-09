@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`users_threads`(
         REFERENCES `ls_chat`.`users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
-    CONSTRAINT `fk_threads_users`
+    CONSTRAINT
         FOREIGN KEY (`thread_id`)
         REFERENCES `ls_chat`.`threads` (`id`)
         ON DELETE NO ACTION
@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`users_favorites`(
         REFERENCES `ls_chat`.`users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
-    CONSTRAINT `fk_messages_users`
+    CONSTRAINT
         FOREIGN KEY (`message_id`)
         REFERENCES `ls_chat`.`messages` (`id`)
         ON DELETE NO ACTION
