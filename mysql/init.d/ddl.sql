@@ -1,4 +1,4 @@
-DROP DATABASE `ls_chat`;
+DROP DATABASE IF EXISTS `ls_chat`;
 CREATE DATABASE IF NOT EXISTS `ls_chat`;
 
 -- define tables
@@ -90,16 +90,16 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`archives`(
 COMMENT = 'アーカイブ';
 
 -- evaluations(master)
-CREATE TABLE IF NOT EXISTS `ls_chat`.`evalutions`(
+CREATE TABLE IF NOT EXISTS `ls_chat`.`evaluations`(
     `id` VARCHAR(36) PRIMARY KEY COMMENT 'id',
     `item` VARCHAR(10) NOT NULL UNIQUE COMMENT '評価文'
 )
 COMMENT = '評価';
 
-CREATE DATABASE IF NOT EXISTS `ls_chat`.`threads_tags`(
+CREATE TABLE IF NOT EXISTS `ls_chat`.`threads_tags`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
-    `threads_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
-    `tags_id` VARCHAR(36) NOT NULL COMMENT 'タグID',
+    `thread_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
+    `tag_id` VARCHAR(36) NOT NULL COMMENT 'タグID',
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_threads_tags`
         FOREIGN KEY (`thread_id`)
@@ -116,10 +116,10 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`threads_tags`(
 )
 COMMENT='スレッドのタグ';
 
-CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_tags`(
+CREATE TABLE IF NOT EXISTS `ls_chat`.`users_tags`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
-    `users_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
-    'tags_id' VARCHAR(36) NOT NULL COMMENT 'タグID',
+    `user_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
+    `tag_id` VARCHAR(36) NOT NULL COMMENT 'タグID',
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_users_tags`
         FOREIGN KEY (`user_id`)
@@ -136,20 +136,20 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_tags`(
 )
 COMMENT='ユーザーのタグ';
 
-CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_threads`(
+CREATE TABLE IF NOT EXISTS `ls_chat`.`users_threads`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
-    `users_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
-    `threads_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
+    `user_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
+    `thread_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
     `is_admin` TINYINT NOT NULL DEFAULT 0 COMMENT 'スレッドの管理者判断',
     PRIMARY KEY (`id`),
-    CONSTRAINT `fk_users_threads`
+    CONSTRAINT 
         FOREIGN KEY (`user_id`)
         REFERENCES `ls_chat`.`users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
-    CONSTRAINT `fk_threads_users`
+    CONSTRAINT
         FOREIGN KEY (`thread_id`)
-        REFERENCES `ls_chat`.`users` (`id`)
+        REFERENCES `ls_chat`.`threads` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `unique_user_thread`
@@ -157,19 +157,19 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_threads`(
 )
 COMMENT='ユーザーのスレッド';
 
-CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_favorites`(
+CREATE TABLE IF NOT EXISTS `ls_chat`.`users_favorites`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
-    `users_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
+    `user_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
     `message_id` VARCHAR(36) NOT NULL COMMENT 'メッセージID',
     PRIMARY KEY (`id`),
-    CONSTRAINT `fk_users_messages`
+    CONSTRAINT 
         FOREIGN KEY (`user_id`)
         REFERENCES `ls_chat`.`users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
-    CONSTRAINT `fk_messages_users`
+    CONSTRAINT
         FOREIGN KEY (`message_id`)
-        REFERENCES `ls_chat`.`message` (`id`)
+        REFERENCES `ls_chat`.`messages` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `unique_user_id_message_id`
@@ -180,7 +180,7 @@ COMMENT='ユーザーのいいね';
 CREATE TABLE IF NOT EXISTS `ls_chat`.`evaluation_scores`(
     `id` VARCHAR(36) PRIMARY KEY COMMENT 'id',
     `evaluation_id` VARCHAR(36) NOT NULL COMMENT '評価ID',
-    `users_id` VARCHAR(36) NOT NULL COMMENT 'ユーザID',
+    `user_id` VARCHAR(36) NOT NULL COMMENT 'ユーザID',
     `score` INTEGER NOT NULL DEFAULT 0 COMMENT 'スコア' ,
     CONSTRAINT `fk_evaluation_scores_evaluations`
         FOREIGN KEY (`evaluation_id`)
@@ -200,7 +200,7 @@ COMMENT = '評価スコア';
 -- users_followers
 CREATE TABLE IF NOT EXISTS `ls_chat`.`users_followers`(
     `id` VARCHAR(36) PRIMARY KEY COMMENT 'id',
-    `users_id` VARCHAR(36) NOT NULL COMMENT 'ユーザID',
+    `user_id` VARCHAR(36) NOT NULL COMMENT 'ユーザID',
     `followed_user_id` VARCHAR(36) NOT NULL COMMENT 'フォローユーザーID',
     CONSTRAINT `fk_users_followers_users`
         FOREIGN KEY (`user_id`)
@@ -209,11 +209,11 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`users_followers`(
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_users_followers_followed_users`
         FOREIGN KEY (`followed_user_id`)
-        REFERENCES `ls_chat`.`followed_users` (`id`)
+        REFERENCES `ls_chat`.`users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `unique_user_followed`
-        UNIQUE (`user_id`, `followed_id`)
+        UNIQUE (`user_id`, `followed_user_id`)
 )
 COMMENT = 'フォロワー';
 	
