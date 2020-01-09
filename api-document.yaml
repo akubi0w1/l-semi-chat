@@ -1,0 +1,1351 @@
+openapi: 3.0.0
+info:
+  title: プロジェクトchat
+  description: Lゼミのプロジェクトでチャットを作るよ！！！
+  version: '1.0.0.'
+
+servers:
+  - url: 'http://localhost:8000'
+    description: development application server?
+  - url: 'http://localhost:3316'
+    description: development db server. db software is mysql.
+
+tags:
+  - name: "accounts"
+    description: "ユーザ作成とかの周り。ある一個人が使う機能？"
+  - name: 'auth'
+    description: '認証周り'
+  - name: "users"
+    description: "ユーザに関するあれこれ。相手を、ならここ"
+  - name: "threads"
+    description: "スレッドに関するあれこれ"
+  - name: "messages"
+    description: "メッセージに関するあれこれ"
+  - name: 'archives'
+    description: 'アーカイブにかんするあれこれ'
+  - name: "tags"
+    description: "タグに関するあれこれ"
+  - name: 'categories'
+    description: 'カテゴリにかんするあれこれ'
+  - name: 'evaluations'
+    description: '評価に関するあれこれ'
+    
+  
+
+paths:
+  /login:
+    post:
+      summary: 'ログイン'
+      tags: 
+        - 'auth'
+      requestBody:
+        description: 'ログインに必要な情報'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /logout:
+    delete:
+      summary: 'logout'
+      tags: 
+        - 'auth'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /accounts:
+    get:
+      summary: "アカウント情報の取得"
+      description: "リクエストを出したユーザのアカウント情報を取得"
+      tags:
+        - "accounts"
+      parameters:
+        - $ref: '#/components/parameters/AuthByCookie'
+      responses:
+        "200":
+          description: "正常終了"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: "アカウントの作成"
+      tags:
+        - "accounts"
+      requestBody:
+        description: "json object"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        "200":
+          description: "正常終了"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          description: "server error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+    put:
+      summary: "アカウントのupdate"
+      tags:
+        - "accounts"
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+      requestBody:
+        description: "json object"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        "200":
+          description: "正常終了"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags: 
+        - 'accounts'
+      summary: 'userの削除'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+      responses:
+        "200":
+          description: '正常終了'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  message:
+                    type: 'string'
+                    example: 'success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /accounts/tags:
+    # get:
+    #   summary: "アカウントについてるタグの取得"
+    #   tags:
+    #     - "accounts"
+    #   parameters:
+    #     - $ref: '#/components/parameters/AuthByCookie'
+    #   responses:
+    #     "200":
+    #       description: "return array of tags"
+    #       content:
+    #         application/json:
+    #           schema:
+    #             type: 'object'
+    #             properties:
+    #               tags:
+    #                 type: 'array'
+    #                 items:
+    #                   $ref: '#/components/schemas/GetTagResponse'
+    #     '400':
+    #       $ref: '#/components/responses/BadRequest'
+    #     '500':
+    #       $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: "アカウントにタグをつける"
+      tags:
+        - "accounts"
+      parameters:
+        - $ref: '#/components/parameters/AuthByCookie'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagCreatedRequest'
+      responses:
+        '200':
+          $ref: '#/components/schemas/GetTagResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /accounts/tags/{id}:
+    delete:
+      summary: "アカウントのタグを剥がす"
+      tags:
+        - "accounts"
+      parameters:
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users:
+    get:
+      tags:
+        - 'users'
+      summary: '全ユーザの取得'
+      description: 'ログインしてなくても見れる'
+      parameters: 
+        # TODO: require外す
+        - $ref: '#/components/parameters/AuthByCookie'
+      responses:
+        "200":
+          description: 'return array of users'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  users:
+                    type: 'array'
+                    items:
+                      $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        
+  /users/{id}:
+    get:
+      tags: 
+        - 'users'
+      summary: 'idを指定してユーザを取得'
+      description: 'ログインしてなくてもおけ'
+      parameters: 
+        # TODO: requireをはずす
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        "200":
+          description: "正常終了"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users/{id}/follow:
+    get:
+      tags:
+        - 'users'
+      summary: 'フォローしてる人を取得する'
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        "200":
+          description: 'return array of users'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFollowUsersResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      
+    post:
+      tags:
+        - 'users'
+      summary: 'フォロー'
+      description: 'リクエストユーザのidと、pathのidが異なる必要あり'
+      parameters:
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        "200":
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - 'users'
+      summary: 'フォロー解除'
+      description: 'リクエストユーザのidと、pathのidが異なる必要あり'
+      parameters:
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        "200":
+          # TODO: delete follow response
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users/{id}/followers:
+    get:
+      tags:
+        - 'users'
+      summary: 'フォロワーを取得する'
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        "200":
+          description: 'return array of users'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFollowUsersResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users/{u_id}/evaluations/{e_id}:
+    post:
+      tags:
+        - 'users'
+      summary: '投票する'
+      description: 'リクエストユーザのidとu_idが異なる。かつ一人が一人に対していれれる票が1'
+      parameters:
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'u_id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'e_id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          # TODO: スコア（変わったとこだけ）
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    # TODO: 投票を剥がす機能をつけるか？
+    delete:
+      tags:
+        - 'users'
+      summary: '投票の取り消し'
+      description: 'リクエストユーザのidと、pathのidが異なる必要あり'
+      parameters:
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: "u_id"
+          in: "path"
+          required: true
+          schema:
+            type: 'string'
+        - name: 'e_id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        "200":
+          # TODO: 投票を取り消した結果
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      
+  /threads:
+    get:
+      tags: 
+        - 'threads'
+      summary: 'get all threads'
+      description: 'ログインなしでもおk'
+      responses:
+        '200':
+          description: 'success response'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  threads:
+                    type: 'array'
+                    items:
+                      $ref: '#/components/schemas/GetThreadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: 'create new threads'
+      tags: 
+        - 'threads'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThreadUpdateRequest'
+      responses:
+        '200':
+          description: 'return data of thread'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetThreadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /threads/{id}:
+    get:
+      summary: 'get info of thread'
+      tags: 
+        - 'threads'
+      parameters: 
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'success response'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetThreadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    # TODO: admin権限の移譲をどうするか
+    put:
+      summary: 'update info of thread'
+      tags: 
+        - 'threads'
+      description: 'スレッドの作成者である必要がある'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThreadUpdateRequest'
+      responses:
+        '200':
+          description: 'return data of thread'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetThreadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags: 
+        - 'threads'
+      summary: 'delete thread'
+      description: 'スレッドの作成者である必要がある'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /threads/{id}/participants:
+    get:
+      tags:
+        - 'threads'
+      summary: '参加者のリストを取得'
+      parameters:
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'return members in thread'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  members:
+                    type: 'array'
+                    items:
+                      $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - 'threads'
+      summary: 'スレッドに参加'
+      parameters:
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          # TODO: 参加したスレッドを返す
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - 'threads'
+      summary: 'スレッドから退出する'
+      parameters:
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /threads/{t_id}/participants/{m_id}:
+    # TODO: threads_usersに入室禁止のカラムをつけるけ
+    delete:
+      tags:
+        - 'threads'
+      summary: 'スレッドから退出させる'
+      description: 'リクエストユーザがスレッドのadminである必要があります。'
+      parameters:
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 't_id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'm_id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '204': # TODO: 204?
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /threads/{id}/messages:
+    get:
+      tags: 
+        - 'messages'
+      summary: 'スレッドの全メッセージ取得'
+      description: 'adminのみ'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        # TODO: itemsが違う
+        '200':
+          description: 'return all messages in thread'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  threads:
+                    type: 'array'
+                    items:
+                      $ref: '#/components/schemas/GetMessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: 'スレッドにメッセージを作成'
+      description: '参加者のみ'
+      tags: 
+        - 'messages'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageUpdateRequset'
+      responses:
+        '200':
+          description: 'return info of message'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /threads/{t_id}/messages/{m_id}/favorites:
+    post: 
+      summary: 'いいね！'
+      tags: 
+        - 'messages'
+      description: '参加者のみ'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 't_id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'm_id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /threads/{id}/archives:
+    post:
+      tags: 
+        - 'archives'
+      summary: 'スレッドのアーカイブを作成する'
+      description: 'スレッドの管理者である必要がある。privateにするならpassword必須'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateArchiveRequest'
+      responses:
+        '200':
+          description: 'return info of archive'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetArchiveResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    # TODO: passwordの認証
+    # CONT: スレッドの中身はのぞけない
+    get:
+      summary: 'アーカイブを取得'
+      tags: 
+        - 'archives'
+      description: 'public: 本当に誰でも(ログインユーザじゃなくても見れる) private: パスワード知ってれば誰でも'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'return info of archive'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetArchiveResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: 'アーカイブの情報を編集する'
+      tags: 
+        - 'archives'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateArchiveRequest'
+      responses:
+        '200':
+          description: 'return info of archive'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetArchiveResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: 'アーカイブを削除する'
+      tags: 
+        - 'archives'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '204':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /tags:
+    get:
+      tags:
+        - 'tags'
+      summary: 'create all tags'
+      # parameters: 
+      #   - $ref: '#/components/parameters/AuthByCookie'
+      responses:
+        '200':
+          description: 'return all tags'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  tags:
+                    type: 'array'
+                    items:
+                      $ref: '#/components/schemas/GetTagResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: 'create tag'
+      tags:
+        - 'tags'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagCreatedRequest'
+      responses:
+        '200':
+          description: 'return new tag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTagResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        
+  /tags/{id}:
+    get:
+      summary: 'get tag'
+      tags:
+        - 'tags'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'get info of tag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTagResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /categories:
+    get:
+      tags:
+        - 'categories'
+      summary: 'get all categories'
+      responses:
+        '200':
+          description: 'return all categories'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  categories:
+                    type: 'array'
+                    items:
+                      $ref: '#/components/schemas/GetCategoryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      # TODO: categoryにuniqueをつける
+      tags: 
+        - 'categories'
+      summary: 'get info of category'
+      description: 'admin権限を持った人オンリー'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryRequest'
+      responses:
+        '200':
+          description: 'return info of category'
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCategoryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /categories/{id}:
+    put:
+      tags: 
+        - 'categories'
+      summary: 'get info of category'
+      description: 'admin権限を持った人オンリー'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryRequest'
+      responses:
+        '200':
+          description: 'return info of category'
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCategoryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      # TODO: DBのNO Actionを変える
+      tags:
+        - 'categories'
+      summary: 'delete category'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        
+  /evaluations:
+    get:
+      tags:
+        - 'evaluations'
+      summary: 'get all evaluations'
+      responses:
+        '200':
+          description: 'return all evaluations'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  evaluations:
+                    type: 'array'
+                    items:
+                      $ref: '#/components/schemas/GetEvaluationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags: 
+        - 'evaluations'
+      summary: 'create new evaluation'
+      description: 'admin権限を持った人オンリー'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEvaluationRequest'
+      responses:
+        '200':
+          description: 'return info of category'
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetEvaluationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /evaluations/{id}:
+    put:
+      tags: 
+        - 'evaluations'
+      summary: 'get info of evaluation'
+      description: 'admin権限を持った人オンリー'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEvaluationRequest'
+      responses:
+        '200':
+          description: 'return info of evaluation'
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetEvaluationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      # TODO: scoresテーブルをcascadeにする
+      tags:
+        - 'evaluations'
+      summary: 'delete evaluation'
+      parameters: 
+        - $ref: '#/components/parameters/AuthByCookie'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    LoginRequest:
+      type: 'object'
+      properties:
+        user_id:
+          type: 'string'
+        password:
+          type: 'string'
+    UserUpdateRequest:
+      type: 'object'
+      properties:
+        user_id:
+          type: 'string'
+        name:
+          type: 'string'
+        mail:
+          type: 'string'
+        image:
+          type: 'string'
+        profile:
+          type: 'string'
+        password:
+          type: 'string'
+    # TODO: follow, follower, evaluations, tagsを追加？
+    UserResponse:
+      type: "object"
+      properties:
+        user_id:
+          type: "string"
+          description: "ユーザID"
+        name:
+          type: "string"
+          description: "ユーザネーム"
+        mail:
+          type: "string"
+          description: "メールアドレス"
+        image:
+          type: "string"
+          description: "アイコンのパス"
+        profile:
+          type: "string"
+          description: "自己紹介的な"
+        tags: 
+          type: 'array'
+          items:
+            $ref: '#/components/schemas/GetTagResponse'
+        evaluations:
+          type: 'array'
+          items:
+            $ref: '#/components/schemas/GetEvaluationScoreResponse'
+    DeleteFollowResponse:
+      type: 'object'
+      properties:
+        follower:
+          $ref: '#/components/schemas/UserResponse'
+    GetThreadResponse:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+        name:
+          type: 'string'
+        description:
+          type: 'string'
+        limit_users:
+          type: 'integer'
+        admin:
+          $ref: '#/components/schemas/UserResponse'
+        is_public:
+          type: 'integer'
+        created_at:
+          type: 'string'
+        updated_at:
+          type: 'string'
+    ThreadUpdateRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        description:
+          type: 'string'
+        limit_users:
+          type: 'string'
+        is_public:
+          type: 'integer'
+    GetMessageResponse:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+        message:
+          type: 'string'
+        grade:
+          type: 'integer'
+        created_at:
+          type: 'string'
+        user:
+          $ref: '#/components/schemas/UserResponse'
+    MessageUpdateRequset:
+      type: 'object'
+      properties:
+        message:
+          type: 'string'
+        grade:
+          type: 'string'
+    GetArchiveResponse:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+        path:
+          type: 'string'
+        is_public:
+          type: 'integer'
+        password:
+          type: 'string'
+        thread:
+          $ref: '#/components/schemas/GetThreadResponse'
+    UpdateArchiveRequest:
+      type: 'object'
+      properties:
+        password:
+          type: 'string'
+        is_public:
+          type: 'integer'
+    GetTagResponse:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+        tag:
+          type: 'string'
+        category:
+          $ref: '#/components/schemas/GetCategoryResponse'
+    TagCreatedRequest:
+      type: 'object'
+      properties:
+        tag:
+          type: 'string'
+        category_id:
+          type: 'string'
+    UpdateCategoryRequest:
+      type: 'object'
+      properties:
+        category:
+          type: 'string'
+    GetCategoryResponse:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+        category:
+          type: 'string'
+    GetEvaluationResponse:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+        item:
+          type: 'string'
+    GetEvaluationScoreResponse:
+      type: 'object'
+      properties:
+        id:
+          type: 'string'
+        item:
+          type: 'string'
+        score:
+          type: 'integer'
+    UpdateEvaluationRequest:
+      type: 'object'
+      properties:
+        item:
+          type: 'string'
+    ErrorResponse:
+      type: 'object'
+      properties:
+        code:
+          type: 'integer'
+        message:
+          type: 'string'
+    GetFollowUsersResponse:
+      type: 'object'
+      properties:
+        users:
+          type: 'array'
+          items:
+            $ref: '#/components/schemas/UserResponse'
+  parameters:
+    AuthByCookie:
+      name: "x-token"
+      in: "cookie"
+      description: "JWTのトークン"
+      required: true
+      schema:
+        type: "string"
+  responses:
+    Success:
+      description: 'return success message'
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              message:
+                type: 'string'
+    NoContent:
+      description: 'return no content'
+    BadRequest:
+      description: 'bad request'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+            example: 
+              code: 400
+              message: 'error content'
+    Unauthorized:
+      description: 'unauthorized error'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+            example:
+              code: 401
+              message: 'error content'
+    InternalServerError:
+      description: 'internal server error'
+      content:
+        applicatoin/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+            example: 
+              code: 500
+              message: 'error content'
