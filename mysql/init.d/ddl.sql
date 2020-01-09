@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`evalutions`(
 )
 COMMENT = '評価';
 
-CREATE DATABASE IF NOT EXISTS `ls_chat`.`threads_tags`(
+CREATE TABLE IF NOT EXISTS `ls_chat`.`threads_tags`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
     `thread_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
     `tag_id` VARCHAR(36) NOT NULL COMMENT 'タグID',
@@ -116,7 +116,7 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`threads_tags`(
 )
 COMMENT='スレッドのタグ';
 
-CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_tags`(
+CREATE TABLE IF NOT EXISTS `ls_chat`.`users_tags`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
     `user_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
     'tag_id' VARCHAR(36) NOT NULL COMMENT 'タグID',
@@ -136,7 +136,7 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_tags`(
 )
 COMMENT='ユーザーのタグ';
 
-CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_threads`(
+CREATE TABLE IF NOT EXISTS `ls_chat`.`users_threads`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
     `user_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
     `thread_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
@@ -157,7 +157,7 @@ CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_threads`(
 )
 COMMENT='ユーザーのスレッド';
 
-CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_favorites`(
+CREATE TABLE IF NOT EXISTS `ls_chat`.`users_favorites`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
     `user_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
     `message_id` VARCHAR(36) NOT NULL COMMENT 'メッセージID',
