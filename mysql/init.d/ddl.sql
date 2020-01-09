@@ -98,8 +98,8 @@ COMMENT = '評価';
 
 CREATE DATABASE IF NOT EXISTS `ls_chat`.`threads_tags`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
-    `threads_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
-    `tags_id` VARCHAR(36) NOT NULL COMMENT 'タグID',
+    `thread_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
+    `tag_id` VARCHAR(36) NOT NULL COMMENT 'タグID',
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_threads_tags`
         FOREIGN KEY (`thread_id`)
@@ -118,8 +118,8 @@ COMMENT='スレッドのタグ';
 
 CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_tags`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
-    `users_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
-    'tags_id' VARCHAR(36) NOT NULL COMMENT 'タグID',
+    `user_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
+    'tag_id' VARCHAR(36) NOT NULL COMMENT 'タグID',
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_users_tags`
         FOREIGN KEY (`user_id`)
@@ -138,8 +138,8 @@ COMMENT='ユーザーのタグ';
 
 CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_threads`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
-    `users_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
-    `threads_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
+    `user_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
+    `thread_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
     `is_admin` TINYINT NOT NULL DEFAULT 0 COMMENT 'スレッドの管理者判断',
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_users_threads`
@@ -159,7 +159,7 @@ COMMENT='ユーザーのスレッド';
 
 CREATE DATABASE IF NOT EXISTS `ls_chat`.`users_favorites`(
     `id` VARCHAR(36) NOT NULL COMMENT 'id',
-    `users_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
+    `user_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
     `message_id` VARCHAR(36) NOT NULL COMMENT 'メッセージID',
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_users_messages`
