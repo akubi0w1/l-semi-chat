@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	// TODO: load config
+	// load config
 	servConf := conf.LoadServerConfig()
 
 	// connect db
