@@ -18,7 +18,8 @@ INSERT INTO `ls_chat`.`users` (`id`,`user_id`,`name`,`mail`,`image`,`profile`,`i
 
 
 -- threads
-
+INSERT INTO `ls_chat`.`threads`(`id`,`name`,`description`,`limit_users`,`user_id`,`is_public`,`created_at`,`updated_at`)  VALUES ("11111111-1111-1111-1111-111111111111",”name1”,”description1”,1,”11111111-1111-1111-1111-111111111111”,1,cast('2018-11-24 11:56:40' as datetime),cast('2018-11-24 11:56:40' as datetime));
+INSERT INTO `ls_chat`.`threads`(`id`,`name`,`user_id`) VALUES ("22222222-2222-2222-2222-222222222222”,”name1”,”22222222-2222-2222-2222-222222222222”);
 
 -- messages
 INSERT INTO `ls_chat`.`messages` (id,message,created_at,grede,user_id,thread_id) VALUES ('11111111-1111-1111-1111-111111111111','おはよう','2019-12-09 07:14:22',DEFAULT,'11111111-1111-1111-1111-111111111111','11111111-1111-1111-1111-111111111111');
@@ -74,6 +75,7 @@ INSERT INTO `ls_chat`.`categories`(`id`,`evaluation_id`,`user_id`,`score`) VALUE
 
 -- users_followers
 
+INSERT INTO `ls_chat`.`users_followers`(`id`,`user_id`,`followed_user_id`) VALUES (“11111111-1111-1111-1111-111111111111”,“11111111-1111-1111-1111-111111111111”,“11111111-1111-1111-1111-111111111111”);
 
 -- users_tags
 INSERT INTO `ls_chat`.`users_tags` (id,user_id,tag_id) VALUES ('11111111-1111-1111-1111-111111111111','11111111-1111-1111-1111-111111111111','11111111-1111-1111-1111-111111111111');
@@ -84,6 +86,8 @@ INSERT INTO `ls_chat`.`users_tags` (id,user_id,tag_id) VALUES ('55555555-5555-55
 INSERT INTO `ls_chat`.`users_tags` (id,user_id,tag_id) VALUES ('66666666-6666-6666-6666-666666666666','66666666-6666-6666-6666-666666666666','66666666-6666-6666-6666-666666666666');
 -- users_threads
 
+INSERT INTO `ls_chat`.`users_threads`(`id`,`user_id`,`thread_id`,`is_admin`) VALUES ("11111111-1111-1111-1111-111111111111","11111111-1111-1111-1111-111111111111","11111111-1111-1111-1111-111111111111",1);
+INSERT INTO `ls_chat`.`users_threads`(`id`,`user_id`,`thread_id`) VALUES ("22222222-2222-2222-2222-222222222222","22222222-2222-2222-2222-222222222222","22222222-2222-2222-2222-222222222222");
 
 -- users_favorites
 INSERT INTO `ls_chat`.`users_favorites` (id,user_id,message_id) VALUES ('11111111-1111-1111-1111-111111111111','11111111-1111-1111-1111-111111111111','11111111-1111-1111-1111-111111111111');
@@ -93,4 +97,7 @@ INSERT INTO `ls_chat`.`users_favorites` (id,user_id,message_id) VALUES ('4444444
 INSERT INTO `ls_chat`.`users_favorites` (id,user_id,message_id) VALUES ('55555555-5555-5555-5555-555555555555','55555555-5555-5555-5555-555555555555','55555555-5555-5555-5555-555555555555');
 INSERT INTO `ls_chat`.`users_favorites` (id,user_id,message_id) VALUES ('66666666-6666-6666-6666-666666666666','66666666-6666-6666-6666-666666666666','66666666-6666-6666-6666-666666666666');
 -- threads_tags
+
+INSERT INTO `ls_chat`.`users_followers`(`id`,`thread_id`,`tag_id`) VALUES (“11111111-1111-1111-1111-111111111111”,“11111111-1111-1111-1111-111111111111”,“11111111-1111-1111-1111-111111111111”);
+
 
