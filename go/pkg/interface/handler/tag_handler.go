@@ -3,8 +3,10 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"l-semi-chat/pkg/domain"
+	"l-semi-chat/pkg/domain/logger"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
 	"net/http"
@@ -15,12 +17,14 @@ type tagHandler struct {
 	TagInteractor interactor.TagInteractor
 }
 
+// TagHandler tag handler
 type TagHandler interface {
 	CreateTag(w http.ResponseWriter, r *http.Request)
 	GetTagByTagID(w http.ResponseWriter, r *http.Request)
 	GetTags(w http.ResponseWriter, r *http.Request)
 }
 
+// NewTagHandler create tagHandler
 func NewTagHandler(ti interactor.TagInteractor) TagHandler {
 	return &tagHandler{
 		TagInteractor: ti,
@@ -30,12 +34,14 @@ func NewTagHandler(ti interactor.TagInteractor) TagHandler {
 func (th *tagHandler) CreateTag(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		logger.Warn(err)
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
 	var req createTagRequest
 	err = json.Unmarshal(body, &req)
 	if err != nil {
+		logger.Error(err)
 		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
@@ -66,6 +72,7 @@ type createTagResponse struct {
 func (th *tagHandler) GetTagByTagID(w http.ResponseWriter, r *http.Request) {
 	tagID := strings.TrimPrefix(r.URL.Path, "/tags/")
 	if tagID == "" {
+		logger.Warn(fmt.Sprintf("tagID is empty. path = %s", r.URL.Path))
 		response.HttpError(w, errors.New("tagID is empty"))
 		return
 	}

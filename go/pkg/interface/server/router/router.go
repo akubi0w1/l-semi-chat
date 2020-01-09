@@ -5,6 +5,7 @@ import (
 	"l-semi-chat/pkg/interface/server"
 )
 
+// SetupRouter routing
 func SetupRouter(s server.Server, h handler.AppHandler) {
 
 	// account
@@ -13,5 +14,9 @@ func SetupRouter(s server.Server, h handler.AppHandler) {
 	// auth
 	s.Handle("/login", h.Login())
 	s.Handle("/logout", h.Logout())
+
+	// tags
+	s.Handle("/tags", h.ManageTag())
+	s.Handle("/tags/", h.ManageTag())
 
 }

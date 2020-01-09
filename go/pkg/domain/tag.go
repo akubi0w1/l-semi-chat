@@ -10,7 +10,7 @@ type Tag struct {
 // Tags Define tags model
 type Tags []Tag
 
-// あとで消して
+// TODO: あとで消して
 type Category struct {
 	ID   string
 	name string

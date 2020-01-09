@@ -29,7 +29,7 @@ type AppHandler interface {
 
 	// tag
 	ManageTag() http.HandlerFunc
-	// ManageOneTag() http.HandlerFunc
+	ManageSpecificTag() http.HandlerFunc
 }
 
 // NewAppHandler create application handler
@@ -104,6 +104,17 @@ func (ah *appHandler) ManageTag() http.HandlerFunc {
 			ah.TagHandler.GetTags(w, r)
 		case http.MethodPost:
 			middleware.Authorized(ah.TagHandler.CreateTag).ServeHTTP(w, r)
+		default:
+			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
+		}
+	}
+}
+
+func (ah *appHandler) ManageSpecificTag() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			ah.TagHandler.GetTagByTagID(w, r)
 		default:
 			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
 		}
