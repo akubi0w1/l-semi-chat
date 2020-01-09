@@ -3,7 +3,8 @@
 
 ## DBの初期化について
 気が向いたら自動化します。
-事前に、`docker-compose up`でコンテナを起動させておく
+事前に、`docker-compose up`でコンテナを起動させておく。
+
 すでに起動してる人は、`docker-compose down --rmi local`ってしておくと色々吹っ飛ぶ
 
 1. `docker exec -it lschat-mysql bash`でコンテナの中に入る
