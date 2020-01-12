@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"l-semi-chat/pkg/domain"
-	"l-semi-chat/pkg/interface/server/logger"
+	"l-semi-chat/pkg/domain/logger"
 	"l-semi-chat/pkg/interface/server/middleware"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
