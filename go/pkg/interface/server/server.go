@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"l-semi-chat/pkg/domain/logger"
 )
 
 type server struct {
-	Addr string
-	Port string
+	Addr   string
+	Port   string
+	Router *mux.Router
 }
 
 // Server server
@@ -21,8 +23,9 @@ type Server interface {
 // NewServer serverの作成
 func NewServer(addr, port string) Server {
 	return &server{
-		Addr: addr,
-		Port: port,
+		Addr:   addr,
+		Port:   port,
+		Router: mux.NewRouter(),
 	}
 }
 
@@ -30,12 +33,12 @@ func (s *server) Serve() {
 	logger.Info(fmt.Sprintf("Starting server http://%s:%s", s.Addr, s.Port))
 	http.ListenAndServe(
 		fmt.Sprintf("%s:%s", s.Addr, s.Port),
-		nil,
+		s.Router,
 	)
 }
 
 func (s *server) Handle(endpoint string, apiFunc http.HandlerFunc) {
-	http.HandleFunc(endpoint, httpMethod(apiFunc))
+	s.Router.HandleFunc(endpoint, httpMethod(apiFunc))
 }
 
 func httpMethod(apiFunc http.HandlerFunc) http.HandlerFunc {

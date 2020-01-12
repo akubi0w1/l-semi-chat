@@ -2,7 +2,9 @@ package interactor
 
 import (
 	"errors"
+	"fmt"
 	"l-semi-chat/pkg/domain"
+	"l-semi-chat/pkg/domain/logger"
 	"l-semi-chat/pkg/service/repository"
 	"time"
 
@@ -33,26 +35,32 @@ func NewAccountInteractor(ar repository.AccountRepository, ph PasswordHandler) A
 func (ai *accountInteractor) AddAccount(userID, name, mail, image, profile, password string) (domain.User, error) {
 	var user domain.User
 	if userID == "" {
+		logger.Warn("create account: userID is empty")
 		return user, domain.BadRequest(errors.New("userID is empty"))
 	}
 	if name == "" {
+		logger.Warn("create account: name is empty")
 		return user, domain.BadRequest(errors.New("name is empty"))
 	}
 	if mail == "" {
+		logger.Warn("create account: mail is empty")
 		return user, domain.BadRequest(errors.New("mail is empty"))
 	}
 	if password == "" {
+		logger.Warn("create account: password is empty")
 		return user, domain.BadRequest(errors.New("password is empty"))
 	}
 
 	// passwordハッシュ
 	hash, err := ai.PasswordHandler.PasswordHash(password)
 	if err != nil {
+		logger.Error(fmt.Sprintf("create account: %s", err.Error()))
 		return user, domain.InternalServerError(err)
 	}
 
 	id, err := uuid.NewRandom()
 	if err != nil {
+		logger.Error(fmt.Sprintf("create account: %s", err.Error()))
 		return user, domain.InternalServerError(err)
 	}
 
@@ -90,17 +98,24 @@ func (ai *accountInteractor) UpdateAccount(userID, newUserID, name, mail, image,
 	// password hash
 	hash, err := ai.PasswordHandler.PasswordHash(password)
 	if err != nil {
+		// TODO: ここwarning/400か？
+		logger.Error(fmt.Sprintf("update account: %s", err.Error()))
 		return user, domain.InternalServerError(err)
 	}
 
 	err = ai.AccountRepositoy.UpdateAccount(userID, newUserID, name, mail, image, profile, hash)
 	if err != nil {
+		logger.Error(fmt.Sprintf("update account: %s", err.Error()))
 		return
 	}
+
 	if newUserID == "" {
 		user, err = ai.AccountRepositoy.FindAccountByUserID(userID)
 	} else {
 		user, err = ai.AccountRepositoy.FindAccountByUserID(newUserID)
+	}
+	if err != nil {
+		logger.Error(fmt.Sprintf("update account: %s", err.Error()))
 	}
 	return
 }

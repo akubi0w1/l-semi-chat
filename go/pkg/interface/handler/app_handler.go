@@ -15,6 +15,7 @@ import (
 type appHandler struct {
 	AccountHandler AccountHandler
 	AuthHandler    AuthHandler
+	TagHandler     TagHandler
 }
 
 // AppHandler ApplicationHandler
@@ -25,6 +26,10 @@ type AppHandler interface {
 	// auth
 	Login() http.HandlerFunc
 	Logout() http.HandlerFunc
+
+	// tag
+	ManageTag() http.HandlerFunc
+	ManageSpecificTag() http.HandlerFunc
 }
 
 // NewAppHandler create application handler
@@ -40,6 +45,11 @@ func NewAppHandler(sh repository.SQLHandler, ph interactor.PasswordHandler) AppH
 			interactor.NewAuthInteractor(
 				repository.NewAuthRepository(sh),
 				ph,
+			),
+		),
+		TagHandler: NewTagHandler(
+			interactor.NewTagInteractor(
+				repository.NewTagRepository(sh),
 			),
 		),
 	}
@@ -82,6 +92,30 @@ func (ah *appHandler) Logout() http.HandlerFunc {
 			ah.AuthHandler.Logout(w, r)
 		default:
 			logger.Warn("request method not allowed")
+			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
+		}
+	}
+}
+
+func (ah *appHandler) ManageTag() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			ah.TagHandler.GetTags(w, r)
+		case http.MethodPost:
+			middleware.Authorized(ah.TagHandler.CreateTag).ServeHTTP(w, r)
+		default:
+			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
+		}
+	}
+}
+
+func (ah *appHandler) ManageSpecificTag() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			ah.TagHandler.GetTagByTagID(w, r)
+		default:
 			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
 		}
 	}
