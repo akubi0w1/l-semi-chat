@@ -34,8 +34,10 @@ func Authorized(nextFunc http.HandlerFunc) http.HandlerFunc {
 
 		claims := token.Claims.(jwt.MapClaims)
 		userID := claims["user_id"].(string)
+		id := claims["id"].(string)
 
 		ctx = dcontext.SetUserID(ctx, userID)
+		ctx = dcontext.SetID(ctx, id)
 
 		nextFunc(w, r.WithContext(ctx))
 	}

@@ -7,12 +7,13 @@ import (
 )
 
 // CreateToken JWTの作成
-func CreateToken(userID string) (string, error) {
+func CreateToken(id, userID string) (string, error) {
 	// tokenの作成
 	token := jwt.New(jwt.GetSigningMethod("HS256"))
 
 	// claimsの設定
 	token.Claims = jwt.MapClaims{
+		"id":      id,
 		"user_id": userID,
 		"exp":     time.Now().Add(time.Hour * 1).Unix(),
 	}

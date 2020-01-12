@@ -50,7 +50,7 @@ func (ah *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 認証処理
-	err = ah.AuthInteractor.Login(req.UserID, req.Password)
+	user, err := ah.AuthInteractor.Login(req.UserID, req.Password)
 	if err != nil {
 		logger.Error(err)
 		response.HttpError(w, err)
@@ -58,7 +58,7 @@ func (ah *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// tokenの作成
-	token, err := auth.CreateToken(req.UserID)
+	token, err := auth.CreateToken(user.ID, user.UserID)
 	if err != nil {
 		logger.Error(err)
 		response.HttpError(w, domain.InternalServerError(err))
