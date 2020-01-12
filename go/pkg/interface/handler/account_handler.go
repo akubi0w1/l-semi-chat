@@ -10,6 +10,7 @@ import (
 	"l-semi-chat/pkg/domain/logger"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
+	"l-semi-chat/pkg/service/repository"
 
 	"l-semi-chat/pkg/interface/dcontext"
 )
@@ -27,9 +28,12 @@ type AccountHandler interface {
 }
 
 // NewAccountHandler create account handler
-func NewAccountHandler(ai interactor.AccountInteractor) AccountHandler {
+func NewAccountHandler(sh repository.SQLHandler, ph interactor.PasswordHandler) AccountHandler {
 	return &accountHandler{
-		AccountInteractor: ai,
+		AccountInteractor: interactor.NewAccountInteractor(
+			repository.NewAccountRepository(sh),
+			ph,
+		),
 	}
 }
 

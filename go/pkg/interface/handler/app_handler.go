@@ -22,36 +22,24 @@ type appHandler struct {
 type AppHandler interface {
 	// account
 	ManageAccount() http.HandlerFunc
+	// ManageAccountTags() http.HandlerFunc
+	// ManageAccountTag() http.HandlerFunc
 
 	// auth
 	Login() http.HandlerFunc
 	Logout() http.HandlerFunc
 
 	// tag
+	ManageTags() http.HandlerFunc
 	ManageTag() http.HandlerFunc
-	ManageSpecificTag() http.HandlerFunc
 }
 
 // NewAppHandler create application handler
 func NewAppHandler(sh repository.SQLHandler, ph interactor.PasswordHandler) AppHandler {
 	return &appHandler{
-		AccountHandler: NewAccountHandler(
-			interactor.NewAccountInteractor(
-				repository.NewAccountRepository(sh),
-				ph,
-			),
-		),
-		AuthHandler: NewAuthHandler(
-			interactor.NewAuthInteractor(
-				repository.NewAuthRepository(sh),
-				ph,
-			),
-		),
-		TagHandler: NewTagHandler(
-			interactor.NewTagInteractor(
-				repository.NewTagRepository(sh),
-			),
-		),
+		AccountHandler: NewAccountHandler(sh, ph),
+		AuthHandler:    NewAuthHandler(sh, ph),
+		TagHandler:     NewTagHandler(sh),
 	}
 }
 
@@ -97,7 +85,7 @@ func (ah *appHandler) Logout() http.HandlerFunc {
 	}
 }
 
-func (ah *appHandler) ManageTag() http.HandlerFunc {
+func (ah *appHandler) ManageTags() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -110,7 +98,7 @@ func (ah *appHandler) ManageTag() http.HandlerFunc {
 	}
 }
 
-func (ah *appHandler) ManageSpecificTag() http.HandlerFunc {
+func (ah *appHandler) ManageTag() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:

@@ -9,6 +9,7 @@ import (
 	"l-semi-chat/pkg/domain/logger"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
+	"l-semi-chat/pkg/service/repository"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -26,9 +27,11 @@ type TagHandler interface {
 }
 
 // NewTagHandler create tagHandler
-func NewTagHandler(ti interactor.TagInteractor) TagHandler {
+func NewTagHandler(sh repository.SQLHandler) TagHandler {
 	return &tagHandler{
-		TagInteractor: ti,
+		TagInteractor: interactor.NewTagInteractor(
+			repository.NewTagRepository(sh),
+		),
 	}
 }
 
