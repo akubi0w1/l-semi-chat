@@ -100,11 +100,14 @@ func (ai *accountInteractor) ShowAccount(userID string) (domain.User, error) {
 
 func (ai *accountInteractor) UpdateAccount(userID, newUserID, name, mail, image, profile, password string) (user domain.User, err error) {
 	// password hash
-	hash, err := ai.PasswordHandler.PasswordHash(password)
-	if err != nil {
-		// TODO: ここwarning/400か？
-		logger.Error(fmt.Sprintf("update account: %s", err.Error()))
-		return user, domain.InternalServerError(err)
+	var hash string
+	if password != "" {
+		hash, err = ai.PasswordHandler.PasswordHash(password)
+		if err != nil {
+			// TODO: ここwarning/400か？
+			logger.Error(fmt.Sprintf("update account: %s", err.Error()))
+			return user, domain.InternalServerError(err)
+		}
 	}
 
 	err = ai.AccountRepositoy.UpdateAccount(userID, newUserID, name, mail, image, profile, hash)

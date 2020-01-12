@@ -55,33 +55,33 @@ func (ar *accountRepository) FindAccountByUserID(userID string) (user domain.Use
 
 func (ar *accountRepository) UpdateAccount(userID, newUserID, name, mail, image, profile, password string) error {
 	// create query
-	query := "UPDATE users"
+	query := "UPDATE users SET"
 	var values []interface{}
 	if newUserID != "" {
-		query += " SET user_id=?"
+		query += " user_id=?"
 		values = append(values, newUserID)
 	}
 	if name != "" {
-		query += " SET name=?"
+		query += " name=?"
 		values = append(values, name)
 	}
 	if mail != "" {
-		query += " SET mail=?"
+		query += " mail=?"
 		values = append(values, mail)
 	}
 	if image != "" {
-		query += " SET image=?"
+		query += " image=?"
 		values = append(values, image)
 	}
 	if profile != "" {
-		query += " SET profile=?"
+		query += " profile=?"
 		values = append(values, profile)
 	}
 	if password != "" {
-		query += " SET password=?"
+		query += " password=?"
 		values = append(values, password)
 	}
-	query += " WHERE user_id=?;"
+	query += " WHERE user_id=?"
 	values = append(values, userID)
 
 	// exec

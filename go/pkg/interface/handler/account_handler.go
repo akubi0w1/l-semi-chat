@@ -168,6 +168,13 @@ func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	id, err := dcontext.GetIDFromContext(ctx)
+	if err != nil {
+		logger.Warn(fmt.Sprintf("get account: %s", err.Error()))
+		response.HttpError(w, err)
+		return
+	}
+
 	// bodyの取得
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -190,14 +197,32 @@ func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	// tagの取得
+	tags, err := ah.AccountInteractor.ShowTagsByUserID(id)
+
+	var res updateAccountResponse
+	res.UserID = user.UserID
+	res.Name = user.Name
+	res.Mail = user.Mail
+	res.Image = user.Image
+	res.Profile = user.Profile
+
+	for _, tag := range tags {
+		res.Tags = append(
+			res.Tags,
+			getTagResponse{
+				ID:  tag.ID,
+				Tag: tag.Tag,
+				Category: getCategoryResponse{
+					ID:       tag.Category.ID,
+					Category: tag.Category.Category,
+				},
+			},
+		)
+	}
+
 	// response
-	response.Success(w, &updateAccountResponse{
-		UserID:  user.UserID,
-		Name:    user.Name,
-		Mail:    user.Mail,
-		Image:   user.Image,
-		Profile: user.Profile,
-	})
+	response.Success(w, res)
 
 }
 
@@ -211,12 +236,12 @@ type updateAccountRequest struct {
 }
 
 type updateAccountResponse struct {
-	UserID  string `json:"user_id"`
-	Name    string `json:"name"`
-	Mail    string `json:"mail"`
-	Image   string `json:"image"`
-	Profile string `json:"profile"`
-	// Tags
+	UserID  string           `json:"user_id"`
+	Name    string           `json:"name"`
+	Mail    string           `json:"mail"`
+	Image   string           `json:"image"`
+	Profile string           `json:"profile"`
+	Tags    []getTagResponse `json:"tags"`
 	// Evaluations
 }
 
