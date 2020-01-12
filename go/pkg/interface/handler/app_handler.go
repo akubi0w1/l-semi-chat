@@ -22,8 +22,8 @@ type appHandler struct {
 type AppHandler interface {
 	// account
 	ManageAccount() http.HandlerFunc
-	// ManageAccountTags() http.HandlerFunc
-	// ManageAccountTag() http.HandlerFunc
+	ManageAccountTags() http.HandlerFunc
+	ManageAccountTag() http.HandlerFunc
 
 	// auth
 	Login() http.HandlerFunc
@@ -56,6 +56,29 @@ func (ah *appHandler) ManageAccount() http.HandlerFunc {
 			middleware.Authorized(ah.AccountHandler.DeleteAccount).ServeHTTP(w, r)
 		default:
 			logger.Warn("request method not allowed")
+			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
+		}
+	}
+}
+
+func (ah *appHandler) ManageAccountTags() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			middleware.Authorized(ah.AccountHandler.SetTag).ServeHTTP(w, r)
+		default:
+			logger.Warn("request method not allowed")
+			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
+		}
+	}
+}
+
+func (ah *appHandler) ManageAccountTag() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodDelete:
+			middleware.Authorized(ah.AccountHandler.RemoveTag).ServeHTTP(w, r)
+		default:
 			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
 		}
 	}

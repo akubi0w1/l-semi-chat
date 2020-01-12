@@ -22,6 +22,10 @@ type AccountInteractor interface {
 	UpdateAccount(string, string, string, string, string, string, string) (domain.User, error)
 	ShowAccount(userID string) (domain.User, error)
 	DeleteAccount(userID string) error
+
+	ShowTagsByUserID(userID string) (domain.Tags, error)
+	AddAccountTag(userID, tagName, categoryID string) (domain.Tag, error)
+	DeleteAccountTag(userID, tagID string) error
 }
 
 // NewAccountInteractor accountInteractorを作成
@@ -122,4 +126,65 @@ func (ai *accountInteractor) UpdateAccount(userID, newUserID, name, mail, image,
 
 func (ai *accountInteractor) DeleteAccount(userID string) error {
 	return ai.AccountRepositoy.DeleteAccount(userID)
+}
+
+func (ai *accountInteractor) ShowTagsByUserID(userID string) (domain.Tags, error) {
+	return ai.AccountRepositoy.FindTagsByUserID(userID)
+}
+
+func (ai *accountInteractor) AddAccountTag(userID, tagName, categoryID string) (tag domain.Tag, err error) {
+	if userID == "" {
+		logger.Warn("add account tag: userID is empty")
+		return tag, domain.BadRequest(errors.New("userID is empty"))
+	}
+	if tagName == "" {
+		logger.Warn("add account tag: tag is empty")
+		return tag, domain.BadRequest(errors.New("tag is empty"))
+	}
+	if categoryID == "" {
+		logger.Warn("add account tag: categoryID is empty")
+		return tag, domain.BadRequest(errors.New("categoryID is empty"))
+	}
+
+	// タグが存在しているかチェック
+	tag, err = ai.AccountRepositoy.FindTagByTag(tagName, categoryID)
+	var id uuid.UUID
+	if err != nil {
+		// なければ登録
+		id, err = uuid.NewRandom()
+		if err != nil {
+			logger.Error(fmt.Sprintf("add account tag: %s", err.Error()))
+			return tag, domain.InternalServerError(err)
+		}
+
+		err = ai.AccountRepositoy.StoreTag(id.String(), tagName, categoryID)
+		if err != nil {
+			logger.Error(fmt.Sprintf("add account tag: %s", err.Error()))
+			return tag, domain.InternalServerError(err)
+		}
+
+		//TODO: きたねえ
+		tag, err = ai.AccountRepositoy.FindTagByTag(tagName, categoryID)
+		if err != nil {
+			logger.Error(fmt.Sprintf("add account tag: %s", err.Error()))
+			return tag, domain.InternalServerError(err)
+		}
+	}
+
+	// store
+	id, err = uuid.NewRandom()
+	if err != nil {
+		logger.Error(fmt.Sprintf("add account tag: %s", err.Error()))
+		return tag, domain.InternalServerError(err)
+	}
+	err = ai.AccountRepositoy.StoreAccountTag(id.String(), userID, tag.ID)
+	if err != nil {
+		logger.Error(fmt.Sprintf("add account tag: %s", err.Error()))
+		return tag, domain.InternalServerError(err)
+	}
+	return
+}
+
+func (ai *accountInteractor) DeleteAccountTag(userID, tagID string) error {
+	return ai.AccountRepositoy.DeleteAccountTag(userID, tagID)
 }
