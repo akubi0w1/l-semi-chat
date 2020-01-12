@@ -17,6 +17,6 @@ func SetupRouter(s server.Server, h handler.AppHandler) {
 
 	// tags
 	s.Handle("/tags", h.ManageTag())
-	s.Handle("/tags/", h.ManageTag())
+	s.Handle("/tags/{id}", h.ManageSpecificTag())
 
 }

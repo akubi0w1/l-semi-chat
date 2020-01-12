@@ -10,7 +10,8 @@ import (
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
 	"net/http"
-	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 type tagHandler struct {
@@ -70,7 +71,8 @@ type createTagResponse struct {
 }
 
 func (th *tagHandler) GetTagByTagID(w http.ResponseWriter, r *http.Request) {
-	tagID := strings.TrimPrefix(r.URL.Path, "/tags/")
+	vars := mux.Vars(r)
+	tagID := vars["id"]
 	if tagID == "" {
 		logger.Warn(fmt.Sprintf("tagID is empty. path = %s", r.URL.Path))
 		response.HttpError(w, errors.New("tagID is empty"))
