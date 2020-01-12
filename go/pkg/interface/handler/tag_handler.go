@@ -9,6 +9,7 @@ import (
 	"l-semi-chat/pkg/domain/logger"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
+	"l-semi-chat/pkg/service/repository"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -26,9 +27,11 @@ type TagHandler interface {
 }
 
 // NewTagHandler create tagHandler
-func NewTagHandler(ti interactor.TagInteractor) TagHandler {
+func NewTagHandler(sh repository.SQLHandler) TagHandler {
 	return &tagHandler{
-		TagInteractor: ti,
+		TagInteractor: interactor.NewTagInteractor(
+			repository.NewTagRepository(sh),
+		),
 	}
 }
 
@@ -52,10 +55,14 @@ func (th *tagHandler) CreateTag(w http.ResponseWriter, r *http.Request) {
 		response.HttpError(w, err)
 		return
 	}
+
 	response.Success(w, &createTagResponse{
-		ID:       tag.ID,
-		Tag:      tag.Tag,
-		Category: tag.Category,
+		ID:  tag.ID,
+		Tag: tag.Tag,
+		Category: getCategoryResponse{
+			ID:       tag.Category.ID,
+			Category: tag.Category.Category,
+		},
 	})
 }
 
@@ -65,9 +72,9 @@ type createTagRequest struct {
 }
 
 type createTagResponse struct {
-	ID       string          `json:"id"`
-	Tag      string          `json:"tag"`
-	Category domain.Category // TODO: ここ、handlerのカテゴリに変更して
+	ID       string              `json:"id"`
+	Tag      string              `json:"tag"`
+	Category getCategoryResponse `json:"category"`
 }
 
 func (th *tagHandler) GetTagByTagID(w http.ResponseWriter, r *http.Request) {
@@ -85,22 +92,23 @@ func (th *tagHandler) GetTagByTagID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: カテゴリ...
 	response.Success(w, &getTagResponse{
-		ID:       tag.ID,
-		Tag:      tag.Tag,
-		Category: tag.Category,
+		ID:  tag.ID,
+		Tag: tag.Tag,
+		Category: getCategoryResponse{
+			ID:       tag.Category.ID,
+			Category: tag.Category.Category,
+		},
 	})
 }
 
 type getTagResponse struct {
-	ID       string          `json:"id"`
-	Tag      string          `json:"tag"`
-	Category domain.Category // TODO: ここ、handlerのカテゴリに変更して
+	ID       string              `json:"id"`
+	Tag      string              `json:"tag"`
+	Category getCategoryResponse `json:"category"`
 }
 
 func (th *tagHandler) GetTags(w http.ResponseWriter, r *http.Request) {
-	// TODO: カテゴリへの対応...?
 	tags, err := th.TagInteractor.ShowTags()
 	if err != nil {
 		response.HttpError(w, err)
@@ -109,9 +117,12 @@ func (th *tagHandler) GetTags(w http.ResponseWriter, r *http.Request) {
 	var res getTagsResponse
 	for _, tag := range tags {
 		res.Tags = append(res.Tags, getTagResponse{
-			ID:       tag.ID,
-			Tag:      tag.Tag,
-			Category: tag.Category,
+			ID:  tag.ID,
+			Tag: tag.Tag,
+			Category: getCategoryResponse{
+				ID:       tag.Category.ID,
+				Category: tag.Category.Category,
+			},
 		})
 	}
 
@@ -119,5 +130,5 @@ func (th *tagHandler) GetTags(w http.ResponseWriter, r *http.Request) {
 }
 
 type getTagsResponse struct {
-	Tags []getTagResponse
+	Tags []getTagResponse `json:"tags"`
 }

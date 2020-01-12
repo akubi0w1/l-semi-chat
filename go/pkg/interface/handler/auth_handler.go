@@ -7,6 +7,7 @@ import (
 	"l-semi-chat/pkg/domain/logger"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
+	"l-semi-chat/pkg/service/repository"
 	"net/http"
 
 	"l-semi-chat/pkg/interface/auth"
@@ -23,9 +24,12 @@ type AuthHandler interface {
 }
 
 // NewAuthHandler create authorized handler
-func NewAuthHandler(ai interactor.AuthInteractor) AuthHandler {
+func NewAuthHandler(sh repository.SQLHandler, ph interactor.PasswordHandler) AuthHandler {
 	return &authHandler{
-		AuthInteractor: ai,
+		AuthInteractor: interactor.NewAuthInteractor(
+			repository.NewAuthRepository(sh),
+			ph,
+		),
 	}
 }
 
