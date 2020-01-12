@@ -39,6 +39,12 @@ func (ti *tagInteractor) AddTag(tagName, categoryID string) (tag domain.Tag, err
 		return tag, domain.BadRequest(errors.New("categoryID is empty"))
 	}
 
+	// カテゴリがあるか
+	category, err := ti.TagRepository.FindCategoryByCategoryID(categoryID)
+	if err != nil {
+		return tag, domain.InternalServerError(err)
+	}
+
 	// uuidの生成
 	id, err := uuid.NewRandom()
 	if err != nil {
@@ -46,16 +52,16 @@ func (ti *tagInteractor) AddTag(tagName, categoryID string) (tag domain.Tag, err
 		return tag, domain.InternalServerError(err)
 	}
 
-	// TODO: カテゴリiDの正当性...?
-
 	err = ti.TagRepository.StoreTag(id.String(), tagName, categoryID)
 	if err != nil {
 		return
 	}
+
+	// return作成
 	tag.ID = id.String()
 	tag.Tag = tagName
-	tag.Category = tag.Category
-	// TODO: カテゴリの処理
+	tag.Category.ID = category.ID
+	tag.Category.Category = category.Category
 
 	return
 }

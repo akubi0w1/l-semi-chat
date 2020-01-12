@@ -52,7 +52,7 @@ func (th *tagHandler) CreateTag(w http.ResponseWriter, r *http.Request) {
 		response.HttpError(w, err)
 		return
 	}
-	// TODO: カテゴリの処理
+
 	response.Success(w, &createTagResponse{
 		ID:  tag.ID,
 		Tag: tag.Tag,
@@ -89,7 +89,6 @@ func (th *tagHandler) GetTagByTagID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: カテゴリ...
 	response.Success(w, &getTagResponse{
 		ID:  tag.ID,
 		Tag: tag.Tag,
@@ -107,7 +106,6 @@ type getTagResponse struct {
 }
 
 func (th *tagHandler) GetTags(w http.ResponseWriter, r *http.Request) {
-	// TODO: カテゴリへの対応...?
 	tags, err := th.TagInteractor.ShowTags()
 	if err != nil {
 		response.HttpError(w, err)
@@ -129,5 +127,5 @@ func (th *tagHandler) GetTags(w http.ResponseWriter, r *http.Request) {
 }
 
 type getTagsResponse struct {
-	Tags []getTagResponse
+	Tags []getTagResponse `json:"tags"`
 }
