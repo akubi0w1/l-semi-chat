@@ -14,5 +14,12 @@ type Archives []Archive
 
 // 後で消して
 type Thread struct {
-	ID string
+	ID          string
+	Name        string
+	Description string
+	LimitUsers  int
+	IsPublic    int
+	CreatedAt   string
+	UpdatedAt   string
+	Admin       User
 }

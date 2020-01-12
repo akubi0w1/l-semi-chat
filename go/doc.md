@@ -55,4 +55,4 @@ go
 1/8
 - archive, tag のロギング？
 - そういえばアーカイブの認証どうすんの？
-- archive, pathっているの？threadidでよくね？
+- archive, pathっているの？thread idでよくね？

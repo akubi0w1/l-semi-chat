@@ -12,6 +12,7 @@ type archiveInteractor struct {
 	PasswordHandler
 }
 
+// ArchiveInteractor archive interactor
 type ArchiveInteractor interface {
 	ShowArchive(threadID string) (domain.Archive, error)
 	AddArchive(password, threadID string, isPublic int) (domain.Archive, error)
@@ -19,6 +20,7 @@ type ArchiveInteractor interface {
 	DeleteArchive(threadID string) error
 }
 
+// NewArchiveInteractor create archive interactor
 func NewArchiveInteractor(ar repository.ArchiveRepository, ph PasswordHandler) ArchiveInteractor {
 	return &archiveInteractor{
 		ArchiveRepository: ar,

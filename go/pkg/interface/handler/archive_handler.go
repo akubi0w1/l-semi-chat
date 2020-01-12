@@ -15,6 +15,7 @@ type archiveHandler struct {
 	ArchiveInteractor interactor.ArchiveInteractor
 }
 
+// ArchiveHandler archive handler
 type ArchiveHandler interface {
 	CreateArchive(w http.ResponseWriter, r *http.Request)
 	GetArchive(w http.ResponseWriter, r *http.Request)
@@ -22,6 +23,7 @@ type ArchiveHandler interface {
 	DeleteArchive(w http.ResponseWriter, r *http.Request)
 }
 
+// NewArchiveHandler create archive handler
 func NewArchiveHandler(ai interactor.ArchiveInteractor) ArchiveHandler {
 	return &archiveHandler{
 		ArchiveInteractor: ai,
