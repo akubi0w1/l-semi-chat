@@ -12,6 +12,6 @@ type Tags []Tag
 
 // TODO: あとで消して
 type Category struct {
-	ID   string
-	name string
+	ID       string
+	Category string
 }

@@ -120,3 +120,9 @@ func (ah *appHandler) ManageSpecificTag() http.HandlerFunc {
 		}
 	}
 }
+
+// TODO: けして
+type getCategoryResponse struct {
+	ID       string `json:"id"`
+	Category string `json:"category"`
+}

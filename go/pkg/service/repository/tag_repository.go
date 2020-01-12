@@ -40,9 +40,15 @@ func (tr *tagRepository) StoreTag(tagID, tag, categoryID string) error {
 }
 
 func (tr *tagRepository) FindTagByTagID(tagID string) (tag domain.Tag, err error) {
-	row := tr.SQLHandler.QueryRow("SELECT id, tag, category_id FROM tags WHERE id=?", tagID)
+	row := tr.SQLHandler.QueryRow(
+		`SELECT tags.id, tags.tag, tags.category_id, categories.category
+		FROM tags
+		INNER JOIN categories
+		ON tags.category_id = categories.id
+		WHERE tags.id = ?`,
+		tagID)
 	// TODO: カテゴリも一緒にselectで取得したい
-	if err = row.Scan(&tag.ID, &tag.Tag, &tag.Category.ID); err != nil {
+	if err = row.Scan(&tag.ID, &tag.Tag, &tag.Category.ID, &tag.Category.Category); err != nil {
 		logger.Error(fmt.Sprintf("find tag by ID: %s", err.Error()))
 		return tag, domain.InternalServerError(err)
 	}
