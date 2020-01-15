@@ -1,7 +1,10 @@
 package repository
 
 import (
+	"github.com/google/uuid"
 	"l-semi-chat/pkg/domain"
+	"l-semi-chat/pkg/domain/logger"
+	"strings"
 	"time"
 )
 
@@ -21,6 +24,8 @@ type AccountRepository interface {
 	StoreTag(id, tag, categoryID string) error
 	StoreAccountTag(id, userID, tagID string) error
 	DeleteAccountTag(userID, tagID string) error
+
+	InitializeEvaluations(userID string) (domain.EvaluationScores, error)
 }
 
 // NewAccountRepository accountRepositoryの作成
@@ -158,4 +163,37 @@ func (ar *accountRepository) StoreAccountTag(id, userID, tagID string) error {
 func (ar *accountRepository) DeleteAccountTag(userID, tagID string) error {
 	_, err := ar.SQLHandler.Execute("DELETE FROM users_tags WHERE user_id=? and tag_id=?", userID, tagID)
 	return domain.InternalServerError(err)
+}
+
+func (ar *accountRepository) InitializeEvaluations(userID string) (es domain.EvaluationScores, err error) {
+	// get evaluation item
+	rows, err := ar.SQLHandler.Query("SELECT id, item FROM evaluations")
+	if err != nil {
+		return es, domain.InternalServerError(err)
+	}
+
+	// make query and response
+	var id uuid.UUID
+	var values []interface{}
+	query := "INSERT INTO evaluation_scores(id, evaluation_id, user_id) VALUES "
+	for rows.Next() {
+		var evaluation domain.EvaluationScore
+		if err = rows.Scan(&evaluation.ID, &evaluation.Item); err != nil {
+			logger.Error("init evaluations: fail rows scan.")
+			continue
+		}
+		es = append(es, evaluation)
+		query += "(?,?,?),"
+		id, _ = uuid.NewRandom()
+		values = append(values, id.String(), evaluation.ID, userID)
+	}
+	query = strings.TrimSuffix(query, ",")
+	logger.Debug(query)
+
+	// insert table
+	_, err = ar.SQLHandler.Execute(query, values...)
+	if err != nil {
+		return es, domain.InternalServerError(err)
+	}
+	return
 }

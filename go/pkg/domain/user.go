@@ -12,7 +12,18 @@ type User struct {
 	LoginAt   string
 	CreatedAt string
 	Password  string
+
+	Evaluations EvaluationScores
 }
 
 // Users define users model
 type Users []User
+
+// 後で消して
+type EvaluationScore struct {
+	ID    string
+	Item  string
+	Score int
+}
+
+type EvaluationScores []EvaluationScore

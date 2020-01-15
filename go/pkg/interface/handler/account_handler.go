@@ -64,13 +64,19 @@ func (ah *accountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	var evaluationScores []getEvaluationScore
+	for _, v := range user.Evaluations {
+		evaluationScores = append(evaluationScores, getEvaluationScore{ID: v.ID, Item: v.Item, Score: v.Score})
+	}
+
 	// レスポンスの作成
 	response.Success(w, &createAccountResponse{
-		UserID:  user.UserID,
-		Name:    user.Name,
-		Mail:    user.Mail,
-		Image:   user.Image,
-		Profile: user.Profile,
+		UserID:      user.UserID,
+		Name:        user.Name,
+		Mail:        user.Mail,
+		Image:       user.Image,
+		Profile:     user.Profile,
+		Evaluations: evaluationScores,
 	})
 }
 
@@ -84,13 +90,13 @@ type createAccountRequest struct {
 }
 
 type createAccountResponse struct {
-	UserID  string           `json:"user_id"`
-	Name    string           `json:"name"`
-	Mail    string           `json:"mail"`
-	Image   string           `json:"image"`
-	Profile string           `json:"profile"`
-	Tags    []getTagResponse `json:"tags"`
-	// Evaluations domain.Evaluations `json:"evaluations"`
+	UserID      string               `json:"user_id"`
+	Name        string               `json:"name"`
+	Mail        string               `json:"mail"`
+	Image       string               `json:"image"`
+	Profile     string               `json:"profile"`
+	Tags        []getTagResponse     `json:"tags"`
+	Evaluations []getEvaluationScore `json:"evaluations"`
 }
 
 func (ah *accountHandler) GetAccount(w http.ResponseWriter, r *http.Request) {
@@ -339,4 +345,10 @@ func (ah *accountHandler) RemoveTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.NoContent(w)
+}
+
+type getEvaluationScore struct {
+	ID    string `json:"id"`
+	Item  string `json:"item"`
+	Score int    `json:"score"`
 }

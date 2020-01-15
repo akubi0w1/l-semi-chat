@@ -85,12 +85,21 @@ func (ai *accountInteractor) AddAccount(userID, name, mail, image, profile, pass
 	if err != nil {
 		return user, domain.InternalServerError(err)
 	}
-
+	user.ID = id.String()
 	user.UserID = userID
 	user.Name = name
 	user.Mail = mail
 	user.Image = image
 	user.Profile = profile
+
+	// TODO: 評価の初期化とres用の値の取得
+	evaluationScores, err := ai.AccountRepositoy.InitializeEvaluations(user.ID)
+	if err != nil {
+		logger.Error(fmt.Sprintf("create account: %s", err.Error()))
+		return user, err
+	}
+	user.Evaluations = evaluationScores
+
 	return user, nil
 }
 
