@@ -34,7 +34,7 @@ func (th *threadHandler) CreateThread(w http.ResponseWriter, r *http.Request) {
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
-	var req CreateThreadRequest
+	var req createThreadRequest
 	err = json.Unmarshal(body, &req)
 	if err != nil {
 		logger.Error(err)
@@ -49,7 +49,7 @@ func (th *threadHandler) CreateThread(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Success(w, &CreateThreadResponse{
+	response.Success(w, &createThreadResponse{
 		ID:				thread.ID
 		Name:			thread.Name
 		Description:	thread.Description
@@ -60,7 +60,7 @@ func (th *threadHandler) CreateThread(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-type CreateThreadRequest struct {
+type createThreadRequest struct {
 	userID			string `json:"user_id"`
 	Name			string `json:"name"`
 	Description		string `json:"description"`
@@ -68,7 +68,36 @@ type CreateThreadRequest struct {
 	IsPublic		int    `json:"isPublic"`
 }
 
-type CreateThreadResponse struct {
+type createThreadResponse struct {
+	Id				string `json:"id"`
+	Name			string `json:"name"`
+	Description		string `json:"description"`
+	LimitUsers		string `json:"limitUsers"`
+	IsPublic		int    `json:"isPublic"`
+	CreatedAt		string `json:"createdAt"`
+	UpdatedAt		string `json:"updatedAt"`
+}
+
+func (th *threadHandler) GetThread(w http.ResponseWriter, r *http.Request) {
+	thread, err :=th.ThreadInteractor.ShowThread()
+	if err != nil {
+		logger.Error(err)
+		response.HttpError(w, err)
+		return
+	}
+
+	response.Success(w, &getThreadResponse{
+		ID:				thread.ID
+		Name:			thread.Name
+		Description:	thread.Description
+		LimitUsers:		thread.LimitUsers
+		IsPublic:		thread.IsPublic
+		CreatedAt:		thread.CreatedAt
+		UpdatedAt:		thread.UpdatedAt
+	})
+}
+
+type getThreadResponse struct {
 	Id				string `json:"id"`
 	Name			string `json:"name"`
 	Description		string `json:"description"`

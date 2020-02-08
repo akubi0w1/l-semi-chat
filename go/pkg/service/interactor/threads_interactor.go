@@ -15,7 +15,7 @@ type threadInteractor struct {
 type threadInteractor interface{
 	AddThread(string,string,string,string,int)(domain.Thread,error)
 	UpdateThreads
-	ShowThreads
+	ShowThread()(domain.Thread, error)
 	DeleteThreads
 }
 
@@ -57,4 +57,8 @@ func (ti *threadInteractor) AddThread(userID, name, description, limitUsers, isP
 	thread.UpdatedAt = updatedAt
 
 	return thread, nil
+}
+
+func (ti *threadInteractor) ShowThread()(domain.Thread, error) {
+	return ti.ThreadRepository.FindThread()
 }

@@ -11,7 +11,7 @@ type threadRepository struct {
 
 type threadRepository interface{
 	StoreThread(id,name,description,limitUsers,isPublic,createdAt timr.Time,UpdatedAt time.Time)error
-	FindThreadByUserID
+	FindThread(string)(domain.thread, error)
 	UpdateThread
 	DeleteThread
 }
@@ -34,4 +34,11 @@ func (tr *threadRepository) StoreThread(id,name,description,limitUsers,isPublic,
 		updatedAt,
 	)
 	return domain.InternalServerError(err)
+}
+func (tr *threadRepository) FindThread()(thread domain.thread, err error) {
+	row := tr.SQLHandler.QueryRow("SELECT id,name,description,limit_users,is_public,created_at,updated_at FROM threads")
+	if err = row.Scan(&thread.id, &thread.name, &thread.description, &thread.limit_users, &thread.is_public, &thread.created_at, &thread.updated_at); err != nil {
+		return thread, domain.InternalServerError(err)
+	}
+	return thread, domain.InternalServerError(err)
 }
