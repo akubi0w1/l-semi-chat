@@ -12,7 +12,7 @@ type Archive struct {
 // Archives define archives model
 type Archives []Archive
 
-// 後で消して
+// TODO: 後で消して
 type Thread struct {
 	ID          string
 	Name        string

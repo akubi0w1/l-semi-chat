@@ -18,6 +18,9 @@ type ArchiveInteractor interface {
 	AddArchive(password, threadID string, isPublic int) (domain.Archive, error)
 	UpdateArchive(threadID, password string, isPublic int) (domain.Archive, error)
 	DeleteArchive(threadID string) error
+
+	// CheckAdmin threadの管理者であるか確認する
+	CheckIsAdmin(threadID, userID string) (bool, error)
 }
 
 // NewArchiveInteractor create archive interactor
@@ -34,7 +37,6 @@ func (ai *archiveInteractor) ShowArchive(threadID string) (domain.Archive, error
 }
 
 func (ai *archiveInteractor) AddArchive(password, threadID string, isPublic int) (archive domain.Archive, err error) {
-	// TODO: privateならちゃんとpasswordがついてるか
 
 	// password hash
 	var hash string
@@ -86,4 +88,15 @@ func (ai *archiveInteractor) UpdateArchive(threadID, password string, isPublic i
 
 func (ai *archiveInteractor) DeleteArchive(threadID string) error {
 	return ai.ArchiveRepository.DeleteArchive(threadID)
+}
+
+func (ai *archiveInteractor) CheckIsAdmin(threadID, userID string) (bool, error) {
+	thread, err := ai.ArchiveRepository.FindThreadByThreadID(threadID)
+	if err != nil {
+		return false, err
+	}
+	if thread.Admin.UserID != userID {
+		return false, nil
+	}
+	return true, nil
 }

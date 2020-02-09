@@ -5,11 +5,14 @@ import (
 	"net/http"
 
 	"l-semi-chat/pkg/domain/logger"
+
+	"github.com/gorilla/mux"
 )
 
 type server struct {
-	Addr string
-	Port string
+	Addr   string
+	Port   string
+	Router *mux.Router
 }
 
 // Server server
@@ -21,8 +24,9 @@ type Server interface {
 // NewServer serverの作成
 func NewServer(addr, port string) Server {
 	return &server{
-		Addr: addr,
-		Port: port,
+		Addr:   addr,
+		Port:   port,
+		Router: mux.NewRouter(),
 	}
 }
 
@@ -30,15 +34,15 @@ func (s *server) Serve() {
 	logger.Info(fmt.Sprintf("Starting server http://%s:%s", s.Addr, s.Port))
 	http.ListenAndServe(
 		fmt.Sprintf("%s:%s", s.Addr, s.Port),
-		nil,
+		s.Router,
 	)
 }
 
 func (s *server) Handle(endpoint string, apiFunc http.HandlerFunc) {
-	http.HandleFunc(endpoint, httpMethod(apiFunc))
+	s.Router.HandleFunc(endpoint, httpSetting(apiFunc))
 }
 
-func httpMethod(apiFunc http.HandlerFunc) http.HandlerFunc {
+func httpSetting(apiFunc http.HandlerFunc) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		// CORS対応
 		writer.Header().Add("Access-Control-Allow-Origin", "*") // client server

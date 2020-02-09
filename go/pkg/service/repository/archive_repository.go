@@ -2,6 +2,7 @@ package repository
 
 import (
 	"l-semi-chat/pkg/domain"
+	"l-semi-chat/pkg/domain/logger"
 )
 
 type archiveRepository struct {
@@ -14,6 +15,8 @@ type ArchiveRepository interface {
 	StoreArchive(archiveID, path, password, threadID string, isPublic int) error
 	UpdateArchive(threadID, password string, isPublic int) error
 	DeleteArchive(threadID string) error
+
+	FindThreadByThreadID(threadID string) (domain.Thread, error)
 }
 
 // NewArchiveRepository create archive repository
@@ -25,6 +28,7 @@ func NewArchiveRepository(sh SQLHandler) ArchiveRepository {
 
 func (ar *archiveRepository) FindArchiveByThreadID(threadID string) (archive domain.Archive, err error) {
 	// TODO: threadに対応させる
+	logger.Debug(threadID)
 	row := ar.SQLHandler.QueryRow(
 		`SELECT archives.id, archives.path, archives.password, archives.is_public, archives.thread_id, threads.name, threads.description, threads.limit_users, threads.is_public, threads.created_at, threads.updated_at, threads.user_id, users.name, users.mail, users.image, users.profile
 		FROM archives
@@ -56,10 +60,10 @@ func (ar *archiveRepository) UpdateArchive(threadID, password string, isPublic i
 	query := "UPDATE archives SET"
 	var values []interface{}
 	if password != "" {
-		query += " password=?"
+		query += " password=?,"
 		values = append(values, password)
 	}
-	query += "is_public=? WHERE thread_id=?"
+	query += " is_public=? WHERE thread_id=?"
 	values = append(values, isPublic, threadID)
 
 	_, err := ar.SQLHandler.Execute(query, values...)
@@ -69,4 +73,20 @@ func (ar *archiveRepository) UpdateArchive(threadID, password string, isPublic i
 func (ar *archiveRepository) DeleteArchive(threadID string) error {
 	_, err := ar.SQLHandler.Execute("DELETE FROM archives WHERE thread_id=?", threadID)
 	return domain.InternalServerError(err)
+}
+
+func (ar *archiveRepository) FindThreadByThreadID(threadID string) (thread domain.Thread, err error) {
+	// 取り出したいの、uuidのuserIDな。。。。
+	row := ar.SQLHandler.QueryRow(
+		`SELECT users.id, users.user_id
+		FROM threads
+		INNER JOIN users
+		ON users.id = threads.user_id
+		WHERE threads.id = ?`,
+		threadID,
+	)
+	if err = row.Scan(&thread.Admin.ID, &thread.Admin.UserID); err != nil {
+		return thread, domain.InternalServerError(err)
+	}
+	return thread, nil
 }

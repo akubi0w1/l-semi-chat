@@ -2,13 +2,15 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"l-semi-chat/pkg/domain"
 	"l-semi-chat/pkg/interface/dcontext"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
 	"net/http"
-	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 type archiveHandler struct {
@@ -32,8 +34,7 @@ func NewArchiveHandler(ai interactor.ArchiveInteractor) ArchiveHandler {
 
 func (ai *archiveHandler) GetArchive(w http.ResponseWriter, r *http.Request) {
 	// queryの読み出し
-	threadID := strings.TrimPrefix(r.URL.Path, "/threads/")
-	threadID = strings.TrimSuffix(threadID, "/archives")
+	threadID := mux.Vars(r)["threadID"]
 
 	archive, err := ai.ArchiveInteractor.ShowArchive(threadID)
 	if err != nil {
@@ -61,16 +62,14 @@ type getArchiveResponse struct {
 
 func (ai *archiveHandler) CreateArchive(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	_, err := dcontext.GetUserIDFromContext(ctx)
+	userID, err := dcontext.GetUserIDFromContext(ctx)
 	if err != nil {
 		response.HttpError(w, err)
 		return
 	}
 
-	threadID := strings.TrimPrefix(r.URL.Path, "/threads/")
-	threadID = strings.TrimSuffix(threadID, "/archives")
-
-	// TODO: thread管理者であるか確認
+	// get threadID
+	threadID := mux.Vars(r)["threadID"]
 
 	// requestの読み出し
 	body, err := ioutil.ReadAll(r.Body)
@@ -82,6 +81,21 @@ func (ai *archiveHandler) CreateArchive(w http.ResponseWriter, r *http.Request) 
 	err = json.Unmarshal(body, &req)
 	if err != nil {
 		response.HttpError(w, domain.InternalServerError(err))
+		return
+	}
+
+	isAdmin, err := ai.ArchiveInteractor.CheckIsAdmin(threadID, userID)
+	if err != nil {
+		response.HttpError(w, err)
+		return
+	}
+	if !isAdmin {
+		response.HttpError(w, domain.Unauthorized(errors.New("archiveを作成する権限がありません")))
+		return
+	}
+
+	if req.IsPublic == 0 && req.Password == "" {
+		response.HttpError(w, domain.BadRequest(errors.New("非公開アーカイブを作成する場合、パスワードは必須です")))
 		return
 	}
 
@@ -113,16 +127,23 @@ type createArchiveResponse struct {
 
 func (ai *archiveHandler) UpdateArchive(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	_, err := dcontext.GetUserIDFromContext(ctx)
+	userID, err := dcontext.GetUserIDFromContext(ctx)
 	if err != nil {
 		response.HttpError(w, err)
 		return
 	}
 
-	threadID := strings.TrimPrefix(r.URL.Path, "/threads/")
-	threadID = strings.TrimSuffix(threadID, "/archives")
+	threadID := mux.Vars(r)["threadID"]
 
-	// TODO: thread管理者であるか確認
+	isAdmin, err := ai.ArchiveInteractor.CheckIsAdmin(threadID, userID)
+	if err != nil {
+		response.HttpError(w, err)
+		return
+	}
+	if !isAdmin {
+		response.HttpError(w, domain.Unauthorized(errors.New("archiveを作成する権限がありません")))
+		return
+	}
 
 	// requestの読み出し
 	body, err := ioutil.ReadAll(r.Body)
@@ -164,16 +185,23 @@ type updateArchiveResponse struct {
 
 func (ai *archiveHandler) DeleteArchive(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	_, err := dcontext.GetUserIDFromContext(ctx)
+	userID, err := dcontext.GetUserIDFromContext(ctx)
 	if err != nil {
 		response.HttpError(w, err)
 		return
 	}
 
-	threadID := strings.TrimPrefix(r.URL.Path, "/threads/")
-	threadID = strings.TrimSuffix(threadID, "/archives")
+	threadID := mux.Vars(r)["threadID"]
 
-	// TODO: thread管理者であるか確認
+	isAdmin, err := ai.ArchiveInteractor.CheckIsAdmin(threadID, userID)
+	if err != nil {
+		response.HttpError(w, err)
+		return
+	}
+	if !isAdmin {
+		response.HttpError(w, domain.Unauthorized(errors.New("archiveを作成する権限がありません")))
+		return
+	}
 
 	err = ai.ArchiveInteractor.DeleteArchive(threadID)
 	if err != nil {
