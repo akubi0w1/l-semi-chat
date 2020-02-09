@@ -5,6 +5,7 @@ import (
 	"l-semi-chat/pkg/interface/server"
 )
 
+// SetupRouter urlのマッピングを行う
 func SetupRouter(s server.Server, h handler.AppHandler) {
 
 	// account
@@ -15,7 +16,6 @@ func SetupRouter(s server.Server, h handler.AppHandler) {
 	s.Handle("/logout", h.Logout())
 
 	// archive
-	// TODO: gorrilaの導入しないとダメだわ
 	s.Handle("/threads/{threadID}/archives", h.ManageArchive())
 
 }
