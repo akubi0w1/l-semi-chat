@@ -42,7 +42,7 @@ func (th *tagHandler) CreateTag(w http.ResponseWriter, r *http.Request) {
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
-	var req createTagRequest
+	var req updateTagRequest
 	err = json.Unmarshal(body, &req)
 	if err != nil {
 		logger.Error(err)
@@ -56,7 +56,7 @@ func (th *tagHandler) CreateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Success(w, &createTagResponse{
+	response.Success(w, &updateTagResponse{
 		ID:  tag.ID,
 		Tag: tag.Tag,
 		Category: getCategoryResponse{
@@ -64,17 +64,6 @@ func (th *tagHandler) CreateTag(w http.ResponseWriter, r *http.Request) {
 			Category: tag.Category.Category,
 		},
 	})
-}
-
-type createTagRequest struct {
-	Tag        string `json:"tag"`
-	CategoryID string `json:"category_id"`
-}
-
-type createTagResponse struct {
-	ID       string              `json:"id"`
-	Tag      string              `json:"tag"`
-	Category getCategoryResponse `json:"category"`
 }
 
 func (th *tagHandler) GetTagByTagID(w http.ResponseWriter, r *http.Request) {
@@ -102,12 +91,6 @@ func (th *tagHandler) GetTagByTagID(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-type getTagResponse struct {
-	ID       string              `json:"id"`
-	Tag      string              `json:"tag"`
-	Category getCategoryResponse `json:"category"`
-}
-
 func (th *tagHandler) GetTags(w http.ResponseWriter, r *http.Request) {
 	tags, err := th.TagInteractor.ShowTags()
 	if err != nil {
@@ -129,6 +112,23 @@ func (th *tagHandler) GetTags(w http.ResponseWriter, r *http.Request) {
 	response.Success(w, res)
 }
 
+type getTagResponse struct {
+	ID       string              `json:"id"`
+	Tag      string              `json:"tag"`
+	Category getCategoryResponse `json:"category"`
+}
+
 type getTagsResponse struct {
 	Tags []getTagResponse `json:"tags"`
+}
+
+type updateTagRequest struct {
+	Tag        string `json:"tag"`
+	CategoryID string `json:"category_id"`
+}
+
+type updateTagResponse struct {
+	ID       string              `json:"id"`
+	Tag      string              `json:"tag"`
+	Category getCategoryResponse `json:"category"`
 }

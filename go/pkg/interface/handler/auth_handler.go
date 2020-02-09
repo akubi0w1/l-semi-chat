@@ -79,15 +79,6 @@ func (ah *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 }
 
-type loginRequest struct {
-	UserID   string `json:"user_id"`
-	Password string `json:"password"`
-}
-
-type loginResponse struct {
-	Message string `json:"message"`
-}
-
 func (ah *authHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	// check cookie
 	cookie, err := r.Cookie("x-token")
@@ -110,4 +101,13 @@ func (ah *authHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 
 	response.NoContent(w)
+}
+
+type loginRequest struct {
+	UserID   string `json:"user_id"`
+	Password string `json:"password"`
+}
+
+type loginResponse struct {
+	Message string `json:"message"`
 }

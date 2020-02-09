@@ -26,6 +26,7 @@ type AccountRepository interface {
 	DeleteAccountTag(userID, tagID string) error
 
 	InitializeEvaluations(userID string) (domain.EvaluationScores, error)
+	FindEvaluationsByUserID(userID string) (domain.EvaluationScores, error)
 }
 
 // NewAccountRepository accountRepositoryの作成
@@ -194,6 +195,29 @@ func (ar *accountRepository) InitializeEvaluations(userID string) (es domain.Eva
 	_, err = ar.SQLHandler.Execute(query, values...)
 	if err != nil {
 		return es, domain.InternalServerError(err)
+	}
+	return
+}
+
+func (ar *accountRepository) FindEvaluationsByUserID(userID string) (es domain.EvaluationScores, err error) {
+	rows, err := ar.SQLHandler.Query(
+		`SELECT evaluation_scores.id, evaluations.item, evaluation_scores.score
+		FROM ls_chat.evaluation_scores
+		INNER JOIN ls_chat.evaluations
+		ON evaluations.id = evaluation_scores.evaluation_id
+		WHERE evaluation_scores.user_id=?`,
+		userID,
+	)
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		var item domain.EvaluationScore
+		if err = rows.Scan(&item.ID, &item.Item, &item.Score); err != nil {
+			continue
+		}
+		es = append(es, item)
 	}
 	return
 }

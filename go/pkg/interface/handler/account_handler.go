@@ -49,7 +49,7 @@ func (ah *accountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) 
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
-	var req createAccountRequest
+	var req updateAccountRequest
 	err = json.Unmarshal(body, &req)
 	if err != nil {
 		logger.Error(fmt.Sprintf("create account: %s", err.Error()))
@@ -64,13 +64,13 @@ func (ah *accountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	var evaluationScores []getEvaluationScore
+	var evaluationScores []getEvaluationScoreResponse
 	for _, v := range user.Evaluations {
-		evaluationScores = append(evaluationScores, getEvaluationScore{ID: v.ID, Item: v.Item, Score: v.Score})
+		evaluationScores = append(evaluationScores, getEvaluationScoreResponse{ID: v.ID, Item: v.Item, Score: v.Score})
 	}
 
 	// レスポンスの作成
-	response.Success(w, &createAccountResponse{
+	response.Success(w, &getAccountResponse{
 		UserID:      user.UserID,
 		Name:        user.Name,
 		Mail:        user.Mail,
@@ -78,25 +78,6 @@ func (ah *accountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) 
 		Profile:     user.Profile,
 		Evaluations: evaluationScores,
 	})
-}
-
-type createAccountRequest struct {
-	UserID   string `json:"user_id"`
-	Name     string `json:"name"`
-	Mail     string `json:"mail"`
-	Image    string `json:"image"`
-	Profile  string `json:"profile"`
-	Password string `json:"password"`
-}
-
-type createAccountResponse struct {
-	UserID      string               `json:"user_id"`
-	Name        string               `json:"name"`
-	Mail        string               `json:"mail"`
-	Image       string               `json:"image"`
-	Profile     string               `json:"profile"`
-	Tags        []getTagResponse     `json:"tags"`
-	Evaluations []getEvaluationScore `json:"evaluations"`
 }
 
 func (ah *accountHandler) GetAccount(w http.ResponseWriter, r *http.Request) {
@@ -129,6 +110,12 @@ func (ah *accountHandler) GetAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	scores, err := ah.AccountInteractor.ShowEvaluationScoresByUserID(id)
+	if err != nil {
+		response.HttpError(w, err)
+		return
+	}
+
 	var res getAccountResponse
 	res.UserID = user.UserID
 	res.Name = user.Name
@@ -150,19 +137,19 @@ func (ah *accountHandler) GetAccount(w http.ResponseWriter, r *http.Request) {
 		)
 	}
 
+	for _, score := range scores {
+		res.Evaluations = append(
+			res.Evaluations,
+			getEvaluationScoreResponse{
+				ID:    score.ID,
+				Item:  score.Item,
+				Score: score.Score,
+			},
+		)
+	}
+
 	// create response
 	response.Success(w, res)
-
-}
-
-type getAccountResponse struct {
-	UserID  string           `json:"user_id"`
-	Name    string           `json:"name"`
-	Mail    string           `json:"mail"`
-	Image   string           `json:"image"`
-	Profile string           `json:"profile"`
-	Tags    []getTagResponse `json:"tags"`
-	// Evaluations
 }
 
 func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) {
@@ -205,8 +192,19 @@ func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) 
 
 	// tagの取得
 	tags, err := ah.AccountInteractor.ShowTagsByUserID(id)
+	if err != nil {
+		response.HttpError(w, err)
+		return
+	}
 
-	var res updateAccountResponse
+	// evaluationの取得
+	scores, err := ah.AccountInteractor.ShowEvaluationScoresByUserID(id)
+	if err != nil {
+		response.HttpError(w, err)
+		return
+	}
+
+	var res getAccountResponse
 	res.UserID = user.UserID
 	res.Name = user.Name
 	res.Mail = user.Mail
@@ -227,28 +225,19 @@ func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) 
 		)
 	}
 
+	for _, score := range scores {
+		res.Evaluations = append(
+			res.Evaluations,
+			getEvaluationScoreResponse{
+				ID:    score.ID,
+				Item:  score.Item,
+				Score: score.Score,
+			},
+		)
+	}
+
 	// response
 	response.Success(w, res)
-
-}
-
-type updateAccountRequest struct {
-	UserID   string `json:"user_id"`
-	Name     string `json:"name"`
-	Mail     string `json:"mail"`
-	Image    string `json:"image"`
-	Profile  string `json:"profile"`
-	Password string `json:"password"`
-}
-
-type updateAccountResponse struct {
-	UserID  string           `json:"user_id"`
-	Name    string           `json:"name"`
-	Mail    string           `json:"mail"`
-	Image   string           `json:"image"`
-	Profile string           `json:"profile"`
-	Tags    []getTagResponse `json:"tags"`
-	// Evaluations
 }
 
 func (ah *accountHandler) DeleteAccount(w http.ResponseWriter, r *http.Request) {
@@ -267,13 +256,10 @@ func (ah *accountHandler) DeleteAccount(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// response
+	// TODO: ここnocontentでよくねえ...?
 	response.Success(w, &deleteAccountResponse{
 		Message: "success delete account",
 	})
-}
-
-type deleteAccountResponse struct {
-	Message string `json:"message"`
 }
 
 func (ah *accountHandler) SetTag(w http.ResponseWriter, r *http.Request) {
@@ -315,17 +301,6 @@ func (ah *accountHandler) SetTag(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-type setAccountTagRequest struct {
-	Tag        string `json:"tag"`
-	CategoryID string `json:"category_id"`
-}
-
-type setAccountTagResponse struct {
-	ID       string              `json:"id"`
-	Tag      string              `json:"tag"`
-	Category getCategoryResponse `json:"category"`
-}
-
 func (ah *accountHandler) RemoveTag(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, err := dcontext.GetIDFromContext(ctx)
@@ -347,7 +322,42 @@ func (ah *accountHandler) RemoveTag(w http.ResponseWriter, r *http.Request) {
 	response.NoContent(w)
 }
 
-type getEvaluationScore struct {
+type updateAccountRequest struct {
+	UserID   string `json:"user_id"`
+	Name     string `json:"name"`
+	Mail     string `json:"mail"`
+	Image    string `json:"image"`
+	Profile  string `json:"profile"`
+	Password string `json:"password"`
+}
+
+type deleteAccountResponse struct {
+	Message string `json:"message"`
+}
+
+type setAccountTagRequest struct {
+	Tag        string `json:"tag"`
+	CategoryID string `json:"category_id"`
+}
+
+type setAccountTagResponse struct {
+	ID       string              `json:"id"`
+	Tag      string              `json:"tag"`
+	Category getCategoryResponse `json:"category"`
+}
+
+type getAccountResponse struct {
+	UserID      string                       `json:"user_id"`
+	Name        string                       `json:"name"`
+	Mail        string                       `json:"mail"`
+	Image       string                       `json:"image"`
+	Profile     string                       `json:"profile"`
+	Tags        []getTagResponse             `json:"tags"`
+	Evaluations []getEvaluationScoreResponse `json:"evaluations"`
+}
+
+// TODO: 消して?
+type getEvaluationScoreResponse struct {
 	ID    string `json:"id"`
 	Item  string `json:"item"`
 	Score int    `json:"score"`

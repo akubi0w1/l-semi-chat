@@ -39,6 +39,7 @@ type AppHandler interface {
 
 // NewAppHandler create application handler
 func NewAppHandler(sh repository.SQLHandler, ph interactor.PasswordHandler) AppHandler {
+
 	return &appHandler{
 		AccountHandler: NewAccountHandler(sh, ph),
 		AuthHandler:    NewAuthHandler(sh, ph),

@@ -2,7 +2,6 @@ package repository
 
 import (
 	"l-semi-chat/pkg/domain"
-	"l-semi-chat/pkg/domain/logger"
 )
 
 type archiveRepository struct {
@@ -16,6 +15,8 @@ type ArchiveRepository interface {
 	UpdateArchive(threadID, password string, isPublic int) error
 	DeleteArchive(threadID string) error
 
+	FindUserByID(userID string) (domain.User, error)
+
 	FindThreadByThreadID(threadID string) (domain.Thread, error)
 }
 
@@ -27,8 +28,6 @@ func NewArchiveRepository(sh SQLHandler) ArchiveRepository {
 }
 
 func (ar *archiveRepository) FindArchiveByThreadID(threadID string) (archive domain.Archive, err error) {
-	// TODO: threadに対応させる
-	logger.Debug(threadID)
 	row := ar.SQLHandler.QueryRow(
 		`SELECT archives.id, archives.path, archives.password, archives.is_public, archives.thread_id, threads.name, threads.description, threads.limit_users, threads.is_public, threads.created_at, threads.updated_at, threads.user_id, users.name, users.mail, users.image, users.profile
 		FROM archives
@@ -76,7 +75,6 @@ func (ar *archiveRepository) DeleteArchive(threadID string) error {
 }
 
 func (ar *archiveRepository) FindThreadByThreadID(threadID string) (thread domain.Thread, err error) {
-	// 取り出したいの、uuidのuserIDな。。。。
 	row := ar.SQLHandler.QueryRow(
 		`SELECT users.id, users.user_id
 		FROM threads
@@ -89,4 +87,12 @@ func (ar *archiveRepository) FindThreadByThreadID(threadID string) (thread domai
 		return thread, domain.InternalServerError(err)
 	}
 	return thread, nil
+}
+
+func (ar *archiveRepository) FindUserByID(userID string) (user domain.User, err error) {
+	row := ar.SQLHandler.QueryRow("SELECT id, user_id, name, mail, image, profile FROM users WHERE id=?", userID)
+	if err = row.Scan(&user.ID, &user.UserID, &user.Name, &user.Mail, &user.Image, &user.Profile); err != nil {
+		return user, domain.InternalServerError(err)
+	}
+	return user, nil
 }

@@ -26,6 +26,8 @@ type AccountInteractor interface {
 	ShowTagsByUserID(userID string) (domain.Tags, error)
 	AddAccountTag(userID, tagName, categoryID string) (domain.Tag, error)
 	DeleteAccountTag(userID, tagID string) error
+
+	ShowEvaluationScoresByUserID(userID string) (domain.EvaluationScores, error)
 }
 
 // NewAccountInteractor accountInteractorを作成
@@ -92,7 +94,7 @@ func (ai *accountInteractor) AddAccount(userID, name, mail, image, profile, pass
 	user.Image = image
 	user.Profile = profile
 
-	// TODO: 評価の初期化とres用の値の取得
+	// DONE: 評価の初期化とres用の値の取得
 	evaluationScores, err := ai.AccountRepositoy.InitializeEvaluations(user.ID)
 	if err != nil {
 		logger.Error(fmt.Sprintf("create account: %s", err.Error()))
@@ -113,7 +115,6 @@ func (ai *accountInteractor) UpdateAccount(userID, newUserID, name, mail, image,
 	if password != "" {
 		hash, err = ai.PasswordHandler.PasswordHash(password)
 		if err != nil {
-			// TODO: ここwarning/400か？
 			logger.Error(fmt.Sprintf("update account: %s", err.Error()))
 			return user, domain.InternalServerError(err)
 		}
@@ -169,13 +170,13 @@ func (ai *accountInteractor) AddAccountTag(userID, tagName, categoryID string) (
 			return tag, domain.InternalServerError(err)
 		}
 
+		// TODO: StoreTagとかは、tagHandlerが持っててもいいかも
 		err = ai.AccountRepositoy.StoreTag(id.String(), tagName, categoryID)
 		if err != nil {
 			logger.Error(fmt.Sprintf("add account tag: %s", err.Error()))
 			return tag, domain.InternalServerError(err)
 		}
 
-		//TODO: きたねえ
 		tag, err = ai.AccountRepositoy.FindTagByTag(tagName, categoryID)
 		if err != nil {
 			logger.Error(fmt.Sprintf("add account tag: %s", err.Error()))
@@ -199,4 +200,8 @@ func (ai *accountInteractor) AddAccountTag(userID, tagName, categoryID string) (
 
 func (ai *accountInteractor) DeleteAccountTag(userID, tagID string) error {
 	return ai.AccountRepositoy.DeleteAccountTag(userID, tagID)
+}
+
+func (ai *accountInteractor) ShowEvaluationScoresByUserID(userID string) (domain.EvaluationScores, error) {
+	return ai.AccountRepositoy.FindEvaluationsByUserID(userID)
 }

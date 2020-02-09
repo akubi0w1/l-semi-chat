@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`archives`(
     `path` VARCHAR(128) NOT NULL COMMENT 'ファイルのpath',
     `is_public` TINYINT NOT NULL DEFAULT 1 COMMENT '公開範囲',
     `password` VARCHAR(70) NOT NULL COMMENT 'パスワード' ,
-    `thread_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
+    `thread_id` VARCHAR(36) NOT NULL UNIQUE COMMENT 'スレッドID',
     CONSTRAINT `fk_archives_threads`
         FOREIGN KEY (`thread_id`)
         REFERENCES `ls_chat`.`threads` (`id`)
