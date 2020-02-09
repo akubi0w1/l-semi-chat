@@ -44,7 +44,7 @@ func (ar *accountRepository) FindAccountByUserID(userID string) (user domain.Use
 	if err = row.Scan(&user.UserID, &user.Name, &user.Mail, &user.Image, &user.Profile); err != nil {
 		return user, domain.InternalServerError(err)
 	}
-	return user, domain.InternalServerError(err)
+	return user, nil
 }
 
 func (ar *accountRepository) UpdateAccount(userID, newUserID, name, mail, image, profile, password string) error {

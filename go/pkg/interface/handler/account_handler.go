@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -9,6 +10,7 @@ import (
 	"l-semi-chat/pkg/domain/logger"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
+	"l-semi-chat/pkg/service/repository"
 
 	"l-semi-chat/pkg/interface/dcontext"
 )
@@ -26,9 +28,12 @@ type AccountHandler interface {
 }
 
 // NewAccountHandler create account handler
-func NewAccountHandler(ai interactor.AccountInteractor) AccountHandler {
+func NewAccountHandler(sh repository.SQLHandler, ph interactor.PasswordHandler) AccountHandler {
 	return &accountHandler{
-		AccountInteractor: ai,
+		AccountInteractor: interactor.NewAccountInteractor(
+			repository.NewAccountRepository(sh),
+			ph,
+		),
 	}
 }
 
@@ -36,14 +41,14 @@ func (ah *accountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) 
 	// requestの読み出し
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		logger.Warn(err)
+		logger.Warn(fmt.Sprintf("create account: %s", err.Error()))
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
 	var req createAccountRequest
 	err = json.Unmarshal(body, &req)
 	if err != nil {
-		logger.Error(err)
+		logger.Error(fmt.Sprintf("create account: %s", err.Error()))
 		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
@@ -51,7 +56,6 @@ func (ah *accountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) 
 	// 登録
 	user, err := ah.AccountInteractor.AddAccount(req.UserID, req.Name, req.Mail, req.Image, req.Profile, req.Password)
 	if err != nil {
-		logger.Error(err)
 		response.HttpError(w, err)
 		return
 	}
@@ -90,7 +94,7 @@ func (ah *accountHandler) GetAccount(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, err := dcontext.GetUserIDFromContext(ctx)
 	if err != nil {
-		logger.Warn(err)
+		logger.Warn(fmt.Sprintf("get account: %s", err.Error()))
 		response.HttpError(w, err)
 		return
 	}
@@ -98,7 +102,6 @@ func (ah *accountHandler) GetAccount(w http.ResponseWriter, r *http.Request) {
 	// getData
 	user, err := ah.AccountInteractor.ShowAccount(userID)
 	if err != nil {
-		logger.Error(err)
 		response.HttpError(w, err)
 		return
 	}
@@ -129,7 +132,6 @@ func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) 
 	ctx := r.Context()
 	userID, err := dcontext.GetUserIDFromContext(ctx)
 	if err != nil {
-		logger.Warn(err)
 		response.HttpError(w, err)
 		return
 	}
@@ -137,14 +139,14 @@ func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) 
 	// bodyの取得
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		logger.Warn(err)
+		logger.Error(fmt.Sprintf("update account: %s", err.Error()))
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
 	var req updateAccountRequest
 	err = json.Unmarshal(body, &req)
 	if err != nil {
-		logger.Error(err)
+		logger.Error(fmt.Sprintf("update account: %s", err.Error()))
 		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
@@ -152,7 +154,6 @@ func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) 
 	// 更新用データの作成
 	user, err := ah.AccountInteractor.UpdateAccount(userID, req.UserID, req.Name, req.Mail, req.Image, req.Profile, req.Password)
 	if err != nil {
-		logger.Error(err)
 		response.HttpError(w, err)
 		return
 	}
@@ -191,7 +192,6 @@ func (ah *accountHandler) DeleteAccount(w http.ResponseWriter, r *http.Request) 
 	ctx := r.Context()
 	userID, err := dcontext.GetUserIDFromContext(ctx)
 	if err != nil {
-		logger.Warn(err)
 		response.HttpError(w, err)
 		return
 	}
@@ -199,7 +199,6 @@ func (ah *accountHandler) DeleteAccount(w http.ResponseWriter, r *http.Request) 
 	// delete
 	err = ah.AccountInteractor.DeleteAccount(userID)
 	if err != nil {
-		logger.Error(err)
 		response.HttpError(w, err)
 		return
 	}

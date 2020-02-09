@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"l-semi-chat/pkg/domain"
+	"l-semi-chat/pkg/domain/logger"
 )
 
 type key string
@@ -25,6 +26,7 @@ func GetUserIDFromContext(ctx context.Context) (string, error) {
 		userID = ctx.Value(userIDKey).(string)
 	}
 	if userID == "" {
+		logger.Warn("context: userID is empty")
 		err = domain.BadRequest(errors.New("userID is empty"))
 	}
 	return userID, err

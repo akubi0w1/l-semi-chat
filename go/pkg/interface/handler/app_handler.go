@@ -15,33 +15,31 @@ import (
 type appHandler struct {
 	AccountHandler AccountHandler
 	AuthHandler    AuthHandler
+	TagHandler     TagHandler
 }
 
 // AppHandler ApplicationHandler
 type AppHandler interface {
 	// account
 	ManageAccount() http.HandlerFunc
+	// ManageAccountTags() http.HandlerFunc
+	// ManageAccountTag() http.HandlerFunc
 
 	// auth
 	Login() http.HandlerFunc
 	Logout() http.HandlerFunc
+
+	// tag
+	ManageTags() http.HandlerFunc
+	ManageTag() http.HandlerFunc
 }
 
 // NewAppHandler create application handler
 func NewAppHandler(sh repository.SQLHandler, ph interactor.PasswordHandler) AppHandler {
 	return &appHandler{
-		AccountHandler: NewAccountHandler(
-			interactor.NewAccountInteractor(
-				repository.NewAccountRepository(sh),
-				ph,
-			),
-		),
-		AuthHandler: NewAuthHandler(
-			interactor.NewAuthInteractor(
-				repository.NewAuthRepository(sh),
-				ph,
-			),
-		),
+		AccountHandler: NewAccountHandler(sh, ph),
+		AuthHandler:    NewAuthHandler(sh, ph),
+		TagHandler:     NewTagHandler(sh),
 	}
 }
 
@@ -85,4 +83,34 @@ func (ah *appHandler) Logout() http.HandlerFunc {
 			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
 		}
 	}
+}
+
+func (ah *appHandler) ManageTags() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			ah.TagHandler.GetTags(w, r)
+		case http.MethodPost:
+			middleware.Authorized(ah.TagHandler.CreateTag).ServeHTTP(w, r)
+		default:
+			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
+		}
+	}
+}
+
+func (ah *appHandler) ManageTag() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			ah.TagHandler.GetTagByTagID(w, r)
+		default:
+			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
+		}
+	}
+}
+
+// TODO: けして
+type getCategoryResponse struct {
+	ID       string `json:"id"`
+	Category string `json:"category"`
 }

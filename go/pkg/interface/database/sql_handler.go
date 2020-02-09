@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"l-semi-chat/conf"
+	"l-semi-chat/pkg/domain/logger"
 	"l-semi-chat/pkg/service/repository"
 )
 
@@ -32,6 +33,7 @@ func NewSQLHandler() repository.SQLHandler {
 func (sh *sqlHandler) Execute(query string, args ...interface{}) (repository.Result, error) {
 	result, err := sh.DB.Exec(query, args...)
 	if err != nil {
+		logger.Error(fmt.Sprintf("sql exec error: %s", err.Error()))
 		return &sqlResult{}, err
 	}
 	return &sqlResult{Result: result}, err
@@ -45,6 +47,7 @@ func (sh *sqlHandler) QueryRow(query string, args ...interface{}) repository.Row
 func (sh *sqlHandler) Query(query string, args ...interface{}) (repository.Rows, error) {
 	rows, err := sh.DB.Query(query, args...)
 	if err != nil {
+		logger.Error(fmt.Sprintf("sql exec error: %s", err.Error()))
 		return &sql.Rows{}, err
 	}
 	return &sqlRows{Rows: rows}, err
