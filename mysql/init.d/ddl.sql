@@ -19,8 +19,8 @@ COMMENT = 'ユーザ';
 CREATE TABLE IF NOT EXISTS `ls_chat`.`threads`(
     `id` VARCHAR(36) PRIMARY KEY NOT NULL COMMENT 'id',
     `name` VARCHAR(32) NOT NULL COMMENT '名前',
-    `description` VARCHAR(150) COMMENT '説明',
-    `limit_users` INTEGER COMMENT '上限人数',
+    `description` VARCHAR(150) DEFAULT "" COMMENT '説明',
+    `limit_users` INTEGER DEFAULT -1 COMMENT '上限人数',
     `user_id` VARCHAR(64) NOT NULL COMMENT '管理者',-- F
     `is_public` TINYINT NOT NULL DEFAULT 0 COMMENT '範囲',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',

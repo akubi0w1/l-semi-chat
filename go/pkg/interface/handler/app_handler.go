@@ -16,6 +16,7 @@ type appHandler struct {
 	AccountHandler AccountHandler
 	AuthHandler    AuthHandler
 	TagHandler     TagHandler
+	ArchiveHandler ArchiveHandler
 }
 
 // AppHandler ApplicationHandler
@@ -32,6 +33,8 @@ type AppHandler interface {
 	// tag
 	ManageTags() http.HandlerFunc
 	ManageTag() http.HandlerFunc
+	// archive
+	ManageArchive() http.HandlerFunc
 }
 
 // NewAppHandler create application handler
@@ -40,6 +43,7 @@ func NewAppHandler(sh repository.SQLHandler, ph interactor.PasswordHandler) AppH
 		AccountHandler: NewAccountHandler(sh, ph),
 		AuthHandler:    NewAuthHandler(sh, ph),
 		TagHandler:     NewTagHandler(sh),
+		ArchiveHandler: NewArchiveHandler(sh, ph),
 	}
 }
 
@@ -108,6 +112,24 @@ func (ah *appHandler) Logout() http.HandlerFunc {
 	}
 }
 
+func (ah *appHandler) ManageArchive() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			middleware.Authorized(ah.ArchiveHandler.GetArchive).ServeHTTP(w, r)
+		case http.MethodPost:
+			middleware.Authorized(ah.ArchiveHandler.CreateArchive).ServeHTTP(w, r)
+		case http.MethodPut:
+			middleware.Authorized(ah.ArchiveHandler.UpdateArchive).ServeHTTP(w, r)
+		case http.MethodDelete:
+			middleware.Authorized(ah.ArchiveHandler.DeleteArchive).ServeHTTP(w, r)
+		default:
+			logger.Warn("request method not allowed")
+			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
+		}
+	}
+}
+
 func (ah *appHandler) ManageTags() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -116,6 +138,7 @@ func (ah *appHandler) ManageTags() http.HandlerFunc {
 		case http.MethodPost:
 			middleware.Authorized(ah.TagHandler.CreateTag).ServeHTTP(w, r)
 		default:
+			logger.Warn("request method not allowed")
 			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
 		}
 	}

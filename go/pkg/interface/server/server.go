@@ -38,10 +38,10 @@ func (s *server) Serve() {
 }
 
 func (s *server) Handle(endpoint string, apiFunc http.HandlerFunc) {
-	s.Router.HandleFunc(endpoint, httpMethod(apiFunc))
+	s.Router.HandleFunc(endpoint, httpSetting(apiFunc))
 }
 
-func httpMethod(apiFunc http.HandlerFunc) http.HandlerFunc {
+func httpSetting(apiFunc http.HandlerFunc) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		// CORS対応
 		writer.Header().Add("Access-Control-Allow-Origin", "*") // client server

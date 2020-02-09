@@ -195,7 +195,11 @@ paths:
               $ref: '#/components/schemas/TagCreatedRequest'
       responses:
         '200':
-          $ref: '#/components/schemas/GetTagResponse'
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTagResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -257,11 +261,10 @@ paths:
       summary: 'idを指定してユーザを取得'
       description: 'ログインしてなくてもおけ'
       parameters: 
-        # TODO: requireをはずす
         - $ref: '#/components/parameters/AuthByCookie'
         - name: "id"
           in: "path"
-          required: true
+          required: false
           schema:
             type: 'string'
       responses:
@@ -1177,14 +1180,19 @@ components:
           type: 'string'
         limit_users:
           type: 'integer'
-        admin:
-          $ref: '#/components/schemas/UserResponse'
         is_public:
           type: 'integer'
         created_at:
           type: 'string'
         updated_at:
           type: 'string'
+        admin:
+          $ref: '#/components/schemas/UserResponse'
+        tags: 
+          type: 'array'
+          items:
+            $ref: '#/components/schemas/GetTagResponse'
+          
     ThreadUpdateRequest:
       type: "object"
       properties:
