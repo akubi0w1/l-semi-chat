@@ -140,6 +140,11 @@ func (ai *archiveHandler) UpdateArchive(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	if req.IsPublic == 0 && req.Password == "" {
+		response.HttpError(w, domain.BadRequest(errors.New("非公開アーカイブを作成する場合、パスワードは必須です")))
+		return
+	}
+
 	// threadの登録
 	_, err = ai.ArchiveInteractor.UpdateArchive(threadID, req.Password, req.IsPublic)
 	if err != nil {
@@ -149,6 +154,7 @@ func (ai *archiveHandler) UpdateArchive(w http.ResponseWriter, r *http.Request) 
 	archive, err := ai.ArchiveInteractor.ShowArchive(threadID, req.Password)
 	if err != nil {
 		response.HttpError(w, err)
+		return
 	}
 
 	response.Success(w, convertArchiveToResponse(archive))

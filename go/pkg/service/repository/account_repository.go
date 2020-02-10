@@ -64,29 +64,30 @@ func (ar *accountRepository) UpdateAccount(userID, newUserID, name, mail, image,
 	query := "UPDATE users SET"
 	var values []interface{}
 	if newUserID != "" {
-		query += " user_id=?"
+		query += " user_id=?,"
 		values = append(values, newUserID)
 	}
 	if name != "" {
-		query += " name=?"
+		query += " name=?,"
 		values = append(values, name)
 	}
 	if mail != "" {
-		query += " mail=?"
+		query += " mail=?,"
 		values = append(values, mail)
 	}
 	if image != "" {
-		query += " image=?"
+		query += " image=?,"
 		values = append(values, image)
 	}
 	if profile != "" {
-		query += " profile=?"
+		query += " profile=?,"
 		values = append(values, profile)
 	}
 	if password != "" {
-		query += " password=?"
+		query += " password=?,"
 		values = append(values, password)
 	}
+	query = strings.TrimSuffix(query, ",")
 	query += " WHERE user_id=?"
 	values = append(values, userID)
 

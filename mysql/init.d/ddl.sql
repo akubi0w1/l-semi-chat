@@ -190,8 +190,8 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`evaluation_scores`(
     CONSTRAINT `fk_evaluation_scores_users`
         FOREIGN KEY (`user_id`)
         REFERENCES `ls_chat`.`users` (`id`)
-        ON DELETE NO ACTION
-        ON UPDATE NO ACTION,
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
     CONSTRAINT `unique_user_evaluation`
         UNIQUE (`user_id`, `evaluation_id`)
 )
