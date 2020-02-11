@@ -223,14 +223,7 @@ func (ah *accountHandler) SetTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Success(w, &setAccountTagResponse{
-		ID:  tag.ID,
-		Tag: tag.Tag,
-		Category: getCategoryResponse{
-			ID:       tag.Category.ID,
-			Category: tag.Category.Category,
-		},
-	})
+	response.Success(w, convertTagToResponse(tag))
 }
 
 func (ah *accountHandler) RemoveTag(w http.ResponseWriter, r *http.Request) {
@@ -296,17 +289,7 @@ func convertAccountToResponse(user domain.User) (res getAccountResponse) {
 	res.Profile = user.Profile
 
 	for _, tag := range user.Tags {
-		res.Tags = append(
-			res.Tags,
-			getTagResponse{
-				ID:  tag.ID,
-				Tag: tag.Tag,
-				Category: getCategoryResponse{
-					ID:       tag.Category.ID,
-					Category: tag.Category.Category,
-				},
-			},
-		)
+		res.Tags = append(res.Tags, convertTagToResponse(tag))
 	}
 	for _, score := range user.Evaluations {
 		res.Evaluations = append(
