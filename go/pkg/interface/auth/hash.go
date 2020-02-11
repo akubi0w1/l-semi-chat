@@ -8,6 +8,7 @@ import (
 
 type passwordHandler struct{}
 
+// NewPasswordHandler パスワードの暗号化、検証を行うためのハンドラ
 func NewPasswordHandler() interactor.PasswordHandler {
 	return &passwordHandler{}
 }

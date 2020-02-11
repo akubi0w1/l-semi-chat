@@ -160,28 +160,6 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
   /accounts/tags:
-    # get:
-    #   summary: "アカウントについてるタグの取得"
-    #   tags:
-    #     - "accounts"
-    #   parameters:
-    #     - $ref: '#/components/parameters/AuthByCookie'
-    #   responses:
-    #     "200":
-    #       description: "return array of tags"
-    #       content:
-    #         application/json:
-    #           schema:
-    #             type: 'object'
-    #             properties:
-    #               tags:
-    #                 type: 'array'
-    #                 items:
-    #                   $ref: '#/components/schemas/GetTagResponse'
-    #     '400':
-    #       $ref: '#/components/responses/BadRequest'
-    #     '500':
-    #       $ref: '#/components/responses/InternalServerError'
     post:
       summary: "アカウントにタグをつける"
       tags:
@@ -234,9 +212,6 @@ paths:
         - 'users'
       summary: '全ユーザの取得'
       description: 'ログインしてなくても見れる'
-      parameters: 
-        # TODO: require外す
-        - $ref: '#/components/parameters/AuthByCookie'
       responses:
         "200":
           description: 'return array of users'
@@ -264,7 +239,7 @@ paths:
         - $ref: '#/components/parameters/AuthByCookie'
         - name: "id"
           in: "path"
-          required: false
+          required: true
           schema:
             type: 'string'
       responses:
@@ -590,7 +565,12 @@ paths:
       responses:
         '200':
           # TODO: 参加したスレッドを返す
-          $ref: '#/components/responses/Success'
+          # CHANGE: レスポンス
+          description: '参加完了'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetThreadResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -619,6 +599,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
   /threads/{t_id}/participants/{m_id}:
     # TODO: threads_usersに入室禁止のカラムをつけるけ
+    # CHANGE: users_threadsのddlを変更した。コミットはしてない
     delete:
       tags:
         - 'threads'
@@ -637,7 +618,7 @@ paths:
           schema:
             type: 'string'
       responses:
-        '204': # TODO: 204?
+        '204':
           $ref: '#/components/responses/NoContent'
         '400':
           $ref: '#/components/responses/BadRequest'
@@ -661,6 +642,7 @@ paths:
             type: 'string'
       responses:
         # TODO: itemsが違う
+        # CHANGE: itemsのお名前変更
         '200':
           description: 'return all messages in thread'
           content:
@@ -668,7 +650,7 @@ paths:
               schema:
                 type: 'object'
                 properties:
-                  threads:
+                  messages:
                     type: 'array'
                     items:
                       $ref: '#/components/schemas/GetMessageResponse'
@@ -766,7 +748,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
-    # TODO: passwordの認証
     # CONT: スレッドの中身はのぞけない
     get:
       summary: 'アーカイブを取得'
@@ -778,6 +759,10 @@ paths:
         - name: 'id'
           in: 'path'
           required: true
+          schema:
+            type: 'string'
+        - name: '_password'
+          in: 'header'
           schema:
             type: 'string'
       responses:
@@ -847,8 +832,6 @@ paths:
       tags:
         - 'tags'
       summary: 'create all tags'
-      # parameters: 
-      #   - $ref: '#/components/parameters/AuthByCookie'
       responses:
         '200':
           description: 'return all tags'
@@ -936,7 +919,6 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
-      # TODO: categoryにuniqueをつける
       tags: 
         - 'categories'
       summary: 'get info of category'
@@ -1093,6 +1075,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
     delete:
       # TODO: scoresテーブルをcascadeにする
+      # CHANGE: した? userはした。けど、evalのほうがなってないはず
       tags:
         - 'evaluations'
       summary: 'delete evaluation'
@@ -1223,6 +1206,11 @@ components:
         message:
           type: 'string'
         grade:
+          type: 'string'
+    GetArchiceRequest:
+      type: 'object'
+      properties:
+        password:
           type: 'string'
     GetArchiveResponse:
       type: 'object'

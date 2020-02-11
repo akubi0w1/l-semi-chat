@@ -141,6 +141,7 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`users_threads`(
     `user_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
     `thread_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
     `is_admin` TINYINT NOT NULL DEFAULT 0 COMMENT 'スレッドの管理者判断',
+    `no_permit` TINYINT NOT NULL DEFAULT 0 COMMENT '入室禁止なら1が入る'
     PRIMARY KEY (`id`),
     CONSTRAINT 
         FOREIGN KEY (`user_id`)

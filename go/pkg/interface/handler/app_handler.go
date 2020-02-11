@@ -39,7 +39,6 @@ type AppHandler interface {
 
 // NewAppHandler create application handler
 func NewAppHandler(sh repository.SQLHandler, ph interactor.PasswordHandler) AppHandler {
-
 	return &appHandler{
 		AccountHandler: NewAccountHandler(sh, ph),
 		AuthHandler:    NewAuthHandler(sh, ph),
@@ -84,6 +83,7 @@ func (ah *appHandler) ManageAccountTag() http.HandlerFunc {
 		case http.MethodDelete:
 			middleware.Authorized(ah.AccountHandler.RemoveTag).ServeHTTP(w, r)
 		default:
+			logger.Warn("request method not allowed")
 			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
 		}
 	}
@@ -151,6 +151,7 @@ func (ah *appHandler) ManageTag() http.HandlerFunc {
 		case http.MethodGet:
 			ah.TagHandler.GetTagByTagID(w, r)
 		default:
+			logger.Warn("request method not allowed")
 			response.HttpError(w, domain.MethodNotAllowed(errors.New("method not allowed")))
 		}
 	}

@@ -7,7 +7,6 @@ import (
 
 // SetupRouter urlのマッピングを行う
 func SetupRouter(s server.Server, h handler.AppHandler) {
-
 	// account
 	s.Handle("/accounts", h.ManageAccount())
 	s.Handle("/accounts/tags", h.ManageAccountTags())

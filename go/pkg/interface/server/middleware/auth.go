@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"l-semi-chat/pkg/domain"
+	"l-semi-chat/pkg/domain/logger"
 	"l-semi-chat/pkg/interface/auth"
 	"l-semi-chat/pkg/interface/dcontext"
 	"l-semi-chat/pkg/interface/server/response"
@@ -22,6 +23,7 @@ func Authorized(nextFunc http.HandlerFunc) http.HandlerFunc {
 
 		cookie, err := r.Cookie("x-token")
 		if err != nil {
+			logger.Warn("middleware: ", err)
 			response.HttpError(w, domain.BadRequest(err))
 			return
 		}

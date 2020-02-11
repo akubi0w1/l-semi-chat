@@ -103,53 +103,19 @@ func (ah *accountHandler) GetAccount(w http.ResponseWriter, r *http.Request) {
 		response.HttpError(w, err)
 		return
 	}
-
-	tags, err := ah.AccountInteractor.ShowTagsByUserID(id)
+	user.Tags, err = ah.AccountInteractor.ShowTagsByUserID(id)
 	if err != nil {
 		response.HttpError(w, err)
 		return
 	}
-
-	scores, err := ah.AccountInteractor.ShowEvaluationScoresByUserID(id)
+	user.Evaluations, err = ah.AccountInteractor.ShowEvaluationScoresByUserID(id)
 	if err != nil {
 		response.HttpError(w, err)
 		return
-	}
-
-	var res getAccountResponse
-	res.UserID = user.UserID
-	res.Name = user.Name
-	res.Mail = user.Mail
-	res.Image = user.Image
-	res.Profile = user.Profile
-
-	for _, tag := range tags {
-		res.Tags = append(
-			res.Tags,
-			getTagResponse{
-				ID:  tag.ID,
-				Tag: tag.Tag,
-				Category: getCategoryResponse{
-					ID:       tag.Category.ID,
-					Category: tag.Category.Category,
-				},
-			},
-		)
-	}
-
-	for _, score := range scores {
-		res.Evaluations = append(
-			res.Evaluations,
-			getEvaluationScoreResponse{
-				ID:    score.ID,
-				Item:  score.Item,
-				Score: score.Score,
-			},
-		)
 	}
 
 	// create response
-	response.Success(w, res)
+	response.Success(w, convertAccountToResponse(user))
 }
 
 func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) {
@@ -189,55 +155,21 @@ func (ah *accountHandler) UpdateAccount(w http.ResponseWriter, r *http.Request) 
 		response.HttpError(w, err)
 		return
 	}
-
 	// tagの取得
-	tags, err := ah.AccountInteractor.ShowTagsByUserID(id)
+	user.Tags, err = ah.AccountInteractor.ShowTagsByUserID(id)
 	if err != nil {
 		response.HttpError(w, err)
 		return
 	}
-
 	// evaluationの取得
-	scores, err := ah.AccountInteractor.ShowEvaluationScoresByUserID(id)
+	user.Evaluations, err = ah.AccountInteractor.ShowEvaluationScoresByUserID(id)
 	if err != nil {
 		response.HttpError(w, err)
 		return
-	}
-
-	var res getAccountResponse
-	res.UserID = user.UserID
-	res.Name = user.Name
-	res.Mail = user.Mail
-	res.Image = user.Image
-	res.Profile = user.Profile
-
-	for _, tag := range tags {
-		res.Tags = append(
-			res.Tags,
-			getTagResponse{
-				ID:  tag.ID,
-				Tag: tag.Tag,
-				Category: getCategoryResponse{
-					ID:       tag.Category.ID,
-					Category: tag.Category.Category,
-				},
-			},
-		)
-	}
-
-	for _, score := range scores {
-		res.Evaluations = append(
-			res.Evaluations,
-			getEvaluationScoreResponse{
-				ID:    score.ID,
-				Item:  score.Item,
-				Score: score.Score,
-			},
-		)
 	}
 
 	// response
-	response.Success(w, res)
+	response.Success(w, convertAccountToResponse(user))
 }
 
 func (ah *accountHandler) DeleteAccount(w http.ResponseWriter, r *http.Request) {
@@ -354,6 +286,40 @@ type getAccountResponse struct {
 	Profile     string                       `json:"profile"`
 	Tags        []getTagResponse             `json:"tags"`
 	Evaluations []getEvaluationScoreResponse `json:"evaluations"`
+}
+
+func convertAccountToResponse(user domain.User) (res getAccountResponse) {
+	res.UserID = user.UserID
+	res.Name = user.Name
+	res.Mail = user.Mail
+	res.Image = user.Image
+	res.Profile = user.Profile
+
+	for _, tag := range user.Tags {
+		res.Tags = append(
+			res.Tags,
+			getTagResponse{
+				ID:  tag.ID,
+				Tag: tag.Tag,
+				Category: getCategoryResponse{
+					ID:       tag.Category.ID,
+					Category: tag.Category.Category,
+				},
+			},
+		)
+	}
+	for _, score := range user.Evaluations {
+		res.Evaluations = append(
+			res.Evaluations,
+			getEvaluationScoreResponse{
+				ID:    score.ID,
+				Item:  score.Item,
+				Score: score.Score,
+			},
+		)
+	}
+
+	return
 }
 
 // TODO: 消して?

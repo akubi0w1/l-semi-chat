@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"l-semi-chat/pkg/domain"
+	"l-semi-chat/pkg/domain/logger"
 	"l-semi-chat/pkg/interface/dcontext"
 	"l-semi-chat/pkg/interface/server/response"
 	"l-semi-chat/pkg/service/interactor"
@@ -64,6 +65,13 @@ func (ai *archiveHandler) CreateArchive(w http.ResponseWriter, r *http.Request) 
 	// get threadID
 	threadID := mux.Vars(r)["threadID"]
 
+	// 権限チェック
+	_, err = ai.ArchiveInteractor.CheckIsAdmin(threadID, userID)
+	if err != nil {
+		response.HttpError(w, err)
+		return
+	}
+
 	// requestの読み出し
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -77,31 +85,22 @@ func (ai *archiveHandler) CreateArchive(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	isAdmin, err := ai.ArchiveInteractor.CheckIsAdmin(threadID, userID)
-	if err != nil {
-		response.HttpError(w, err)
-		return
-	}
-	if !isAdmin {
-		response.HttpError(w, domain.Unauthorized(errors.New("archiveを作成する権限がありません")))
-		return
-	}
-
 	if req.IsPublic == 0 && req.Password == "" {
+		logger.Warn("archive update: 非公開のアーカイブをパスワードなしでリクエスト request userID=", userID)
 		response.HttpError(w, domain.BadRequest(errors.New("非公開アーカイブを作成する場合、パスワードは必須です")))
 		return
 	}
 
 	// threadの登録
-	_, err = ai.ArchiveInteractor.AddArchive(req.Password, threadID, req.IsPublic)
+	archive, err := ai.ArchiveInteractor.AddArchive(req.Password, threadID, req.IsPublic)
 	if err != nil {
 		response.HttpError(w, err)
 		return
 	}
-	archive, err := ai.ArchiveInteractor.ShowArchive(threadID, req.Password)
-	if err != nil {
-		response.HttpError(w, err)
-	}
+	// archive, err := ai.ArchiveInteractor.ShowArchive(threadID, req.Password)
+	// if err != nil {
+	// 	response.HttpError(w, err)
+	// }
 
 	response.Success(w, convertArchiveToResponse(archive))
 
@@ -117,13 +116,9 @@ func (ai *archiveHandler) UpdateArchive(w http.ResponseWriter, r *http.Request) 
 
 	threadID := mux.Vars(r)["threadID"]
 
-	isAdmin, err := ai.ArchiveInteractor.CheckIsAdmin(threadID, userID)
+	_, err = ai.ArchiveInteractor.CheckIsAdmin(threadID, userID)
 	if err != nil {
 		response.HttpError(w, err)
-		return
-	}
-	if !isAdmin {
-		response.HttpError(w, domain.Unauthorized(errors.New("archiveを作成する権限がありません")))
 		return
 	}
 
@@ -141,6 +136,7 @@ func (ai *archiveHandler) UpdateArchive(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if req.IsPublic == 0 && req.Password == "" {
+		logger.Warn("archive update: 非公開のアーカイブをパスワードなしでリクエスト request userID=", userID)
 		response.HttpError(w, domain.BadRequest(errors.New("非公開アーカイブを作成する場合、パスワードは必須です")))
 		return
 	}
@@ -170,13 +166,9 @@ func (ai *archiveHandler) DeleteArchive(w http.ResponseWriter, r *http.Request) 
 
 	threadID := mux.Vars(r)["threadID"]
 
-	isAdmin, err := ai.ArchiveInteractor.CheckIsAdmin(threadID, userID)
+	_, err = ai.ArchiveInteractor.CheckIsAdmin(threadID, userID)
 	if err != nil {
 		response.HttpError(w, err)
-		return
-	}
-	if !isAdmin {
-		response.HttpError(w, domain.Unauthorized(errors.New("archiveを作成する権限がありません")))
 		return
 	}
 

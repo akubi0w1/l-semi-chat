@@ -76,17 +76,17 @@ func (ar *archiveRepository) DeleteArchive(threadID string) error {
 
 func (ar *archiveRepository) FindThreadByThreadID(threadID string) (thread domain.Thread, err error) {
 	row := ar.SQLHandler.QueryRow(
-		`SELECT users.id, users.user_id
+		`SELECT threads.id, threads.name, threads.description, threads.limit_users, threads.user_id, threads.is_public, threads.created_at, threads.updated_at, users.user_id, users.name, users.image, users.profile
 		FROM threads
 		INNER JOIN users
 		ON users.id = threads.user_id
 		WHERE threads.id = ?`,
 		threadID,
 	)
-	if err = row.Scan(&thread.Admin.ID, &thread.Admin.UserID); err != nil {
+	if err = row.Scan(&thread.ID, &thread.Name, &thread.Description, &thread.LimitUsers, &thread.Admin.ID, &thread.IsPublic, &thread.CreatedAt, &thread.UpdatedAt, &thread.Admin.UserID, &thread.Admin.Name, &thread.Admin.Image, &thread.Admin.Profile); err != nil {
 		return thread, domain.InternalServerError(err)
 	}
-	return thread, nil
+	return
 }
 
 func (ar *archiveRepository) FindUserByID(userID string) (user domain.User, err error) {

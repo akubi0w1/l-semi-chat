@@ -18,8 +18,8 @@ type accountInteractor struct {
 
 // AccountInteractor メイン処理
 type AccountInteractor interface {
-	AddAccount(string, string, string, string, string, string) (domain.User, error)
-	UpdateAccount(string, string, string, string, string, string, string) (domain.User, error)
+	AddAccount(userID, name, mail, image, profile, password string) (domain.User, error)
+	UpdateAccount(userID, newUserID, name, mail, image, profile, password string) (domain.User, error)
 	ShowAccount(userID string) (domain.User, error)
 	DeleteAccount(userID string) error
 
@@ -87,19 +87,19 @@ func (ai *accountInteractor) AddAccount(userID, name, mail, image, profile, pass
 	if err != nil {
 		return user, domain.InternalServerError(err)
 	}
+
+	// DONE: 評価の初期化とres用の値の取得
+	evaluationScores, err := ai.AccountRepositoy.InitializeEvaluations(user.ID)
+	if err != nil {
+		return user, err
+	}
+
 	user.ID = id.String()
 	user.UserID = userID
 	user.Name = name
 	user.Mail = mail
 	user.Image = image
 	user.Profile = profile
-
-	// DONE: 評価の初期化とres用の値の取得
-	evaluationScores, err := ai.AccountRepositoy.InitializeEvaluations(user.ID)
-	if err != nil {
-		logger.Error(fmt.Sprintf("create account: %s", err.Error()))
-		return user, err
-	}
 	user.Evaluations = evaluationScores
 
 	return user, nil
@@ -192,7 +192,6 @@ func (ai *accountInteractor) AddAccountTag(userID, tagName, categoryID string) (
 	}
 	err = ai.AccountRepositoy.StoreAccountTag(id.String(), userID, tag.ID)
 	if err != nil {
-		logger.Error(fmt.Sprintf("add account tag: %s", err.Error()))
 		return tag, domain.InternalServerError(err)
 	}
 	return

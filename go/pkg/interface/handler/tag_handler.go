@@ -38,14 +38,14 @@ func NewTagHandler(sh repository.SQLHandler) TagHandler {
 func (th *tagHandler) CreateTag(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		logger.Warn(err)
+		logger.Warn("tag create: ", err)
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
 	var req updateTagRequest
 	err = json.Unmarshal(body, &req)
 	if err != nil {
-		logger.Error(err)
+		logger.Error("tag create: ", err)
 		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
@@ -56,14 +56,7 @@ func (th *tagHandler) CreateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Success(w, &updateTagResponse{
-		ID:  tag.ID,
-		Tag: tag.Tag,
-		Category: getCategoryResponse{
-			ID:       tag.Category.ID,
-			Category: tag.Category.Category,
-		},
-	})
+	response.Success(w, convertTagToResponse(tag))
 }
 
 func (th *tagHandler) GetTagByTagID(w http.ResponseWriter, r *http.Request) {
@@ -81,14 +74,7 @@ func (th *tagHandler) GetTagByTagID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Success(w, &getTagResponse{
-		ID:  tag.ID,
-		Tag: tag.Tag,
-		Category: getCategoryResponse{
-			ID:       tag.Category.ID,
-			Category: tag.Category.Category,
-		},
-	})
+	response.Success(w, convertTagToResponse(tag))
 }
 
 func (th *tagHandler) GetTags(w http.ResponseWriter, r *http.Request) {
@@ -99,14 +85,7 @@ func (th *tagHandler) GetTags(w http.ResponseWriter, r *http.Request) {
 	}
 	var res getTagsResponse
 	for _, tag := range tags {
-		res.Tags = append(res.Tags, getTagResponse{
-			ID:  tag.ID,
-			Tag: tag.Tag,
-			Category: getCategoryResponse{
-				ID:       tag.Category.ID,
-				Category: tag.Category.Category,
-			},
-		})
+		res.Tags = append(res.Tags, convertTagToResponse(tag))
 	}
 
 	response.Success(w, res)
@@ -131,4 +110,14 @@ type updateTagResponse struct {
 	ID       string              `json:"id"`
 	Tag      string              `json:"tag"`
 	Category getCategoryResponse `json:"category"`
+}
+
+func convertTagToResponse(tag domain.Tag) (res getTagResponse) {
+	res.ID = tag.ID
+	res.Tag = tag.Tag
+	res.Category = getCategoryResponse{
+		ID:       tag.Category.ID,
+		Category: tag.Category.Category,
+	}
+	return
 }

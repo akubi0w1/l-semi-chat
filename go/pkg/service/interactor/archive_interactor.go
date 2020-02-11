@@ -1,7 +1,9 @@
 package interactor
 
 import (
+	"errors"
 	"l-semi-chat/pkg/domain"
+	"l-semi-chat/pkg/domain/logger"
 	"l-semi-chat/pkg/service/repository"
 
 	"github.com/google/uuid"
@@ -42,25 +44,23 @@ func (ai *archiveInteractor) ShowArchive(threadID, password string) (domain.Arch
 	if archive.IsPublic == 0 {
 		err = ai.PasswordHandler.PasswordVerify(archive.Password, password)
 		if err != nil {
+			logger.Warn("show archive: ", err)
 			return domain.Archive{}, err
 		}
 	}
 
-	user, err := ai.ArchiveRepository.FindUserByID(archive.Thread.Admin.ID)
+	archive.Thread.Admin, err = ai.ArchiveRepository.FindUserByID(archive.Thread.Admin.ID)
 	if err != nil {
 		return archive, err
 	}
-	archive.Thread.Admin = user
-	tags, err := ai.AccountRepository.FindTagsByUserID(user.ID)
+	archive.Thread.Admin.Tags, err = ai.AccountRepository.FindTagsByUserID(archive.Thread.Admin.ID)
 	if err != nil {
 		return archive, err
 	}
-	archive.Thread.Admin.Tags = tags
-	scores, err := ai.AccountRepository.FindEvaluationsByUserID(user.ID)
+	archive.Thread.Admin.Evaluations, err = ai.AccountRepository.FindEvaluationsByUserID(archive.Thread.Admin.ID)
 	if err != nil {
 		return archive, err
 	}
-	archive.Thread.Admin.Evaluations = scores
 
 	return archive, nil
 }
@@ -71,6 +71,7 @@ func (ai *archiveInteractor) AddArchive(password, threadID string, isPublic int)
 	if password != "" {
 		hash, err = ai.PasswordHandler.PasswordHash(password)
 		if err != nil {
+			logger.Error("add archive: ", err)
 			return archive, domain.InternalServerError(err)
 		}
 	}
@@ -78,6 +79,7 @@ func (ai *archiveInteractor) AddArchive(password, threadID string, isPublic int)
 	// id生成
 	id, err := uuid.NewRandom()
 	if err != nil {
+		logger.Error("add archive: ", err)
 		return archive, domain.InternalServerError(err)
 	}
 
@@ -89,12 +91,22 @@ func (ai *archiveInteractor) AddArchive(password, threadID string, isPublic int)
 		return archive, domain.InternalServerError(err)
 	}
 
-	// TODO: threadに対応させねば
 	archive.ID = id.String()
 	archive.Path = path
 	archive.Password = hash
 	archive.IsPublic = isPublic
-	archive.Thread.ID = threadID
+	archive.Thread, err = ai.ArchiveRepository.FindThreadByThreadID(threadID)
+	if err != nil {
+		return archive, err
+	}
+	archive.Thread.Admin.Tags, err = ai.AccountRepository.FindTagsByUserID(archive.Thread.Admin.ID)
+	if err != nil {
+		return archive, err
+	}
+	archive.Thread.Admin.Evaluations, err = ai.AccountRepository.FindEvaluationsByUserID(archive.Thread.Admin.ID)
+	if err != nil {
+		return archive, err
+	}
 	return
 }
 
@@ -104,6 +116,7 @@ func (ai *archiveInteractor) UpdateArchive(threadID, password string, isPublic i
 	if password != "" {
 		hash, err = ai.PasswordHandler.PasswordHash(password)
 		if err != nil {
+			logger.Error("update archive: ", err)
 			return archive, domain.InternalServerError(err)
 		}
 	}
@@ -126,7 +139,8 @@ func (ai *archiveInteractor) CheckIsAdmin(threadID, userID string) (bool, error)
 		return false, err
 	}
 	if thread.Admin.UserID != userID {
-		return false, nil
+		logger.Warn("archive checkIsAdmin: アーカイブを作成する権限がない。 request userID=", userID)
+		return false, domain.Unauthorized(errors.New("アーカイブを作成する権限がありません"))
 	}
 	return true, nil
 }
