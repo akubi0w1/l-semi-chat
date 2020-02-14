@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-DROP DATABASE `ls_chat`;
-=======
 DROP DATABASE IF EXISTS `ls_chat`;
->>>>>>> b39f0e155457d3849b73da09d8bf4f4704c24661
 CREATE DATABASE IF NOT EXISTS `ls_chat`;
 
 -- define tables
