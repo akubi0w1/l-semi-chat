@@ -12,7 +12,7 @@ type authInteractor struct {
 
 // AuthInteractor 認証系の処理
 type AuthInteractor interface {
-	Login(userID, password string) error
+	Login(userID, password string) (domain.User, error)
 }
 
 // NewAuthInteractor authInteractorの作成
@@ -23,16 +23,16 @@ func NewAuthInteractor(ar repository.AuthRepository, ph PasswordHandler) AuthInt
 	}
 }
 
-func (ai *authInteractor) Login(userID, password string) error {
+func (ai *authInteractor) Login(userID, password string) (domain.User, error) {
 
 	// ユーザの取得
 	user, err := ai.AuthRepository.FindUserByUserID(userID)
 	if err != nil {
-		return err
+		return user, err
 	}
 
 	// password の比較
 	err = ai.PasswordHandler.PasswordVerify(user.Password, password)
 
-	return domain.Unauthorized(err)
+	return user, domain.Unauthorized(err)
 }

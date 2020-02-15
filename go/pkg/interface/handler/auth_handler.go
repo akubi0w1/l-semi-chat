@@ -37,30 +37,30 @@ func (ah *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 	// bodyの読み出し
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		logger.Warn(err)
+		logger.Warn("login: ", err)
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
 	var req loginRequest
 	err = json.Unmarshal(body, &req)
 	if err != nil {
-		logger.Error(err)
+		logger.Error("login: ", err)
 		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
 
 	// 認証処理
-	err = ah.AuthInteractor.Login(req.UserID, req.Password)
+	user, err := ah.AuthInteractor.Login(req.UserID, req.Password)
 	if err != nil {
-		logger.Error(err)
+		logger.Error("login: ", err)
 		response.HttpError(w, err)
 		return
 	}
 
 	// tokenの作成
-	token, err := auth.CreateToken(req.UserID)
+	token, err := auth.CreateToken(user.ID, user.UserID)
 	if err != nil {
-		logger.Error(err)
+		logger.Error("login: ", err)
 		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
@@ -79,20 +79,11 @@ func (ah *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 }
 
-type loginRequest struct {
-	UserID   string `json:"user_id"`
-	Password string `json:"password"`
-}
-
-type loginResponse struct {
-	Message string `json:"message"`
-}
-
 func (ah *authHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	// check cookie
 	cookie, err := r.Cookie("x-token")
 	if err != nil {
-		logger.Warn(err)
+		logger.Warn("logout: ", err)
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
@@ -100,7 +91,7 @@ func (ah *authHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	// check token
 	_, err = auth.VerifyToken(cookie.Value)
 	if err != nil {
-		logger.Warn(err)
+		logger.Warn("logout: ", err)
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
@@ -110,4 +101,13 @@ func (ah *authHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 
 	response.NoContent(w)
+}
+
+type loginRequest struct {
+	UserID   string `json:"user_id"`
+	Password string `json:"password"`
+}
+
+type loginResponse struct {
+	Message string `json:"message"`
 }

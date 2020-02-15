@@ -11,4 +11,4 @@ type Thread struct{
 	UpdatedAt 	string
 }
 
-type Thread []Threads
+type Threads []Thread
