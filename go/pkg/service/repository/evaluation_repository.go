@@ -76,7 +76,7 @@ func (er *evaluationRepository) UpdateEvaluation(evaluationID, item string)(eval
 }
 
 func (er *evaluationRepository) DeleteEvaluation(evaluationID string)error {
-	_, err = er.SQLHandler.Execute("DELETE FROM evaluations id=?", evaluationID)
+	_, err = er.SQLHandler.Execute("DELETE FROM evaluations WHERE id=?", evaluationID)
 	return domain.InternalServerError(err)
 }
 

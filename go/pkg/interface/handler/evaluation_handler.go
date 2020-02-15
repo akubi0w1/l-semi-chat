@@ -106,7 +106,7 @@ type getEvaluationResponse struct {
 }
 
 type getEvaluationsResponse struct {
-	Tags []getEvaluationResponse `json:"evaluations"`
+	Evaluations []getEvaluationResponse `json:"evaluations"`
 }
 
 func (eh *evaluationHandler) UpdateEvaluation(w http.ResponseWriter, r *http.Request) {
@@ -139,7 +139,7 @@ func (eh *evaluationHandler) UpdateEvaluation(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	evaluation, err := eh.EvaluationInteractor.UpdateEvaluation(evaluationID ,erq.item)
+	evaluation, err := eh.EvaluationInteractor.UpdateEvaluation(evaluationID ,erq.Item)
 	if err != nil {
 		response.HttpError(w, domain.InternalServerError(err))
 		return

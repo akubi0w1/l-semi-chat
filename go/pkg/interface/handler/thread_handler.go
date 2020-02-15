@@ -39,7 +39,7 @@ func NewThreadHandler(ti interactor.ThreadInteractor) ThreadHandler{
 func (th *threadHandler) CreateThread(w http.ResponseWriter, r *http.Request) {
 	
 	ctx := r.Context()
-	userID, err := dcontext.GetIDFromContext(ctx)
+	id, err := dcontext.GetIDFromContext(ctx)
 	if err != nil {
 		logger.Warn("create thread: %s",err.Error())
 		response.HttpError(w, err)
@@ -68,18 +68,29 @@ func (th *threadHandler) CreateThread(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = th.ThreadInteractor.AddUsersThread(thread.ID, UserID)
+	err = th.ThreadInteractor.AddUsersThread(thread.ID, id)
 	if err != nil {
 		logger.Error(err)
 		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
 
-	var Admin getAccountResponse
-	Admin, err := th.ThreadInteractor.ShowAccountByID(userID)
+	
+	admin, err := th.ThreadInteractor.ShowAccountByID(id)
 	if err != nil {
 		logger.Error(err)
 		response.HttpError(w, domani.InternalServerError(err))
+		return
+	}
+
+	admin.user.Tags, err = th.ThreadInteractor.ShowTagsByUserID(id)
+	if err != nil {
+		response.HttpError(w, domain.InternalServerError(err))
+		return
+	}
+	admin.user.Evaluations, err = th.ThreadInteractor.ShowEvaluationScoresByUserID(id)
+	if err != nil {
+		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
 
@@ -89,7 +100,7 @@ func (th *threadHandler) CreateThread(w http.ResponseWriter, r *http.Request) {
 		Name:           thread.Name,
 		Description:    thread.Description,
 		LimitUsers:     thread.LimitUsers,
-		Admin:          Admin,
+		Admin:          admin,
 		IsPublic:       thread.IsPublic,
 		CreatedAt:      thread.CreatedAt,
 		UpdatedAt:      thread.UpdatedAt,
@@ -124,7 +135,29 @@ func (th *threadHandler) GetThreads(w http.ResponseWriter, r *http.Request) {
 	var res getThreadsResponse
 
 	for _, thread := range threads {
-		res.Threads = append(res.Threads, convertThreadToResponse(thread))
+		ctx := r.Context()
+		id, err := dcontext.GetIDFromContext(ctx)
+		if err != nil {
+			response.HttpError(w, domain.BadRequest(err))
+			return
+		}
+
+		thread, err := th.ThreadInteractor.ShowThreadByID(threadID)
+		if err != nil {
+			response.HttpError(w, err)
+			return
+		}
+		thread.user.Tags, err = th.ThreadInteractor.ShowTagsByUserID(id)
+		if err != nil {
+			response.HttpError(w, domain.InternalServerError(err))
+			return
+		}
+		thread.user.Evaluations, err = th.ThreadInteractor.ShowEvaluationScoresByUserID(id)
+		if err != nil {
+			response.HttpError(w, domain.InternalServerError(err))
+			return
+		}
+			res.Threads = append(res.Threads, convertThreadToResponse(thread))
 	}
 
 	response.Success(w, res)
@@ -150,9 +183,26 @@ func (th *threadHandler) GetThreadByThreadID(w http.ResponseWriter, r *http.Requ
 		response.HttpError(w, domain.InternalServerError(err))
 	}
 
+	ctx := r.Context()
+	id, err := dcontext.GetIDFromContext(ctx)
+	if err != nil {
+		response.HttpError(w, domain.BadRequest(err))
+		return
+	}
+
 	thread, err := th.ThreadInteractor.ShowThreadByID(threadID)
 	if err != nil {
 		response.HttpError(w, err)
+		return
+	}
+	thread.user.Tags, err = th.ThreadInteractor.ShowTagsByUserID(id)
+	if err != nil {
+		response.HttpError(w, domain.InternalServerError(err))
+		return
+	}
+	thread.user.Evaluations, err = th.ThreadInteractor.ShowEvaluationScoresByUserID(id)
+	if err != nil {
+		response.HttpError(w, domain.InternalServerError(err))
 		return
 	}
 
@@ -164,7 +214,7 @@ type getThreadsResponse struct {
 }
 
 type getThreadResponse struct {
-	Id				string `json:"id"`
+	ID				string `json:"id"`
 	Name			string `json:"name"`
 	Description		string `json:"description"`
 	LimitUsers		int    `json:"limit_users"`
@@ -182,6 +232,13 @@ func (th *threadHandler) UpdateThread(w http.ResponseWriter, r *http.Request){
 		response.HttpError(w, domain.BadRequest(err))
 	}
 
+	ctx := r.Context()
+	id, err := dcontext.GetIDFromContext(ctx)
+	if err != nil {
+		response.HttpError(w, domain.BadRequest(err))
+		return
+	}
+
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		logger.Error(err)
@@ -190,8 +247,24 @@ func (th *threadHandler) UpdateThread(w http.ResponseWriter, r *http.Request){
 	}
 	var req updateThreadRequest
 	err = json.Unmarshal(body, req)
+	if err != nil {
+		logger.Error(fmt.Sprintf("update thread: %s", err.Error()))
+		response.HttpError(w, domain.InternalServerError(err))
+		return
+	}
+
 
 	thread, err := th.ThreadInteractor.UpdateThread(threadID, req.Name, req.Description, req.LimitUsers, req.IsPublic)
+	if err != nil {
+		response.HttpError(w, domain.InternalServerError(err))
+		return
+	}
+	thread.user.Tags, err = th.ThreadInteractor.ShowTagsByUserID(id)
+	if err != nil {
+		response.HttpError(w, domain.InternalServerError(err))
+		return
+	}
+	thread.user.Evaluations, err = th.ThreadInteractor.ShowEvaluationScoresByUserID(id)
 	if err != nil {
 		response.HttpError(w, domain.InternalServerError(err))
 		return
@@ -225,6 +298,7 @@ func (th *threadHandler) DeleteThread(w http.ResponseWriter, r *http.Request) {
 		response.HttpError(w, domain.BadRequest(err))
 		return
 	}
+	vars := mux.Vars(r)
 	threadID := vars["id"]
 	if threadID == "" {
 		logger.Error(err)
@@ -261,7 +335,13 @@ func (th *threadHandler) GetParticipants(w http.ResponseWriter, r *http.Request)
 	}
 	var res getAccountsResponse
 	for _, user := range users{
-		id, err := th.ThreadInteractor.GetIDByUserID(user.userID)
+		// id, err := th.ThreadInteractor.GetIDByUserID(user.userID)
+		ctx := r.Context()
+		id, err := dcontext.GetIDFromContext(ctx)
+		if err != nil {
+			response.HttpError(w, domain.BadRequest(err))
+			return
+		}
 		if err != nil {
 			response.HttpError(w, domain.InternalServerError(err))
 			return
@@ -290,8 +370,8 @@ func (th *threadHandler) JoinParticipants(w http.ResponseWriter, r *http.Request
 	vars := mux.Vars(r)
 	threadID := vars["id"]
 	if threadID == "" {
-		logger.Error(err)
-		response.HttpError(w, domain.BadRequest(err))
+		logger.fmt.Sprintf("thread error: not get threadID")
+		// response.HttpError(w, domain.BadRequest(err))
 	}
 	ctx := r.Context()
 	userID, err := dcontext.GetrIDFromContext(ctx)
@@ -315,7 +395,7 @@ func (th *threadHandler)RemoveParticipants(w http.ResponseWriter, r *http.Reques
 	vars := mux.Vars(r)
 	threadID := vars["id"]
 	if threadID == "" {
-		logger.Error(err)
+		logger.errors.New(fmt.Sprintf("thread error: not get threadID"))
 		response.HttpError(w, domain.BadRequest(err))
 	}
 	userID, err := dcontext.GetrIDFromContext(ctx)
@@ -337,12 +417,12 @@ func (th *threadHandler)RemoveParticipantsByUser(w http.ResponseWriter, r *http.
 	vars := mux.Vars(r)
 	threadID := vars["t_id"]
 	if threadID == "" {
-		logger.Error(err)
+		logger.fmt.Sprintf("thread error: not get threadID")
 		response.HttpError(w, domain.BadRequest(err))
 	}
 	userID := vars["m_id"]
 	if userID == "" {
-		logger.Error(err)
+		logger.Errorfmt.Sprintf("thread error: not get userID")
 		response.HttpError(w, domain.BadRequest(err))
 	}
 

@@ -46,11 +46,11 @@ func (tr *threadRepository) StoreThread(id,name,description,limitUsers,isPublic,
 }
 
 func (tr *threadRepository) FindThreads()(threads domain.Threads, err error) {
-	rows, err := tr.SQLHandler.Query("
+	rows, err := tr.SQLHandler.Query(`
 	SELECT threads.id, threads.name, threads.description, threads.limit_users, threads.is_public, threads.created_at, threads.updated_at 
 	FROM threads
 	INNER JOIN users
-	ON threads.user_id = user.id")
+	ON threads.user_id = user.id`)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Find thread: %s",err.Error()))
 		return threads, domain.InternalServerError(err)
