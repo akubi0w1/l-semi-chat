@@ -306,7 +306,7 @@ func (th *threadHandler) GetParticipants(w http.ResponseWriter, r *http.Request)
 	vars := mux.Vars(r)
 	threadID := vars["id"]
 	if threadID == "" {
-		logger.Error(err)
+		logger.Warn(fmt.Sprintf("thread error: not get threadID"))
 		response.HttpError(w, domain.BadRequest(err))
 	}
 	

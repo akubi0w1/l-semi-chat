@@ -225,6 +225,8 @@ func (tr *threadRepository) FindEvaluationsByUserID(userID string) (es domain.Ev
 	rows, err := tr.SQLHandler.Query(
 		`SELECT evaluation_scores.id, evaluations.item, evaluation_scores.score
 		ON evaluations.id = evaluation_scores.evaluation_id
+		INNER JOIN evaluations
+		ON evaluations.id = evaluation_scores.evaluation_id
 		WHERE evaluation_scores.user_id=?`,
 		userID,
 	)
