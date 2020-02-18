@@ -139,7 +139,7 @@ func (eh *evaluationHandler) UpdateEvaluation(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	evaluation, err := eh.EvaluationInteractor.UpdateEvaluation(evaluationID ,erq.Item)
+	evaluation, err := eh.EvaluationInteractor.UpdateEvaluation(evaluationID ,req.Item)
 	if err != nil {
 		response.HttpError(w, domain.InternalServerError(err))
 		return

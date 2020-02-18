@@ -13,30 +13,27 @@ type threadInteractor struct {
 }
 
 type threadInteractor interface{
-	AddThread(string,string,string,string,int)(domain.Thread,error)
-	UpdateThread(string, string, string, int, int)(domain.Thread, error)
+	AddThread(userID, name, description string, limitUsers, isPublic int)(domain.Thread,error)
+	UpdateThread(threadID, Name, Description string, LimitUsers, IsPublic int)(domain.Thread, error)
 	ShowThreads()(domain.Threads, error)
-	ShowThreadByID(string)(domain.Thread, error)
-	DeleteThread(string) error
-	ShowUserByThreadID(string)(domain.users_thread, error)
-	JoinParticipantsByThreadID(string, string, string)error
-	RemoveParticipantsByUser(string, string)error
-	RemoveParticipantsByUserID(string,string)error
+	ShowThreadByID(threadID, userID string)(domain.Thread, error)
+	DeleteThread(threadID string) error
+	ShowUserByThreadID(threadID string)(domain.users_thread, error)
+	JoinParticipantsByThreadID(threadID, userID string)error
+	RemoveParticipantsByUser(threadID,userID  string)error
+	RemoveParticipantsByUserID(threadID, userID string)error
 
-	ShowAccountByID(string)(domain.Thread, error)
-	AddUsersThread(string, string)error
-	CheckIsAdmin(string, string)(bool, error)
-	GetIDByUserID(string)(string, error)
-	ShowTagsByUserID(string)(domain.Tags, error)
-	ShowEvaluationScoresByUserID(string)(domain.EvaluationScores, error)
+	ShowAccountByID(userID string)(domain.Thread, error)
+	AddUsersThread(threadID, userID string)error
+	CheckIsAdmin(threadID, userID string)(bool, error)
+	ShowTagsByUserID(userID string)(domain.Tags, error)
+	ShowEvaluationScoresByUserID(userID string)(domain.EvaluationScores, error)
+	ShowUserIDByThreadID(threadID string)(userID string, err error)
 }
 
 func (ti *threadInteractor) AddThread(userID, name, description string, limitUsers, isPublic int) (thread domain.Thread, err error) {
 	
-	user,err=ti.AuthRepository.FindUserByUserID(userID)
-	if err != nil {
-		return user, domain.Unauthorized(errors.New("Unauthorized"))
-	}
+	
 	if name == "" {
 		return thread, domain.BadRequest(errors.New("thread name is empty"))
 	}
@@ -47,11 +44,13 @@ func (ti *threadInteractor) AddThread(userID, name, description string, limitUse
 	}
 	createdAt := time.Now()
 	updatedAt := createdAt
+
 	err = ti.ThreadRepository.StoreThread(
 		id.String(),
 		name,
 		description,
 		limitUsers,
+		userID,
 		isPublic,
 		createdAt,
 		updatedAt,
@@ -74,26 +73,40 @@ func (ti *threadInteractor) ShowThreads()(domain.Threads, error) {
 	return ti.ThreadRepository.FindThreads()
 }
 
-func (ti *threadInteractor) ShowThreadByID(threadID string)(domain.Thread, error) {
-	return ti.ThreadRepository.FindThreadByID(threadID)
+func (ti *threadInteractor) ShowThreadByID(threadID, userID string)(thread domain.Thread, err error) {
+	thread, err := ti.ThreadRepository.FindThreadByID(threadID)
+	if err != nil {
+		response.HttpError(w, domain.InternalServerError(err))
+		return
+	}
+	thread.user.Tags, err = ti.ThreadRepository.FindTagsByUserID(userID)
+	if err != nil {
+		response.HttpError(w, domain.InternalServerError(err))
+		return
+	}
+	thread.user.Evaluations, err = ti.ThreadRepository.FindEvaluationsByUserID(userID)
+	if err != nil {
+		response.HttpError(w, domain.InternalServerError(err))
+		return
+	}
+	return
 }
 
-func (ti *threadInteractor) UpdateThread(threadID, Name, Description string, LimitUsers, IsPublic int)(domain.Thread, error) {
+func (ti *threadInteractor) UpdateThread(threadID, Name, Description string, LimitUsers, IsPublic int)(thread domain.Thread, err error) {
 	err = ti.ThreadRepository.UpdateThread(threadID, Name, Description, LimitUsers, IsPublic)
 	if err != nil {
-		logger.Error(domain.InternalServerError(err))
-		return
+		return thread, domain.InternalServerError(err)
 	}
 	
 	thread, err = ti.ThreadRepository.FindThreadByID(threadID)
 	if err != nil {
-		logger.Error(domain.InternalServerError(err))
+		return thread, domain.InternalServerError(err)
 	}
 	return
 }
 
 
-func (ti *threadInteractor) ShowAccountByID(userID string)(domain.Account, error) {
+func (ti *threadInteractor) ShowAccountByID(userID string)(domain.User, error) {
 	return ti.ThreadRepository.FindAccountByID(userID)
 }
 
@@ -104,6 +117,7 @@ func (ti *threadInteractor) DeleteThread(threadID string) error {
 func (ti *threadInteractor) CheckIsAdmin(threadID, userID string) (bool error) {
 	thread, err := ti.ThreadRepository.FindThreadByID(threadID)
 	if err != nil {
+		logger.Error(domain.InternalServerError(err))
 		return false, err
 	}
 	if thread.Admin.UserID != userID {
@@ -114,15 +128,16 @@ func (ti *threadInteractor) CheckIsAdmin(threadID, userID string) (bool error) {
 }
 
 func (ti *threadInteractor) ShowUserByThreadID(threadID string)(domain.Users, error) {
-	return ti.ThreadRepository.FindUserByThreadID(threadID)
+	return ti.ThreadRepository.FindUsersByThreadID(threadID)
 }
 
 func (ti *threadInteractor) JoinParticipantsByThreadID(threadID, UserID string) error {
 	ID, err := uuid.NewRandom()
 	if err != nil {
+		logger.Error(domain.InternalServerError(err))
 		return domain.InternalServerError(err)
 	}
-	return ti.threadInteractor.JoinParticipantsByThreadID(ID, threadID, UserID)
+	return ti.ThreadRepository.JoinParticipantsByThreadID(ID, threadID, UserID)
 }
 
 func (ti *threadInteractor) RemoveParticipantsByUserID(threadID, UserID string) error {
@@ -132,13 +147,10 @@ func (ti *threadInteractor) RemoveParticipantsByUserID(threadID, UserID string) 
 func (ti *threadInteractor) AddUsersThread(threadID, UserID string) error {
 	id, err := uuid.NewRandom()
 	if err != nil {
+		logger.Error(domain.InternalServerError(err))
 		return domain.InternalServerError(err)
 	}
 	return ti.ThreadRepository.StoreUsersThread(id,threadID,UserID)
-}
-
-func (ti *threadInteractor) GetIDByUserID(userID string)(string, error) {
-	return ti.ThreadRepository.GetIDByUserID(userID)
 }
 
 func (ti *threadInteractor) ShowTagsByUserID(userID string) (domain.Tags, error) {
@@ -148,3 +160,8 @@ func (ti *threadInteractor) ShowTagsByUserID(userID string) (domain.Tags, error)
 func (ti *threadInteractor) ShowEvaluationScoresByUserID(userID string) (domain.EvaluationScores, error) {
 	return ti.ThreadRepository.FindEvaluationsByUserID(userID)
 }
+
+func (ti *threadInteractor) ShowUserIDByThreadID(threadID string)(string, error) {
+	return ti.ThreadRepository.FindUserByThreadID(threadID)
+}
+

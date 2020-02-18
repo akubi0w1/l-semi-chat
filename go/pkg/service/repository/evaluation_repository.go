@@ -11,13 +11,13 @@ type evaluationRepository struct {
 }
 
 type EvaluationRepository interface {
-	StoreEvaluation(string, string) error
+	StoreEvaluation(ID, item  string) error
 	FindEvaluations()(evaluations domain.Evaluations, err error)
-	UpdateEvaluation(string,string) error
-	DeleteEvaluation(string)error
+	UpdateEvaluation(evaluationID, item string) error
+	DeleteEvaluation(evaluationID string)error
 
-	FindEvaluationByID(string)(domain.Evaluation, error)
-	FindUserByID(string)(domain.User, error)
+	FindEvaluationByID(userID string)(domain.Evaluation, error)
+	FindUserByID(evaluationID string)(domain.User, error)
 }
 
 func NewEvaluationRepository(sh SQLHandler) EvaluationRepository {

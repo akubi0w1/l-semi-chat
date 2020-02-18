@@ -16,12 +16,12 @@ type evaluationInteractor struct {
 }
 
 type EvaluationInteractor interface {
-	AddEvaluation(string)(domain.Evaluation, error)
-	UpdateEvaluation(string)(domain.Evaluation, error)
+	AddEvaluation(item string)(domain.Evaluation, error)
+	UpdateEvaluation(evaluationID, item string)(domain.Evaluation, error)
 	ShowEvaluations()(domain.Evaluation, error)
-	DeleteEvaluation(string)error
+	DeleteEvaluation(evaluationID string)error
 
-	CheckIsAdmin(string)(domain.Evaluation, error)
+	CheckIsAdmin(userID string)(domain.Evaluation, error)
 }
 
 func (ei *evaluationRepository) AddEvaluation(item string)(evaluation domain.Evaluation, err error) {
@@ -51,8 +51,8 @@ func (ei *evaluationRepository) ShowEvaluations()(domain.Evaluation, error) {
 	return ei.EvaluationRepository.FindEvaluations()
 }
 
-func (ei *evaluationRepository) UpdateEvaluation(evaluationID, item string)(domain.Evaluation, error) {
-	err = ei.EvaluationRepositoy.UpdateEvaluation(evaluationID, item)
+func (ei *evaluationRepository) UpdateEvaluation(evaluationID, item string)(evaluation domain.Evaluation, err error) {
+	err := ei.EvaluationRepositoy.UpdateEvaluation(evaluationID, item)
 	if err != nil {
 		logger.Error(fmt.Sprintf("update evaluation: %s", err.Error()))
 		return
@@ -73,10 +73,12 @@ func (ei *evaluationRepository) DeleteEvaluation(evaluationID string) error {
 func (ei *evaluationRepository) CheckIsAdmin(userID string)(bool, error) {
 	user, err := ei.EvaluationRepository.FindUserByID(userID)
 	if err != nil {
+		logger.Warn("thread checkAdmin: userのIDがない。 request userID=" userID)
 		return false, err
 	}
 	if user.IsAdmin != 1 {
-		return false, domain.Unauthorized(err)
+		logger.Warn("thread checkIsAdmin: 評価項目を操作する権限がない。 request userID=", userID)
+		return false, domain.Unauthorized(errors.New("評価項目を操作する権限がありません"))
 	} 
 	return true, nil
 }
