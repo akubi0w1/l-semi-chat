@@ -13,7 +13,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-// Authorized JWTの検証を行う
+// Authorized JWTの検証を行う。ログイン状態かを検証
 func Authorized(nextFunc http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

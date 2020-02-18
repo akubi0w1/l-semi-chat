@@ -136,6 +136,7 @@ func (ai *archiveInteractor) DeleteArchive(threadID string) error {
 func (ai *archiveInteractor) CheckIsAdmin(threadID, userID string) (bool, error) {
 	thread, err := ai.ArchiveRepository.FindThreadByThreadID(threadID)
 	if err != nil {
+		logger.Error("archive checkAdmin: ", err)
 		return false, err
 	}
 	if thread.Admin.UserID != userID {
