@@ -10,19 +10,20 @@ type threadRepository struct {
 }
 
 type threadRepository interface{
-	StoreThread(id,name,description,limitUsers,isPublic,createdAt timr.Time,UpdatedAt time.Time)error
+	StoreThread(id,name,description,userID string,limitUsers,isPublic int,createdAt ,UpdatedAt time.Time)error
 	FindThreads()(domain.thread, error)
-	FindThreadByID(string)(domain.threads, error)
-	UpdateThread(string, string, string, int, int)error
-	DeleteThread(string)error
-	FindUserByThreadID(string)(domain.Users, error)
-	JoinParticipantsByThreadID(string, string, string) error
-	FindAccountByID(string)(domain.account error)
-	RemoveParticipantsByUserID(string, string)error
+	FindThreadByID(threadID string)(domain.threads, error)
+	UpdateThread(threadID, name, description string, limitUsers, isPublic int)error
+	DeleteThread(threadID string)error
+	FindUsersByThreadID(threadID string)(domain.Users, error)
+	JoinParticipantsByThreadID(ID, threadID, userID string) error
+	FindAccountByID(userID string)(domain.account error)
+	RemoveParticipantsByUserID(threadID, userID string)error
 	
-	StoreUsersThread(string, string, string)error
-	FindTagsByUserID(string) (domain.Tags, error)
-	FindEvaluationsByUserID(string) (domain.EvaluationScores, error)
+	StoreUsersThread(id, threadID, userID string)error
+	FindTagsByUserID(userID string) (domain.Tags, error)
+	FindEvaluationsByUserID(userID string) (domain.EvaluationScores, error)
+	FindUserByThreadID(threadID string)(string, error)
 }
 
 func NewThreadRepository(sh SQLHandler) ThreadRepository {
@@ -31,13 +32,14 @@ func NewThreadRepository(sh SQLHandler) ThreadRepository {
 	}
 }
 
-func (tr *threadRepository) StoreThread(id,name,description,limitUsers,isPublic,createdAt time.Time,UpdatedAt time.Time)error{
+func (tr *threadRepository) StoreThread(id, name, description, userID string, limitUsers, isPublic int, createdAt, UpdatedAt time.Time)error{
 	_, err :=tr.SQLHandler.Execute(
-		"INSERT INTO threads(id,name,description,limit_users,is_public,created_at,updated_at) VALUES (?,?,?,?,?,?,?)",
+		"INSERT INTO threads(id,name,description,limit_users,user_id,is_public,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)",
 		id,
 		name,
 		description,
 		limitUsers,
+		userID
 		isPublic,
 		createdAt,
 		updatedAt,
@@ -47,10 +49,11 @@ func (tr *threadRepository) StoreThread(id,name,description,limitUsers,isPublic,
 
 func (tr *threadRepository) FindThreads()(threads domain.Threads, err error) {
 	rows, err := tr.SQLHandler.Query(`
-	SELECT threads.id, threads.name, threads.description, threads.limit_users, threads.is_public, threads.created_at, threads.updated_at 
+	SELECT threads.id, threads.name, threads.description, threads.limit_users, threads.is_public, threads.created_at, threads.updated_at, 
+	users.id, users.user_id, users.name
 	FROM threads
 	INNER JOIN users
-	ON threads.user_id = user.id`)
+	ON threads.user_id = users.id`)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Find thread: %s",err.Error()))
 		return threads, domain.InternalServerError(err)
@@ -68,7 +71,7 @@ func (tr *threadRepository) FindThreads()(threads domain.Threads, err error) {
 }
 
 func (tr *threadRepository) FindThreadByID(threadID string)(thread domain.Thread, err error) {
-	row := ar.SQLHandler.QueryRow(
+	row := tr.SQLHandler.QueryRow(
 		`SELECT threads.id, threads.name, threads.description, threads.limit_users, threads.user_id, threads.is_public, threads.created_at, threads.updated_at, users.user_id, users.name, users.image, users.profile
 		FROM threads
 		INNER JOIN users
@@ -83,24 +86,25 @@ func (tr *threadRepository) FindThreadByID(threadID string)(thread domain.Thread
 }
 
 func (tr *threadRepository) UpdateThread(threadID, name, description string, limitUsers, isPublic int)error {
-	query :="UPDATE threads"
+	query :="UPDATE threads SET"
 	var values []interface{}
 	if name != "" {
-		query += "SET name=?"
+		query += "name=?,"
 		values = append(values, name)
 	}
 	if description != "" {
-		query += "SET description=?"
+		query += "description=?,"
 		values = append(values, description)
 	}
 	if limitUsers != "" {
-		query += "SET limit_users=?"
+		query += "limit_users=?,"
 		values = append(values, limitUsers)
 	}
 	if isPublic != "" {
-		query += "SET is_public=?"
+		query += "is_public=?,"
 		values = append(values, isPublic)
 	}
+	query = strings.TrimSuffix(query, ",")
 	query += " WHERE id=?;"
 	values = append(values, threadID)
 
@@ -108,8 +112,8 @@ func (tr *threadRepository) UpdateThread(threadID, name, description string, lim
 	return domain.InternalServerError(err)
 }
 
-func (tr *threadRepository) FindAccountByID(userID string)(user domain.account, err error) {
-	row := ar.SQLHandler.QueryRow("SELECT user_id, name, mail, image, profile FROM users WHERE id=?", userID)
+func (tr *threadRepository) FindAccountByID(userID string)(user domain.User, err error) {
+	row := tr.SQLHandler.QueryRow("SELECT user_id, name, mail, image, profile FROM users WHERE id=?", userID)
 	if err = row.Scan(&user.UserID, &user.Name, &user.Mail, &user.Image, &user.Profile); err != nil {
 		return user, domain.InternalServerError(err)
 	}
@@ -117,18 +121,23 @@ func (tr *threadRepository) FindAccountByID(userID string)(user domain.account, 
 }
 
 func (tr *threadRepository) DeleteThread(threadID string) error {
-	_, err := ar.SQLHandler.Execute("DELETE FROM threads WHERE id=?", threadID)
+	_, err := tr.SQLHandler.Execute("DELETE FROM threads WHERE id=?", threadID)
 	return domain.InternalServerError(err)
 }
 
-func (tr *threadRepository) FindUserIDByThreadID(threadID string)(users domain.Users, err error) {
-	rows, err := tr.SQLHandler.Query(`SELECT user_id, name, mail, image, profile FROM users WHERE id IN (SELECT user_id FROM users_threads WHERE thread_id)`)
+func (tr *threadRepository) FindUsersByThreadID(threadID string)(users domain.Users, err error) {
+	rows, err := tr.SQLHandler.Query(`
+		SELECT users.id, users.user_id, users.name, users.image, users.profile
+		FROM  users
+		INNER JOIN (select user_id from users_threads where thread_id=?) as participants
+		ON participants.user_id = users.id`
+	)
 	if err != nil {
 		logger.Error(err)
 		return 
 	}
 	for rows.Next() {
-		var user domain.user
+		var user domain.User
 		if err = rows.Scan(&user.UserID, &user.Name, &user.Mail, &user.Image, &user.Profile); err != nil {
 			continue
 		}
@@ -136,48 +145,61 @@ func (tr *threadRepository) FindUserIDByThreadID(threadID string)(users domain.U
 	}
 	return
 }
-
+JoinParticipantsByThreadID
 func (tr *threadRepository) JoinParticipantsByThreadID(ID ,threadID, userID string) error {
-	isAdmin = 0
-	_, err := tr.SQLHandler.Execute(
-		"INSERT INTO users_threads(id, user_id, thread_id, is_admin) VALUES (?,?,?,?)",
-		ID,
-		userID,
-		threadID,
-		isAdmin,
-	)
-
+	var ut domain.users_thread
+	var num := 0
+	rows, err := tr.SQLHandler.Query(`SELECT user_id no_permit FROM users_threads WHERE thread_id=?`, threadID)
+	if err == nil {
+		for rows.Next(){
+			if err = rows.Scan(&ut.userID, &ut.noPermit);err != nil {
+				continue
+			}
+			
+			if ut.noPermit == 0 {
+				num++
+			}
+			else if ut.userID == userID{
+				return domain.Unauthorized(err)
+			}
+		}
+	}
+	else {
+		var thread domain.thread
+		row := tr.SQLHandler.QueryRow(`SELECT limit_users FROM threads WHERE id=?`, threadID)
+		if err = row.Scan(&thread.limitUsers); err != nil {
+			return domain.InternalServerError(err)
+		} 
+		if thread.limitUsers<=num {
+			return domain.Unauthorized(err)
+		}
+		_, err = tr.SQLHandler.Execute(
+			"INSERT INTO users_threads(id, user_id, thread_id) VALUES (?,?,?)",
+			ID,
+			userID,
+			threadID,
+		)
+	}
 	return domain.InternalServerError(err)
 }
 
-func (tr *threadRepository) RemoveParticipantsByUserID(threadID, userID){
-	_, err := ar.SQLHandler.Execute("DELETE FROM users_threads WHERE user_id=? AND thread_id=?",userID, threadID)
+func (tr *threadRepository) RemoveParticipantsByUserID(threadID, userID string)error{
+	_, err := tr.SQLHandler.Execute("UPDATE users_threads SET no_permit=1 WHERE user_id=? AND thread_id=?",userID, threadID)
 	return domain.InternalServerError(err)
 }
 
 func (tr *threadRepository) StoreUsersThread(id, threadID, userID string) error {
-	var isAdmin = 1
 	_, err :=tr.SQLHandler.Execute(
-		"INSERT INTO threads(id, user_id, thread_id, is_admin) VALUES (?,?,?,?)",
+		"INSERT INTO users_threads(id, user_id, thread_id) VALUES (?,?,?,?)",
 		id,
 		userID,
 		threadID,
-		isAdmin,
 	)
 	return domain.InternalServerError(err)
 }
 
-
-func (tr *threadRepository) GetIDByUserID(userID string)(id string, err error) {
-	row, err := tr.SQLHandler.Query(`SELECT id FROM users WHERE user_id=? `, userID)
-	if err = row.Scan(&id.UserID); err != nil {
-		return id.UserID, domain.InternalServerError(err)
-	}
-	return id.UserID, domain.InternalServerError(err)
-}
-
 func (tr *threadRepository) FindTagsByUserID(userID string) (tags domain.Tags, err error) {
-	rows, err := ar.SQLHandler.Query(
+	rows, err := tr.SQLHandler.Query(
 		`SELECT users_tags.tag_id, tags.tag, tags.category_id, categories.category
 		FROM users_tags
 		INNER JOIN tags
@@ -200,10 +222,8 @@ func (tr *threadRepository) FindTagsByUserID(userID string) (tags domain.Tags, e
 	return
 }
 func (tr *threadRepository) FindEvaluationsByUserID(userID string) (es domain.EvaluationScores, err error) {
-	rows, err := ar.SQLHandler.Query(
+	rows, err := tr.SQLHandler.Query(
 		`SELECT evaluation_scores.id, evaluations.item, evaluation_scores.score
-		FROM ls_chat.evaluation_scores
-		INNER JOIN ls_chat.evaluations
 		ON evaluations.id = evaluation_scores.evaluation_id
 		WHERE evaluation_scores.user_id=?`,
 		userID,
@@ -219,5 +239,18 @@ func (tr *threadRepository) FindEvaluationsByUserID(userID string) (es domain.Ev
 		}
 		es = append(es, item)
 	}
+	return
+}
+
+func (tr *threadRepository) FindUserByThreadID(threadID string)(userID string, err error) {
+	row, err := tr.SQLHandler.Query(`SELECT id, thread_id, user_id, is_admin, no_permit FROM users_threads WHERE is_admin=1 AND thread_id=?`)
+	if err != nil {
+		return
+	}
+	var ut domain.users_thread
+	if err = row.Scan(&ut.ID, &ut.userID, &ut.threadID, &ut.isPublic, &ut.noPermit); err != nil {
+		return
+	}
+	userID := us.userID
 	return
 }
