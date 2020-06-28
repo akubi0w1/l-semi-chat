@@ -35,3 +35,6 @@ $ gulp sass
 |     | sidebar | clontent |
 |     |         |          |
 ```
+
+![](./mockup/img/color.png)
+![](./mockup/img/screenImage.png)
