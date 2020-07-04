@@ -3,7 +3,8 @@ $base-color: #FFF6E8; // 背景色とか 70%
 $main-color: #3E2C27;
 $accent-color: #FF8E29; // テーマカラー的な 5%
 $sub-color: #B2886B;
-$annotate-color: #aaaaaa;
+$annotate-color: #888888;
+$danger-color: #CC2851;
 
 $border-radius: 5px;
 
@@ -113,7 +114,7 @@ body {
 
 // button
 .btn {
-  padding: 5px 10px;
+  padding: 3px 10px;
   border: 2px solid transparent;
   background-color: transparent;
   font-size: 1em;
@@ -129,6 +130,16 @@ body {
     border-color: $accent-color;
     color: $base-color;
   }
+  &-secondary {
+    background-color: $sub-color;
+    border-color: $sub-color;
+    color: $base-color;
+  }
+  &-danger {
+    background-color: $danger-color;
+    border-color: $danger-color;
+    color: $base-color;
+  }
 }
 
 // input
@@ -138,13 +149,14 @@ body {
     padding: 5px;
     border: none;
     border-bottom: 2px solid $sub-color;
+    background-color: transparent;
     &:focus {
       outline: none;
     }
   }
   &-label {
     font-size: small;
-    color: $annotate-color;
+    color: $sub-color;
   }
 }
 
@@ -254,16 +266,14 @@ body {
 
 // sidebar
 .sidebar-wrapper {
-  // background-color: $sub-color;
   width: $sidebar-width;
-  // display: block;
   border-right: 2px solid $sub-color;
   position: fixed;
   height: 100%;
   overflow-y: scroll;
-  // &::-webkit-scrollbar {
-  //   display: none;
-  // }
+  &::-webkit-scrollbar {
+    display: none;
+  }
   .search {
     position: fixed;
     background-color: $sub-color;
@@ -331,48 +341,4 @@ body {
   margin: 10px 20px;
 }
 
-// container
-// .container-wrapper {
-//   background-color: $base-color;
-//   width: 100%;
-//   display: block;
-// }
-
-// .container {
-//   background-color: $sub-color;
-//   margin: 10px 20px;
-//   height: 100vh;
-//   overflow: scroll;
-// }
-
-.board-title {
-  h2 {
-    font-weight: 400;
-    margin: 0;
-  }
-  border-bottom: 2px solid $main-color;
-}
-
-.board-dialog {
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .avatar {
-    display: inline-block;
-    // font-size: 100px;
-    width: 40px;
-    height: 40px;
-    background-color: $main-color;
-  }
-  .message {
-    padding: 10px;
-    border-bottom: 1px solid $main-color;
-    .info {
-      display: flex;
-      // vertical-align: middle;
-      align-items: center;
-    }
-  }
-}
+// TODO: これ以下に追加していくと良いかも
