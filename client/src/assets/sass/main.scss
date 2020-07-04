@@ -261,6 +261,9 @@ body {
   position: fixed;
   height: 100%;
   overflow-y: scroll;
+  // &::-webkit-scrollbar {
+  //   display: none;
+  // }
   .search {
     position: fixed;
     background-color: $sub-color;
@@ -321,6 +324,7 @@ body {
 
 .content-wrapper {
   margin-left: $sidebar-width;
+  width: 100%;
 }
 
 .content {
@@ -340,3 +344,35 @@ body {
 //   height: 100vh;
 //   overflow: scroll;
 // }
+
+.board-title {
+  h2 {
+    font-weight: 400;
+    margin: 0;
+  }
+  border-bottom: 2px solid $main-color;
+}
+
+.board-dialog {
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .avatar {
+    display: inline-block;
+    // font-size: 100px;
+    width: 40px;
+    height: 40px;
+    background-color: $main-color;
+  }
+  .message {
+    padding: 10px;
+    border-bottom: 1px solid $main-color;
+    .info {
+      display: flex;
+      // vertical-align: middle;
+      align-items: center;
+    }
+  }
+}

@@ -334,8 +334,41 @@ body {
 
 .content-wrapper {
   margin-left: 280px;
+  width: 100%;
 }
 
 .content {
   margin: 10px 20px;
+}
+
+.board-title {
+  border-bottom: 2px solid #3E2C27;
+}
+
+.board-title h2 {
+  font-weight: 400;
+  margin: 0;
+}
+
+.board-dialog ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.board-dialog .avatar {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  background-color: #3E2C27;
+}
+
+.board-dialog .message {
+  padding: 10px;
+  border-bottom: 1px solid #3E2C27;
+}
+
+.board-dialog .message .info {
+  display: flex;
+  align-items: center;
 }
