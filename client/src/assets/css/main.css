@@ -235,6 +235,27 @@ body {
   height: 32px;
 }
 
+.avatar-64 {
+  width: 64px;
+  height: 64px;
+}
+
+.cl-accent {
+  color: #FF8E29;
+}
+
+.cl-sub {
+  color: #B2886B;
+}
+
+.cl-annotate {
+  color: #888888;
+}
+
+.cl-disable {
+  color: #ccc;
+}
+
 .nav-wrapper {
   width: 60px;
   background-color: #FF8E29;
@@ -351,9 +372,141 @@ body {
 
 .content-wrapper {
   margin-left: 280px;
-  width: 100%;
+  width: calc(100% - 280px);
 }
 
 .content {
   margin: 10px 20px;
+}
+
+.chat-board-wrapper {
+  position: relative;
+}
+
+.chat-board-header {
+  padding: 8px 10px;
+  border-bottom: 3px solid #B2886B;
+  display: flex;
+  align-items: flex-start;
+}
+
+.chat-board-title {
+  font-size: 1.6em;
+  font-weight: bold;
+}
+
+.chat-board-description {
+  font-size: .9em;
+}
+
+.chat-board-timeline {
+  list-style: none;
+  margin-block-start: 0em;
+  margin-block-end: 0em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 0px;
+  padding: 8px 10px;
+}
+
+.chat-board-timeline .message {
+  display: flex;
+  border-bottom: 1px solid #B2886B;
+  box-sizing: border-box;
+  padding: 8px 0;
+}
+
+.chat-board-timeline .message:last-child {
+  border: 0;
+}
+
+.chat-board-timeline .message > div {
+  margin-left: 10px;
+}
+
+.chat-board-timeline .message > div:first-child {
+  margin-left: 0;
+}
+
+.chat-board-timeline .message-content {
+  display: block;
+  width: 100%;
+}
+
+.chat-board-timeline .message-header label {
+  font-weight: bold;
+}
+
+.chat-board-timeline .message-info {
+  text-align: center;
+}
+
+.chat-board-timeline .message-footer {
+  display: flex;
+  justify-content: flex-end;
+  font-size: .9em;
+}
+
+.chat-board-timeline .message-footer .control {
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.chat-board-timeline .message-footer .control > span {
+  margin-left: 3px;
+}
+
+.chat-board-textarea-wrapper {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  bottom: 20px;
+  z-index: 100;
+  width: calc(100% - 280px - 100px);
+  height: 140px;
+  box-sizing: border-box;
+}
+
+.chat-board-textarea {
+  box-sizing: border-box;
+  border: 4px solid #FF8E29;
+  border-radius: 5px;
+  width: 500px;
+  background-color: #fff;
+  padding: 10px 5px;
+}
+
+.chat-board-textarea textarea {
+  background-color: transparent;
+  color: #3E2C27;
+  border: 0;
+  font-size: 1.1em;
+  width: 100%;
+  height: 75%;
+  box-sizing: border-box;
+  resize: none;
+}
+
+.chat-board-textarea textarea:focus {
+  outline: none;
+}
+
+.chat-board-textarea-panel {
+  height: 25%;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 10px;
+}
+
+.chat-board-textarea-panel > div {
+  display: flex;
+}
+
+.chat-board-textarea-panel .control {
+  font-size: 1.4em;
+  margin-left: 15px;
+}
+
+.chat-board-textarea-panel .control:first-child {
+  margin: 0;
 }

@@ -225,6 +225,26 @@ body {
     width: 32px;
     height: 32px;
   }
+  &-64 {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+// color
+.cl {
+  &-accent {
+    color: $accent-color;
+  }
+  &-sub {
+    color: $sub-color;
+  }
+  &-annotate {
+    color: $annotate-color;
+  }
+  &-disable {
+    color: #ccc;
+  }
 }
 
 .nav-wrapper {
@@ -334,7 +354,7 @@ body {
 
 .content-wrapper {
   margin-left: $sidebar-width;
-  width: 100%;
+  width: calc(100% - #{$sidebar-width});
 }
 
 .content {
@@ -342,3 +362,123 @@ body {
 }
 
 // TODO: これ以下に追加していくと良いかも
+
+// chat-board
+.chat-board-wrapper {
+  position: relative;
+}
+
+.chat-board {
+  &-header {
+    padding: 8px 10px;
+    border-bottom: 3px solid $sub-color;
+    display: flex;
+    align-items: flex-start;
+  }
+  &-title {
+    font-size: 1.6em;
+    font-weight: bold;
+  }
+  &-description {
+    font-size: .9em;
+  }
+  &-timeline {
+    list-style: none;
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 0px;
+    padding: 8px 10px;
+    .info {
+
+    }
+    .message {
+      display: flex;
+      border-bottom: 1px solid $sub-color;
+      box-sizing: border-box;
+      padding: 8px 0;
+      &:last-child {
+        border: 0;
+      }
+      & > div{
+      margin-left: 10px;
+        &:first-child {
+          margin-left: 0;
+        }
+      }
+      &-content {
+        display: block;
+        width: 100%;
+      }
+      &-header {
+        label {
+          font-weight: bold;
+        }
+      }
+      &-info {
+        text-align: center;
+      }
+      &-footer {
+        display: flex;
+        justify-content: flex-end;
+        font-size: .9em;
+        .control {
+          display: inline-block;
+          margin-left: 8px;
+          > span {
+            margin-left: 3px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.chat-board-textarea-wrapper {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  bottom: 20px;
+  z-index: 100;
+  width: calc(100% - #{$sidebar-width} - 100px);
+  height: 140px;
+  box-sizing: border-box;
+}
+.chat-board-textarea {
+  box-sizing: border-box;
+  border: 4px solid $accent-color;
+  border-radius: 5px;
+  width: 500px;
+  background-color: #fff;
+  padding: 10px 5px;
+  textarea {
+    background-color: transparent;
+    color: $main-color;
+    border: 0;
+    font-size: 1.1em;
+    width: 100%;
+    height: 75%;
+    box-sizing: border-box;
+    resize: none;
+    &:focus {
+      outline: none;
+    }
+  }
+  &-panel {
+    height: 25%;
+    display: flex;
+    justify-content: space-between;
+    margin: 0 10px;
+    & > div {
+      display: flex;
+    }
+    .control {
+      font-size: 1.4em;
+      margin-left: 15px;
+      &:first-child{
+        margin: 0;
+      }
+    }
+  }
+}

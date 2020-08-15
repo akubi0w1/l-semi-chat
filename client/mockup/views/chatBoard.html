@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
+  <!-- cssの読み込み -->
+  <link rel="stylesheet" href="../../src/assets/css/main.css">
+</head>
+
+<body>
+
+  <div class="nav-wrapper">
+    <div class="nav">
+      <ul class="nav-list">
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-home"></i></a></li>
+        <li class="nav-item"><a href="#" class="nav-link avatar avatar-32 round"></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-comments"></i></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-phone"></i></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-cog"></i></a></li>
+      </ul>
+    </div>
+  </div>
+  <!-- END navigation -->
+
+  <div class="container">
+    <div class="sidebar-wrapper">
+      <div class="search">
+        <form method="GET" class="search-form">
+          <input type="text" name="key" />
+          <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
+      </div>
+      <!-- END search -->
+      <div class="sidebar">
+        <ul class="room-list">
+          <li class="room-item">
+            <a class="room-link">
+              <div>
+                <div class="avatar avatar-32 round"></div>
+                <h2 class="h3 room-name">Room name</h2>
+              </div>
+              <div>
+                <label>User > summary...</label>
+              </div>
+            </a>
+          </li>
+          <!-- END room-item -->
+        </ul>
+        <!-- END roomlist -->
+      </div>
+      <!-- END sidebar -->
+    </div>
+    <!-- END sidebar-wrapper -->
+
+    <div class="content-wrapper">
+      <div class="content">
+        <!-- TODO: ここにhtmlを書いていく -->
+          <div class="chat-board-wrapper">
+            <div class="chat-board">
+              <div class="chat-board-header">
+                <div class="mr-10 mt-10">
+                  <div class="avatar avatar-32 round"></div>
+                </div>
+                <div>
+                  <label class="chat-board-title">タイトル</label>
+                  <div class="chat-board-description">Description. Description. Hello I am lemon. Hello I am lemon. Hello I am lemon. Hello I am lemon. Hello I am lemon. Hello I am lemon.</div>
+                </div>
+              </div>
+              <ul class="chat-board-timeline">
+                <li class="message">
+                  <div class="message-avatar">
+                    <div class="avatar avatar-32 round">icon</div>
+                  </div>
+                  <div class="message-content">
+                    <div class="message-header">
+                      <label>名前</label>
+                    </div>
+                    <div class="message-body">
+                      こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。
+                    </div>
+                    <div class="message-footer">
+                      <div class="control"><i class="fas fa-star"></i><span>56</span></div>
+                      <div class="control"><i class="fas fa-star"></i><span>56</span></div>
+                    </div>
+                  </div>
+                </li>
+                <!-- END message -->
+
+                <li class="message">
+                  <div class="message-content">
+                    <div class="message-info">
+                      **さんが入室しました
+                    </div>
+                  </div>
+                </li>
+                <!-- END message -->
+                
+                <li class="message">
+                  <div class="message-avatar">
+                    <div class="avatar avatar-32 round">icon</div>
+                  </div>
+                  <div class="message-content">
+                    <div class="message-header">
+                      <label>名前</label>
+                    </div>
+                    <div class="message-body">
+                      こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。こんにちは。
+                    </div>
+                    <div class="message-footer">
+                      <div class="control"><i class="fas fa-star"></i><span>56</span></div>
+                      <div class="control"><i class="fas fa-star"></i><span>56</span></div>
+                    </div>
+                  </div>
+                </li>
+                <!-- END message -->
+
+              </ul>
+              <!-- END chat-board-timeline -->
+            </div>
+            <!-- END chat-board -->
+
+            <div class="chat-board-textarea-wrapper">
+              <div class="chat-board-textarea">
+                <textarea></textarea>
+                <div class="chat-board-textarea-panel">
+                  <div>
+                    <div class="control cl-disable"><i class="fas fa-times"></i></div>
+                  </div>
+                  <div>
+                    <div class="control cl-disable"><i class="fas fa-at"></i></div>
+                    <div class="control cl-disable"><i class="far fa-laugh"></i></div>
+                    <div class="control cl-accent"><i class="fas fa-play"></i></div>
+                  </div>
+                </div>
+              </div>
+              <!-- END chat-board-textarea -->
+            </div>
+            <!-- END chat-board-textarea-wrapper -->
+          </div>
+          <!-- END chat-board-wrapper -->
+
+          </div>
+      </div>
+      <!-- END content -->
+    </div>
+    <!-- END content-wrapper -->
+  </div>
+</body>
+
+</html>
