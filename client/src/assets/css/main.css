@@ -357,3 +357,40 @@ body {
 .content {
   margin: 10px 20px;
 }
+
+
+
+/*--------------------------------*/
+
+.creation{
+  text-align: center;
+  color: #FF8E29;
+  border-bottom:5px solid #B2886B;
+  width: 300px;
+}
+.form{
+  display: flex;
+  justify-content: center;
+}
+.room-creation{
+  display: flex;
+  flex-direction: column;
+  
+}
+.room-creation-public{
+  display: flex;
+  flex-direction: row;
+}
+
+.room-public .input-switch{
+  float: right 100px;
+}
+
+.room-creation .ok{
+  display: inline-block;
+  margin-right: 50px;
+}
+
+.room-creation .cancel{
+  float: right 100px;
+}

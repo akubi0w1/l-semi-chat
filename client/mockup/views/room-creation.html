@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
+  <!-- cssの読み込み -->
+  <link rel="stylesheet" href="../../src/assets/css/main.css">
+</head>
+
+<body>
+
+  <div class="nav-wrapper">
+    <div class="nav">
+      <ul class="nav-list">
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-home"></i></a></li>
+        <li class="nav-item"><a href="#" class="nav-link avatar avatar-32 round"></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-comments"></i></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-phone"></i></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-cog"></i></a></li>
+      </ul>
+    </div>
+  </div>
+  <!-- END navigation -->
+
+  <div class="container">
+    <div class="sidebar-wrapper">
+      <div class="search">
+        <form method="GET" class="search-form">
+          <input type="text" name="key" />
+          <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
+      </div>
+      <!-- END search -->
+      <div class="sidebar">
+        <ul class="room-list">
+          <li class="room-item">
+            <a class="room-link">
+              <div>
+                <div class="avatar avatar-32 round"></div>
+                <h2 class="h3 room-name">Room name</h2>
+              </div>
+              <div>
+                <label>User > summary...</label>
+              </div>
+            </a>
+          </li>
+          <!-- END room-item -->
+        </ul>
+        <!-- END roomlist -->
+      </div>
+      <!-- END sidebar -->
+    </div>
+    <!-- END sidebar-wrapper -->
+
+    <div class="content-wrapper">
+      <div class="content">
+        <!-- TODO: ここにhtmlを書いていく -->
+        <div class="form">
+          <div class="room-creation">
+            <div class="room-creation-title">
+              <h1 class="creation">作成</h1>
+            </div>
+            <div class="room-creation-name">
+              <h2 class="room-name">部屋名</h2>
+              <div class="ml-10 mt-10">
+                <input class="input-text" />
+              </div>
+            </div>
+            <div class="room-creation-tag">
+              <h2 class="room-tag">タグ</h2>
+              <div class="ml-10 mt-10">
+                <input class="input-text" />
+                <button class="btn btn-danger">+</button>
+              </div>
+            </div>
+            <div class="room-creation-number">
+              <h2 class="room-number">参加人数</h2>
+              <div class="ml-10 mt-10">
+                <input type="number" min=0>
+              </div>
+            </div>
+            <div class="room-creation-public">
+              <h2 class="room-public">Public</h2>
+              <div class="ml-20 mt-20">
+                <label class="input-switch">
+                  <input type="checkbox">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="room-creation-description">
+              <h2 class="description">説明</h2>
+              <div class="ml-10 mt-10">
+                <input class="input-text" />
+              </div>
+            </div>
+            <div class="ml-10 mt-10">
+              <div class="ok">
+                <div class="ml-10 mt-10">
+                  <button class="btn btn-primary">OK</button>
+                </div>
+              </div>
+              <div class="cancel">
+                <button class="btn btn-primary">キャンセル</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END room-creation -->
+      </div>
+      <!-- END content -->
+    </div>
+    <!-- END content-wrapper -->
+  </div>
+</body>
+
+</html>
