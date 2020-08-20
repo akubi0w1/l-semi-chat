@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
   <!-- cssの読み込み -->
-  <link rel="stylesheet" href="../src/assets/css/main.css">
+  <link rel="stylesheet" href="../../src/assets/css/main.css">
 </head>
 
 <body>
@@ -55,7 +55,27 @@
 
     <div class="content-wrapper">
       <div class="content">
-        <!-- TODO: ここにhtmlを書いていく -->
+        <div class="room-search">
+          <div class="room-search-title">
+            <h1 class="search">検索</h1>
+          </div>
+          <div class="enter-room-name">
+            <div class="ml-40 mt-10">
+              <input class="input-text" value="" placeholder="Room name"/>
+              <button type="submit"><i class="fas fa-search"></i></button>
+            </div>
+          </div>
+          <div clas="room-search-result">
+            <ul class="tab-result">
+              <li class="tab-result-item active">ユーザ</li>
+              <li class="tab-result-item">部屋名</li>
+              <li class="tab-result-item">タグ</li>
+            </ul>
+            <div class="tab-content">
+                content content
+            </div>
+          </div>
+        </div>
       </div>
       <!-- END content -->
     </div>
