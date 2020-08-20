@@ -432,7 +432,6 @@ body {
 
 /*-----------------------------------------------------------*/
 
-
 .room-search-title .search{
   text-align: center;
   color: #FF8E29;
@@ -440,20 +439,7 @@ body {
   width: 600px;
 }
 
-.parent {
-  background-color: gray;
-  padding: 10px;
-  /* text-align: center; */
-  display: flex;
-  justify-content: center;
-}
-.children {
-  background-color: yellow;
-  width: 100px;
-  height: 100px;
-  margin-left: 10px;
-}
-.tab-menu {
+.tab-result {
   list-style: none;
   display: flex;
   margin-block-start: 0em;
@@ -462,22 +448,63 @@ body {
   margin-inline-end: 0px;
   padding-inline-start: 0px;
 }
-.tab-menu-item {
-  border: 2px solid red;
+.tab-result-item {
+  border: 2px solid #B2886B;
   /* background-color: cadetblue; */
-  /* color: #fff; */
+  /* color: #FF8E29; */
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   padding: 5px 10px 3px;
   margin-right: 4px;
+  width: 100px;
+  text-align: center;
 }
 .active {
-  border-bottom: 2px solid #fff;
+  border-bottom: 2px solid #FFF6E8;
 }
-.tab-content {
+
+.tab-result-content {
   margin-top: -2px;
-  padding: 10px;
-  border: 2px solid black;
+  padding: 5px;
+  border: 2px solid #B2886B;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
+
 }
+
+/* User */
+
+/* Room name */
+.tab-result-room-name .result{
+  border: solid 3px #B2886B;
+  width: 100px;
+  height: 100px;
+}
+
+.tab-result-room-name .room-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.tab-result-room-name .room-item {
+  border-bottom: 2px solid #B2886B;
+}
+
+.tab-result-room-name .room-link {
+  display: block;
+  padding: 10px 20px;
+}
+
+.tab-result-room-name .room-link:hover {
+  background-color: #B2886B;
+}
+
+.tab-result-room-name .room-tag{
+  color: #FF8E29;
+  font-size: 15px;
+  margin-top: 10px;
+}
+
+/*Tag*/
