@@ -473,6 +473,33 @@ body {
 }
 
 /* User */
+.tab-result-user .user-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tab-result-user .user-item {
+  border-bottom: 2px solid #B2886B;
+}
+
+.tab-result-user .user-link {
+  display: block;
+  padding: 10px 20px;
+}
+
+.tab-result-user .user-link:hover {
+  background-color: #B2886B;
+}
+
+.tab-result-user .user-name{
+  margin-bottom:0;
+}
+.tab-result-user .user-id{
+  color: #888888;
+  margin-top: -5px;
+  margin-bottom:10px;
+}
 
 /* Room name */
 .tab-result-room-name .result{
