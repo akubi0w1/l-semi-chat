@@ -55,90 +55,53 @@
 
     <div class="content-wrapper">
       <div class="content">
-        <div class="room-search">
-          <div class="room-search-title">
-            <h1 class="search">検索</h1>
-          </div>
-          <div class="enter-room-name">
-            <div class="ml-10 mt-10">
-              <input class="input-text" value="" placeholder="Room name"/>
-              <button type="submit"><i class="fas fa-search"></i></button>
+        <div class="form">
+          <div class="room-search">
+            <div class="room-search-title">
+              <h1 class="search">検索</h1>
             </div>
-          </div>
-        </div>
-        <div clas="room-result">
-          <div class="ml-10 mt-40">
-            <ul class="tab-result">
-              <li class="tab-result-item">User</li>
-              <li class="tab-result-item active">Room name</li>
-              <li class="tab-result-item">Tag</li>
-            </ul>
-            <div class="tab-result-content">
-              <div class="tab-result-user">
-                <ul class="user-list">
-                  <li class="user-item">
-                    <a class="user-link">
-                      <div>
-                        <div class="avatar avatar-32 round"></div>
-                        <h2 class="h3 user-name">User</h2>
-                        <div class="user-id">@aaaaaaaaaaaaaaaa</div>
-                        <div class="user-comment">Comment. Comment. Hello. Hello. Hello. Hello. Hello. Hello. </div>
-                      </div>
-                    </a>
-                  </li>
-                  <!-- END user-item -->
-                </ul>
-                <!-- END userlist -->
-                <ul class="user-list">
-                  <li class="user-item">
-                    <a class="user-link">
-                      <div>
-                        <div class="avatar avatar-32 round"></div>
-                        <h2 class="h3 user-name">User</h2>
-                        <div class="user-id">@aaaaaaaaaaaaaaaa</div>
-                        <div class="user-comment">Comment. Comment. Hello. Hello. Hello. Hello. Hello. Hello. </div>
-                      </div>
-                    </a>
-                  </li>
-                  <!-- END user-item -->
-                </ul>
-                <!-- END userlist -->
-                <ul class="user-list">
-                  <li class="user-item">
-                    <a class="user-link">
-                      <div>
-                        <div class="avatar avatar-32 round"></div>
-                        <h2 class="h3 user-name">User</h2>
-                        <div class="user-id">@aaaaaaaaaaaaaaaa</div>
-                        <div class="user-comment">Comment. Comment. Hello. Hello. Hello. Hello. Hello. Hello. </div>
-                      </div>
-                    </a>
-                  </li>
-                  <!-- END user-item -->
-                </ul>
-                <!-- END userlist -->
-                <ul class="user-list">
-                  <li class="user-item">
-                    <a class="user-link">
-                      <div>
-                        <div class="avatar avatar-32 round"></div>
-                        <h2 class="h3 user-name">User</h2>
-                        <div class="user-id">@aaaaaaaaaaaaaaaa</div>
-                        <div class="user-comment">Comment. Comment. Hello. Hello. Hello. Hello. Hello. Hello. </div>
-                      </div>
-                    </a>
-                  </li>
-                  <!-- END user-item -->
-                </ul>
-                <!-- END userlist -->
+            <div class="enter-room-name">
+              <div class="ml-10 mt-10">
+                <form method="GET" class="search-form">
+                  <input type="text" name="key" value="" placeholder="Room name"/>
+                  <button type="submit"><i class="fas fa-search"></i></button>
+                </form>
               </div>
-              <!-- tab-result-user -->
-              ああああああああ
             </div>
-            <!-- tab-result-content -->
+            <div clas="room-result">
+              <div class="ml-10 mt-40">
+                <ul class="tab-result">
+                  <li class="tab-result-item">User</li>
+                  <li class="tab-result-item">Room name</li>
+                  <li class="tab-result-item active">Tag</li>
+                </ul>
+                <div class="tab-result-content">
+                  <!-- ページ別　roomSearch-Tag.html -->
+                  <div class="tab-result-tag">
+                    aaaaaaaaaaaaa
+                  </div>
+                  <!-- END tab-result-tag -->
+                  <div class="pagination">
+                    <ul class="pagination-list">
+                      <li><a href="#"><i class="fas fa-caret-left"></i></a></li>
+                      <li><a  href="#"><i class="fas fa-circle"></i></a></li>
+                      <li><a class="active" href="#"><i class="fas fa-circle"></i></a></li>
+                      <li><a href="#"><i class="fas fa-circle"></i></a></li>
+                      <li><a href="#"><i class="fas fa-circle"></i></a></li>
+                      <li><a href="#"><i class="fas fa-circle"></i></a></li>
+                      <li><a href="#"><i class="fas fa-caret-right"></i></a></li>
+                    </ul>
+                  </div>
+                  <!-- END pagination -->
+                </div>
+                <!-- END tab-result-content -->
+              </div>
+            </div>
+            <!-- END room-result -->
           </div>
+          <!-- END room-search -->
         </div>
-        <!-- room-result -->
+        <!-- END form -->
       </div>
       <!-- END content -->
     </div>
@@ -147,7 +110,6 @@
 </body>
 
 </html>
-
 <!-- 
   <div class="tab-result-room-name">
     ┗ chat-board-description

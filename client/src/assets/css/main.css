@@ -362,6 +362,8 @@ body {
 
 /*--------------------------------*/
 
+/* room-creation */
+
 .form{
   display: flex;
   justify-content: center;
@@ -378,10 +380,12 @@ body {
   border-bottom:5px solid #B2886B;
   width: 600px;
 }
+
 .room-creation-tag .control-tag{
   display: flex;
   align-items: flex-end;
 }
+
 .room-creation-tag .control-tag .tag{
   color: #FF8E29;
   font-size: 20px;
@@ -401,6 +405,7 @@ body {
 .room-public .input-switch{
   float: right 100px;
 }
+
 .room-creation-description-textarea{
   box-sizing: border-box;
   border: 2px solid #B2886B;
@@ -410,6 +415,7 @@ body {
   background-color: #fff;
   padding: 10px 5px;
 }
+
 .room-creation-description-textarea textarea{
   background-color: transparent;
   color: #3E2C27;
@@ -430,13 +436,65 @@ body {
   justify-content: flex-end;
 }
 
+
+
 /*-----------------------------------------------------------*/
 
-.room-search-title .search{
+/* room-search */
+
+.room-search{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.room-search-title .search {
   text-align: center;
   color: #FF8E29;
   border-bottom:5px solid #B2886B;
   width: 600px;
+}
+
+.enter-room-name {
+  padding: 8px 10px;
+  border-bottom:2px solid #B2886B;
+  width: 500px;
+}
+
+.enter-room-name .search-form {
+  background-color: #FFF6E8;
+  box-sizing: border-box;
+  border-radius: 1em;
+  display: flex;
+}
+
+.enter-room-name .search-form input[type=text] {
+  background-color: transparent;
+  border: 0;
+  font-size: 1em;
+  width: 100%;
+  padding: 3px 15px;
+}
+
+.enter-room-name .search-form input[type=text]:focus {
+  outline: none;
+}
+
+.enter-room-name .search-form button[type=submit] {
+  background-color: transparent;
+  border: 0;
+  width: 50px;
+}
+
+.enter-room-name .search-form button[type=submit]:focus {
+  outline: none;
+}
+
+
+.enter-room-name .search-form button[type=submit] {
+  background-color: transparent;
+  border: 0;
+  width: 50px;
 }
 
 .tab-result {
@@ -448,10 +506,9 @@ body {
   margin-inline-end: 0px;
   padding-inline-start: 0px;
 }
+
 .tab-result-item {
   border: 2px solid #B2886B;
-  /* background-color: cadetblue; */
-  /* color: #FF8E29; */
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   padding: 5px 10px 3px;
@@ -459,6 +516,7 @@ body {
   width: 100px;
   text-align: center;
 }
+
 .active {
   border-bottom: 2px solid #FFF6E8;
 }
@@ -472,7 +530,7 @@ body {
 
 }
 
-/* User */
+/* roomSearch-User */
 .tab-result-user .user-list {
   list-style: none;
   margin: 0;
@@ -495,13 +553,14 @@ body {
 .tab-result-user .user-name{
   margin-bottom:0;
 }
+
 .tab-result-user .user-id{
   color: #888888;
   margin-top: -5px;
   margin-bottom:10px;
 }
 
-/* Room name */
+/* roomSearch-RoomName */
 .tab-result-room-name .result{
   border: solid 3px #B2886B;
   width: 100px;
@@ -534,4 +593,46 @@ body {
   margin-top: 10px;
 }
 
-/*Tag*/
+/* roomSearch-Tag */
+
+
+
+/* Pagination */
+.pagination {
+  display: flex;
+  padding: 0;
+  margin: 0;
+  justify-content: center;
+}
+
+.pagination .pagination-list {
+  display: flex;
+  list-style: none;
+  padding: 0;
+}
+
+.pagination-list li a {
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #888888;
+  align-items: center;
+}
+
+.pagination-list li a .fas{
+  font-size:15px;
+  align-items: stretch;
+} 
+
+.pagination-list li a.active {
+  color: #CC2851;
+  height: 20px;
+}
+
+.pagination-list li a.active .fas {
+  font-size:16px;  
+}
+
+.pagination-list li a:hover:not(.active) {
+  color: #FF8E29;
+}
