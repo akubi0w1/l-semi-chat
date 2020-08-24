@@ -358,86 +358,6 @@ body {
   margin: 10px 20px;
 }
 
-
-
-/*--------------------------------*/
-
-/* room-creation */
-
-.form{
-  display: flex;
-  justify-content: center;
-}
-
-.room-creation{
-  display: flex;
-  flex-direction: column;
-}
-
-.room-creation-title .creation{
-  text-align: center;
-  color: #FF8E29;
-  border-bottom:5px solid #B2886B;
-  width: 600px;
-}
-
-.room-creation-tag .control-tag{
-  display: flex;
-  align-items: flex-end;
-}
-
-.room-creation-tag .control-tag .tag{
-  color: #FF8E29;
-  font-size: 20px;
-}
-
-.room-creation-input-number{
-  box-sizing: border-box;
-  border: 2px solid #B2886B;
-  border-radius: 5px;
-}
-
-.room-creation-public{
-  display: flex;
-  flex-direction: row;
-}
-
-.room-public .input-switch{
-  float: right 100px;
-}
-
-.room-creation-description-textarea{
-  box-sizing: border-box;
-  border: 2px solid #B2886B;
-  border-radius: 5px;
-  width: 500px;
-  height: 100px;
-  background-color: #fff;
-  padding: 10px 5px;
-}
-
-.room-creation-description-textarea textarea{
-  background-color: transparent;
-  color: #3E2C27;
-  border: 0;
-  font-size: 1.1em;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  resize: none;
-}
-
-.room-creation-description-textarea textarea:focus{
-  outline: none;
-}
-
-.room-creation-action-btn{
-  display: flex;
-  justify-content: flex-end;
-}
-
-
-
 /*-----------------------------------------------------------*/
 
 /* room-search */
@@ -598,14 +518,43 @@ body {
 }
 
 .tab-result-room-name .room-tag{
-  color: #FF8E29;
+  color: #402E32;
   font-size: 15px;
   margin-top: 10px;
 }
 
 /* roomSearch-Tag */
+.tab-result-tag .result{
+  border: solid 3px #B2886B;
+  width: 100px;
+  height: 100px;
+}
 
+.tab-result-tag .room-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-top: 20px;
+}
 
+.tab-result-tag .room-item {
+  border-bottom: 2px solid #B2886B;
+}
+
+.tab-result-tag .room-link {
+  display: block;
+  padding: 10px 20px;
+}
+
+.tab-result-tag .room-link:hover {
+  background-color: #B2886B;
+}
+
+.tab-result-tag .room-tag{
+  color: #FF8E29;
+  font-size: 15px;
+  margin-top: 10px;
+}
 
 /* Pagination */
 .pagination {
