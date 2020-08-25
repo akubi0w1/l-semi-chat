@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
+  <!-- cssの読み込み -->
+  <link rel="stylesheet" href="../../src/assets/css/main.css">
+</head>
+
+<body>
+
+  <div class="nav-wrapper">
+    <div class="nav">
+      <ul class="nav-list">
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-home"></i></a></li>
+        <li class="nav-item"><a href="#" class="nav-link avatar avatar-32 round"></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-comments"></i></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-phone"></i></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-cog"></i></a></li>
+      </ul>
+    </div>
+  </div>
+  <!-- END navigation -->
+
+  <div class="container">
+    <div class="sidebar-wrapper">
+      <div class="search">
+        <form method="GET" class="search-form">
+          <input type="text" name="key" />
+          <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
+      </div>
+      <!-- END search -->
+      <div class="sidebar">
+        <ul class="room-list">
+          <li class="room-item">
+            <a class="room-link">
+              <div>
+                <div class="avatar avatar-32 round"></div>
+                <h2 class="h3 room-name">Room name</h2>
+              </div>
+              <div>
+                <label>User > summary...</label>
+              </div>
+            </a>
+          </li>
+          <!-- END room-item -->
+        </ul>
+        <!-- END roomlist -->
+      </div>
+      <!-- END sidebar -->
+    </div>
+    <!-- END sidebar-wrapper -->
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="room-search">
+          <div class="room-search-title">
+            <h1 class="search">検索</h1>
+          </div>
+          <div class="enter-room-name">
+            <div class="ml-10 mt-10">
+              <form method="GET" class="search-form">
+                <input type="text" name="key" value="" placeholder="search"/>
+                <button type="submit"><i class="fas fa-search"></i></button>
+              </form>
+            </div>
+          </div>
+          <div clas="room-result">
+            <div class="ml-0 mt-40">
+              <ul class="tab-result">
+                <li class="tab-result-item"><a class="tab-item">User</a></li>
+                <li class="tab-result-item active"><a class="tab-item">Room name</a></li>
+                <li class="tab-result-item"><a class="tab-item">Tag</a></li>
+              </ul>
+              <div class="tab-result-content">
+                <!-- ページ別 roomSearch-RoomName.html -->
+                <div class="tab-result-room-name">
+                  <ul class="room-list">
+                    <li class="room-item">
+                      <a class="room-link">
+                        <div>
+                          <div class="avatar avatar-32 round"></div>
+                          <h2 class="h3 room-name">Room name</h2>
+                          <div class="chat-board-description">Description. Description. Hello I am lemon. Hello I am lemon.</div>
+                          <div class="room-tag">
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                    <!-- END room-item -->
+                    <li class="room-item">
+                      <a class="room-link">
+                        <div>
+                          <div class="avatar avatar-32 round"></div>
+                          <h2 class="h3 room-name">Room name</h2>
+                          <div class="chat-board-description">Description. Description. Hello I am lemon. Hello I am lemon.</div>
+                          <div class="room-tag">
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                    <!-- END room-item -->
+                    <li class="room-item">
+                      <a class="room-link">
+                        <div>
+                          <div class="avatar avatar-32 round"></div>
+                          <h2 class="h3 room-name">Room name</h2>
+                          <div class="chat-board-description">Description. Description. Hello I am lemon. Hello I am lemon. Description. Description. Hello I am lemon. Hello I am lemon.</div>
+                          <div class="room-tag">
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                    <!-- END room-item -->
+                    <li class="room-item">
+                      <a class="room-link">
+                        <div>
+                          <div class="avatar avatar-32 round"></div>
+                          <h2 class="h3 room-name">Room name</h2>
+                          <div class="chat-board-description">Description. Description. Hello I am lemon. Hello I am lemon.</div>
+                          <div class="room-tag">
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                            <i class="fas fa-tag tag">aaa</i>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                    <!-- END room-item -->
+                  </ul>
+                  <!-- END room-list -->
+                </div>
+                <!-- END tab-result-room-name -->
+                <div class="pagination">
+                  <ul class="pagination-list">
+                    <li><a href="#"><i class="fas fa-caret-left"></i></a></li>
+                    <li><a  href="#">1</a></li>
+                    <li><a class="active" href="#">2</i></a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li><a href="#"><i class="fas fa-caret-right"></i></a></li>
+                  </ul>
+                </div>
+                <!-- END pagination -->
+              </div>
+              <!-- END tab-result-content -->
+            </div>
+          </div>
+          <!-- END room-result -->
+        </div>
+        <!-- END room-seach -->
+      </div>
+      <!-- END content -->
+    </div>
+    <!-- END content-wrapper -->
+  </div>
+</body>
+
+</html>
