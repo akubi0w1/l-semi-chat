@@ -19,8 +19,8 @@ COMMENT = 'ユーザ';
 CREATE TABLE IF NOT EXISTS `ls_chat`.`threads`(
     `id` VARCHAR(36) PRIMARY KEY NOT NULL COMMENT 'id',
     `name` VARCHAR(32) NOT NULL COMMENT '名前',
-    `description` VARCHAR(150) COMMENT '説明',
-    `limit_users` INTEGER COMMENT '上限人数',
+    `description` VARCHAR(150) DEFAULT "" COMMENT '説明',
+    `limit_users` INTEGER DEFAULT -1 COMMENT '上限人数',
     `user_id` VARCHAR(64) NOT NULL COMMENT '管理者',-- F
     `is_public` TINYINT NOT NULL DEFAULT 0 COMMENT '範囲',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`archives`(
     `path` VARCHAR(128) NOT NULL COMMENT 'ファイルのpath',
     `is_public` TINYINT NOT NULL DEFAULT 1 COMMENT '公開範囲',
     `password` VARCHAR(70) NOT NULL COMMENT 'パスワード' ,
-    `thread_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
+    `thread_id` VARCHAR(36) NOT NULL UNIQUE COMMENT 'スレッドID',
     CONSTRAINT `fk_archives_threads`
         FOREIGN KEY (`thread_id`)
         REFERENCES `ls_chat`.`threads` (`id`)
@@ -141,6 +141,7 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`users_threads`(
     `user_id` VARCHAR(36) NOT NULL COMMENT 'ユーザーID',
     `thread_id` VARCHAR(36) NOT NULL COMMENT 'スレッドID',
     `is_admin` TINYINT NOT NULL DEFAULT 0 COMMENT 'スレッドの管理者判断',
+    `no_permit` TINYINT NOT NULL DEFAULT 0 COMMENT '入室禁止なら1が入る'
     PRIMARY KEY (`id`),
     CONSTRAINT 
         FOREIGN KEY (`user_id`)
@@ -190,8 +191,8 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`evaluation_scores`(
     CONSTRAINT `fk_evaluation_scores_users`
         FOREIGN KEY (`user_id`)
         REFERENCES `ls_chat`.`users` (`id`)
-        ON DELETE NO ACTION
-        ON UPDATE NO ACTION,
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
     CONSTRAINT `unique_user_evaluation`
         UNIQUE (`user_id`, `evaluation_id`)
 )
