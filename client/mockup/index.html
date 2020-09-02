@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
   <!-- cssの読み込み -->
   <link rel="stylesheet" href="../src/assets/css/main.css">
@@ -140,20 +141,72 @@
       
       <div class="content-wrapper">
         <div class="content">
-          ここの、containerの部分に色々突っ込んでいく感じ。
-          <h1>aaa</h1>
-          <h1>aaa</h1>
-          <h1>aaa</h1>
-          <h1>aaa</h1>
-          <h1>aaa</h1>
-          <h1>aaa</h1>
-          <h1>aaa</h1>
-          <h1>aaa</h1>
-          <h1>aaa</h1>
-          <h1>aaa</h1>
-          <h1>aaa</h1>
-          <h1>aaa</h1>
-          <h1>aaa</h1>
+          <h1>素材</h1>
+          <h2>ボタン</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>クラス</th>
+                <th>コンポーネント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>class="btn btn-primary"</td>
+                <td><button class="btn btn-primary">ボタン</button></td>
+              </tr>
+              <tr>
+                <td>class="btn btn-secondary"</td>
+                <td><button class="btn btn-secondary">ボタン</button></td>
+              </tr>
+              <tr>
+                <td>class="btn btn-danger"</td>
+                <td><button class="btn btn-danger">ボタン</button></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>スライドボタン</h2>
+          <label class="input-switch">
+            <input type="checkbox">
+            <span class="slider round"></span>
+          </label>
+
+          <h2>フォーム</h2>
+          <div class="ml-10 mt-10">
+            <div><label class="input-label">input label</label></div>
+            <input class="input-text" />
+          </div>
+
+          <h2>margin</h2>
+          X = [10, 50]
+          <table>
+            <thead>
+              <tr>
+                <th>テンプレ</th>
+                <th>style</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>class="mt-X"</td>
+                <td>margin-top: Xpx</td>
+              </tr>
+              <tr>
+                <td>class="mr-X"</td>
+                <td>margin-right: Xpx</td>
+              </tr>
+              <tr>
+                <td>class="ml-X"</td>
+                <td>margin-left: Xpx</td>
+              </tr>
+              <tr>
+                <td>class="mb-X"</td>
+                <td>margin-bottom: Xpx</td>
+              </tr>
+          
+            </tbody>
+          </table>
         </div>
         <!-- END content -->
       </div>
@@ -161,18 +214,6 @@
     </div>
 
 
-  <!-- <div class="box">aaaa</div>
-  <div class="ml-10 mt-10">
-    <button class="btn btn-primary">button</button>
 
-    <label class="input-switch">
-      <input type="checkbox">
-      <span class="slider round"></span>
-    </label>
-  </div>
-  <div class="ml-10 mt-10">
-    <div><label class="input-label">input label</label></div>
-    <input class="input-text" />
-  </div> -->
 </body>
 </html>
