@@ -144,6 +144,12 @@ body {
   color: #FFF6E8;
 }
 
+.btn-cancel{
+  background-color: #FFF6E8;
+  border-color: #B2886B;
+  color: #3E2C27;
+}
+
 .input-text {
   font-size: 1em;
   padding: 5px;
@@ -376,11 +382,17 @@ body {
   border-bottom:5px solid #B2886B;
   width: 600px;
 }
-.room-creation-tag .control-tag{
+
+.room-creation-tag{
   display: flex;
   align-items: flex-end;
 }
-.room-creation-tag .control-tag .tag{
+
+.room-creation-tag > * {
+  margin-left: 10px;
+}
+
+.room-creation-tag .tag{
   color: #FF8E29;
   font-size: 20px;
 }
@@ -405,6 +417,7 @@ body {
   background-color: #fff;
   padding: 10px 5px;
 }
+
 .room-creation-description-textarea textarea{
   background-color: transparent;
   color: #3E2C27;
@@ -423,4 +436,9 @@ body {
 .room-creation-action-btn{
   display: flex;
   justify-content: flex-end;
+  margin-top: 50px;
+}
+
+.room-creation-action-btn > * {
+	margin-left: 20px;
 }

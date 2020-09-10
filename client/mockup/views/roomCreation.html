@@ -61,31 +61,19 @@
             <div class="room-creation-title">
               <h1 class="creation">作成</h1>
             </div>
-            <div class="room-creation-name">
-              <h2 class="room-name">部屋名</h2>
-              <div class="ml-40 mt-10">
-                <input class="input-text" />
-              </div>
+            <h2 class="form-name">部屋名</h2>
+            <div class="ml-40 mt-10">
+              <input class="input-text" type=text/>
             </div>
+            <h2 class="form-title">タグ</h2>
             <div class="room-creation-tag">
-              <h2 class="room-tag">タグ</h2>
-              <div class="control-tag">
-                <div class="ml-40 mt-0">
-                  <i class="fas fa-tag tag"></i>
-                </div>
-                <div class="ml-0 mt-0">
-                  <input class="input-text" />
-                </div>
-                <div class="ml-10 mt-0">
-                  <button class="btn btn-danger">+</button>
-                </div>
-              </div>
+              <i class="fas fa-tag tag"></i>
+              <input class="input-text" />
+              <button class="btn btn-danger">+</button>
             </div>
-            <div class="room-creation-number">
-              <h2 class="room-number">参加人数</h2>
-              <div class="ml-40 mt-10">
-                <input type="number"  class="room-creation-input-number" min=0>
-              </div>
+            <h2 class="form-number">参加人数</h2>
+            <div class="ml-40 mt-10">
+              <input type="number"  class="room-creation-input-number" min=0>
             </div>
             <div class="room-creation-public">
               <h2 class="room-public">Public</h2>
@@ -98,27 +86,21 @@
             </div>
             <div class="room-creation-description">
               <h2 class="description">説明</h2>
-                <div class="ml-40 mt-10">
-                  <div class="room-creation-description-textarea">
+              <div class="ml-40 mt-10">
+                <div class="room-creation-description-textarea">
                   <textarea></textarea>
                 </div>
               </div>
-             </div>
-            <div class="room-creation-action-btn">
-              <div class="ok">
-                <div class="ml-20 mt-50">
-                 <button class="btn btn-primary">ok</button>
-                </div>
-              </div>
-              <div class="cancel">
-                <div class="ml-20 mt-50">
-                  <button class="btn btn-primary">cancel</button>
-                </div>
-              </div>
             </div>
+            <div class="room-creation-action-btn">
+              <button class="btn btn-cancel">cancel</button>
+              <button class="btn btn-primary">ok</button>              
+            </div>
+            <!-- END room-creation-action-btn -->
           </div>
+          <!-- END room-creation -->
         </div>
-        <!-- END room-creation -->
+        <!-- END form -->
       </div>
       <!-- END content -->
     </div>
