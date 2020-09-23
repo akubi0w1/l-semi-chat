@@ -140,6 +140,11 @@ body {
     border-color: $danger-color;
     color: $base-color;
   }
+  &-cancel {
+    background-color: $base-color;
+    border-color: $sub-color;
+    color: $main-color;
+  }
 }
 
 // input
@@ -342,3 +347,76 @@ body {
 }
 
 // TODO: これ以下に追加していくと良いかも
+
+/* room-creation */
+.form{
+  display: flex;
+  justify-content: center;
+}
+.room-creation{
+  display: flex;
+  flex-direction: column;
+  &-title {
+    .creation{
+      text-align: center;
+      color: $accent-color;
+      border-bottom:5px solid $sub-color;
+      width: 600px;
+    }
+  }
+  &-tag {
+    display: flex;
+    align-items: flex-end;
+    *{
+      margin-left: 10px;
+    }
+    &.tag{
+      color: $accent-color;
+      font-size: 20px;      
+    }
+  }
+  &-input{
+    &-number{
+      box-sizing: border-box;
+      border: 2px solid $sub-color;
+      border-radius: 5px;    
+    }
+  }
+  &-public{
+    display: flex;
+    flex-direction: row;  
+  }
+  &-description{
+    &-textarea{
+      box-sizing: border-box;
+      border: 2px solid $sub-color;
+      border-radius: 5px;
+      width: 500px;
+      height: 100px;
+      background-color: #fff;
+      padding: 10px 5px;
+      textarea{
+        background-color: transparent;
+        color: $main-color;
+        border: 0;
+        font-size: 1.1em;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        resize: none;
+        &:focus{
+          outline: none;
+        }
+      }
+    }
+  }
+  &-action{
+    &-btn{
+      display: flex;
+      justify-content: flex-end;
+      *{
+        margin-left: 20px;
+      }
+    }
+  }
+}

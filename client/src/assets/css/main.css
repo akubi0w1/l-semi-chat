@@ -144,6 +144,12 @@ body {
   color: #FFF6E8;
 }
 
+.btn-cancel{
+  background-color: #FFF6E8;
+  border-color: #B2886B;
+  color: #3E2C27;
+}
+
 .input-text {
   font-size: 1em;
   padding: 5px;
@@ -356,6 +362,87 @@ body {
 
 .content {
   margin: 10px 20px;
+}
+
+/*-----------------------------------------------------------*/
+
+/* room-creation */
+
+.form{
+  display: flex;
+  justify-content: center;
+}
+
+.room-creation{
+  display: flex;
+  flex-direction: column;
+}
+
+.room-creation-title .creation{
+  text-align: center;
+  color: #FF8E29;
+  border-bottom:5px solid #B2886B;
+  width: 600px;
+}
+
+.room-creation-tag{
+  display: flex;
+  align-items: flex-end;
+}
+
+.room-creation-tag > * {
+  margin-left: 10px;
+}
+
+.room-creation-tag .tag{
+  color: #FF8E29;
+  font-size: 20px;
+}
+
+.room-creation-input-number{
+  box-sizing: border-box;
+  border: 2px solid #B2886B;
+  border-radius: 5px;
+}
+
+.room-creation-public{
+  display: flex;
+  flex-direction: row;
+}
+
+.room-creation-description-textarea{
+  box-sizing: border-box;
+  border: 2px solid #B2886B;
+  border-radius: 5px;
+  width: 500px;
+  height: 100px;
+  background-color: #fff;
+  padding: 10px 5px;
+}
+
+.room-creation-description-textarea textarea{
+  background-color: transparent;
+  color: #3E2C27;
+  border: 0;
+  font-size: 1.1em;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  resize: none;
+}
+
+.room-creation-description-textarea textarea:focus{
+  outline: none;
+}
+
+.room-creation-action-btn{
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 50px;
+}
+
+.room-creation-action-btn > * {
+	margin-left: 20px;
 }
 
 /*-----------------------------------------------------------*/
