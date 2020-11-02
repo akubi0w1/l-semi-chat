@@ -111,7 +111,7 @@ body {
 }
 
 .btn {
-  padding: 5px 10px;
+  padding: 3px 10px;
   border: 2px solid transparent;
   background-color: transparent;
   font-size: 1em;
@@ -132,11 +132,24 @@ body {
   color: #FFF6E8;
 }
 
+.btn-secondary {
+  background-color: #B2886B;
+  border-color: #B2886B;
+  color: #FFF6E8;
+}
+
+.btn-danger {
+  background-color: #CC2851;
+  border-color: #CC2851;
+  color: #FFF6E8;
+}
+
 .input-text {
   font-size: 1em;
   padding: 5px;
   border: none;
   border-bottom: 2px solid #B2886B;
+  background-color: transparent;
 }
 
 .input-text:focus {
@@ -145,13 +158,14 @@ body {
 
 .input-label {
   font-size: small;
-  color: #aaaaaa;
+  color: #B2886B;
 }
 
 .input-switch {
   position: relative;
   display: inline-block;
   vertical-align: middle;
+  margin: 0px 0px 0px 1000px;
   width: 60px;
   height: 32px;
 }
@@ -269,6 +283,10 @@ body {
   overflow-y: scroll;
 }
 
+.sidebar-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
 .sidebar-wrapper .search {
   position: fixed;
   background-color: #B2886B;
@@ -334,8 +352,27 @@ body {
 
 .content-wrapper {
   margin-left: 280px;
+  width: 100%;
 }
 
 .content {
   margin: 10px 20px;
+}
+
+/* ここから追加 */
+.archive-list{
+  margin: 10px 20px;
+  padding: 10px 20px;
+  color: #FF8E29;
+}
+
+.archive{
+  margin: 10px 20px;
+  padding: 10px 20px;
+  font-size: 50px;
+  border-bottom: solid;
+}
+
+.archive:hover{
+  background-color: #B2886B;
 }
