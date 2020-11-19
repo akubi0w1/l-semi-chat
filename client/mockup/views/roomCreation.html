@@ -56,6 +56,51 @@
     <div class="content-wrapper">
       <div class="content">
         <!-- TODO: ここにhtmlを書いていく -->
+        <form class="form">
+          <div class="room-creation">
+            <div class="room-creation-title">
+              <h1 class="creation">作成</h1>
+            </div>
+            <h2 class="form-label">部屋名</h2>
+            <div class="ml-40 mt-10">
+              <input class="input-text" type=text/>
+            </div>
+            <h2 class="form-label">タグ</h2>
+            <div class="room-creation-tag">
+              <i class="fas fa-tag tag"></i>
+              <input class="input-text" />
+              <button class="btn btn-danger">+</button>
+            </div>
+            <h2 class="form-number">参加人数</h2>
+            <div class="ml-40 mt-10">
+              <input type="number"  class="room-creation-input-number" min=0>
+            </div>
+            <div class="room-creation-public">
+              <h2 class="room-public">Public</h2>
+              <div class="ml-40 mt-20">
+                <label class="input-switch">
+                  <input type="checkbox">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="room-creation-description">
+              <h2 class="description">説明</h2>
+              <div class="ml-40 mt-10">
+                <div class="room-creation-description-textarea">
+                  <textarea></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="room-creation-action-btn">
+              <button class="btn btn-cancel">cancel</button>
+              <button class="btn btn-primary">ok</button>              
+            </div>
+            <!-- END room-creation-action-btn -->
+          </div>
+          <!-- END room-creation -->
+        </form>
+        <!-- END form -->
       </div>
       <!-- END content -->
     </div>
